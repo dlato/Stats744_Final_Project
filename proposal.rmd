@@ -20,7 +20,7 @@ header-includes: \usepackage{xspace, longtable, booktabs}
 We have data from 6 replicons from 4 different species of bacteria: \ecol, \bass, \strep, and \smel.
 All of the bacteria have their genome contained in one chromosome except \smel 
 which is a multirepliconic bacteria. A multirepliconic bacteria means that the genome is made up of multiple replicons or chromosome like structures. For this reason, each replicon of \smel 
-(chromosome, pSymA, pSymB) will be analyzed separately. So we effectively have 6 bacterial data sets:
+(chromosome, pSymA, pSymB) will be analyzed separately. So we effectively have 6 bacterial categories:
 
 \begin{table}[h]
 		\begin{center}
@@ -58,10 +58,9 @@ Each gene has an associated genomic position (the midpoint between the protein c
 
 ### Selection Data:
 
-The selection data set has information on the non-synonymous (dN) substitution rate, synonymous (dS) substitution rate, and $\omega$ (dN / dS) for each gene in the bacterial genomes.
+The selection data set has information on the non-synonymous (dN) substitution rate, synonymous (dS) substitution rate, and $\omega$ (dN / dS) for most genes in the bacterial replicons and the relation of these to distance from the origin of replication.
 This information allows us to make inferences about the selective pressures acting on a gene.
-This data set contains information about all three of these selective measures for each gene and the associated distance from the origin of replication of that gene.
-Non-synonymous substitutions cause a change to the amino acid sequence of a gene, which could completely alter the function of the gene and be fatal to the organism.
+Non-synonymous substitutions cause a change to the amino acid sequence of a gene, which could alter the function of the gene.
 Synonymous substitutions do not alter the amino acid sequence of a gene, and therefore are not expected to significantly impact the function of an organism.
 The $\omega$ ratio allows us to determine if these changes in the sequence cause beneficial or deleterious traits to arise.
 If $\omega$ for a gene is larger than 1, the gene is under positive selection and therefore is beneficial to the organism and will likely be maintained in the genome over time.
@@ -72,20 +71,11 @@ If $\omega$ is equal to 1, the gene is under neutral selection, and is neither b
 ## Biological Background
 
 All of the datasets are looking at how the response variables change with distance from the origin of replication.
-Bacterial replicons begin DNA replication from the origin of replication, and this continues in both directions around the (often) circular chromosome.
-Some bacteria for example \strep
-have a single linear chromosome that also replicates from a single origin of replication located roughly in the middle of the replicon, and continues in both directions until the ends of the chromosome are reached.
-
 There are certain properties that are believed to be associated with distance from the origin of replication.
-Replication errors are less frequent near the origin of replication, and as a result, genes that are considered "core" or essential to the survival of the organism are often located in this area.
-Genes that are more accessory to the function of an organism are therefore located near the terminus of replication (located about half way around the genome in circular bacterial genomes, and at the chromosome ends of linear bacterial genomes).
-We therefore expect a lower mutation or substitution rate near the origin of replication compared to the terminus.
-With a lower mutation rate near the origin, we expect genes located in this region to be under purifying or negative selection and removing deleterious traits.
-Selective pressures at the terminus should be positive, because this region has higher mutation rates and is often recombining, there should be selective pressure to increase beneficial traits. 
-However, we do expect that most genes (in any genome) are under neutral or purifying selection, regardless of their genomic location (neutral theory or nearly neutral theory).
-These selective pressures and replication processes also impact where genes are located on a bacterial genome.
-Genes that are essential and highly conserved are generally located near the origin of replication.
-These genes are additionally often highly expressed because they are so important.
+Near the origin of replicaion we expect genes to be more conserved and encoding for essential functions than genes located near the terminus of replication.
+Genes near the origin typically therefore, have higher gene expression and less mutations or substitutions, because they are important to the function of the organism.
+We expect that most genes (in any genome) are under neutral or purifying selection (removing deleterious traits), regardless of their genomic location (neutral theory or nearly neutral theory).
+Since genes near the terminus are changing often (mutations) and involved in local envoronment adaptation, we could suppose that these genes might be the best candidates for positive selection (increase benificial traits).
 
 This leaves us with three predictions for our data sets:
 
