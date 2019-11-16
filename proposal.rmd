@@ -84,3 +84,20 @@ This leaves us with three predictions for our data sets:
 2. Gene expression should decrease when moving away from the origin of replication
 
 3. Most genes should be under neutral or purifying selection, any genes that are under positive selection should be located near the terminus
+
+## The Plots:
+
+\textbf{Selection Data:}
+For this data set, we are going to fit three linear models that tests the effect of the distance from the origin of replication of genes on non-synonymous (dN) substitution rate, synonymous (dS) substitution rate, and $\omega$ (dN / dS). We are going to include a coefficient plot that will compare the three models. This plot can confirm to us whether the third prediction stated above holds. We might also consider fitting other models on this data set. Exploratory graphics will also be included that will help us visualize how our attribute effects our three response variables. Then comment on how our exploratory plot(s) compare to our inferential plot(s).
+
+\textbf{Gene Expression:}
+For this data set, we are also going to fit a model. This model will tests how the distance from the origin of replication of genes effects its expression value. Inferential plots will be used to help us interpret the model results. We will also have some exploratory graphics to go along the inferential plots that will visualize that effect. The inferential and exploratory plots should help us confirm the second prediction stated above.
+
+
+Since the Selection data set and the Gene data set have a column in common, the gene ID, we could consider including a plot that contains variables from both data sets and see if genes that are highly expressed are also under a certain selective pressure.
+
+
+\textbf{Substitution Data Sets (Might not include in the final project):}
+We have six data sets for each Bacterial replicon,and each data set contains over 30 million observations.
+We are not going to fit a model for these data sets, but we will use exploratory plots to help us see whether the position from origin of replication of different sites effects whether there is a substitution at that site or not. For each site, there is information from 10 different branches of the phylogenetic tree of the bacterial strains.
+Maybe we can use box plots, where our y-axis is the position and x-axis is our 10 branches,and then color the boxplots by whether there is a substitution or not. We could also consider facets. This plot will help us see whether the number of substitutions increase when moving away from the origin of replication (The first prediction stated above), and the effect that each branch have on a site.
