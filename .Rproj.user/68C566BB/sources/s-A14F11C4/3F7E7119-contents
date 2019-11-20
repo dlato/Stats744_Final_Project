@@ -1,0 +1,188 @@
+---
+title: "Stats744: HW7"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(dplyr)
+library(ggplot2)
+library(plotly)
+library(htmlwidgets)
+library(gghighlight)
+theme_set(theme_bw() + theme(strip.background =element_rect(fill="#e7e5e2")) +
+            theme(strip.text = element_text(size =10)) +
+            #theme(plot.title = element_text(hjust = 0.5), 
+            theme(plot.title = element_text(), 
+                  panel.background = element_rect(fill = "white", colour = NA), 
+                  panel.grid.major = element_line(colour = "grey90", size = 0.2), 
+                  panel.grid.minor = element_line(colour = "grey98", size = 0.5), 
+                  panel.spacing = unit(0.25, "lines"), 
+                  axis.text=element_text(size=10),
+                  legend.position="top") 
+)
+```
+
+
+## Interactive Graph
+
+### The Data
+
+I will be once again working with my thesis data.
+I have normalized gene expression values for all genes in the *E.coli* genome.
+This data has been previously normalized using the standard DeSeq2 pipeline to be in Counts Per Million (CPM).
+The bacteria was grown under normal conditions, meaning that there was no stressful environment, limiting resources, or competition.
+**BMB: bacteria "was grown?" "were grown?" they both sound funny ...**
+This gene expression data is also associated with the genomic distance from the origin of replication.
+The midpoint between the protein coding start and end of each gene was chosen as a singular genomic position for that gene.
+This was to decrease the complexity of genes with overlapping genomic positions and having an expression value associated with a range of positions.
+Each gene was calibrated so that position 0 is the origin of replication and numbering proceeds in both directions until the terminus of replication is reached.
+This accounts for the bidirectional replication that happens in bacteria.
+See [this figure](https://github.com/dlato/Stat744/blob/master/bidir_rep_fig.pdf) for more details.
+
+The overall goal of this portion of my thesis is to see how (if) gene expression varies across the genome.
+We expect that genes that are important to the survival of the organism are located near the origin of replication, where there are less replication errors and genes can benefit from increased dosage.
+These genes should therefore, have increased expression.
+Genes that are located near the terminus of replication are typically accessory genes used for local environmental adaptation, and therefore should not be as highly expressed.
+
+For this assignment, I will be showing an exploratory graphic and not really commenting on how gene expression varies across the genome.
+
+The goal of the following graphic is to display the distribution of genes bidirectionally around the chromosome of *E.coli*
+and their respective expression levels.
+
+```{r read in data}
+############################################
+#read in data
+exp_data <- read.table("bidirectional_data.csv", sep = "\t")
+head(exp_data)
+#re-scale position
+exp_data$tmp_pos <- exp_data$tmp_pos / 1000000  ##BMB maybe use 1e7 to avoid having to count zeros
+############################################
+```
+
+### The Graph
+
+```{r plot}
+############################################
+mytitle <- "<i>E.coli</i> Chromosome"
+#scatter plot
+scat <- (exp_data
+         %>% highlight_key(~Id)
+         %>% ggplot(aes(tmp_pos, Exp, group=Id)) 
+         + ggtitle(mytitle)
+         + geom_point(alpha = 0.5)
+         + ylab("Expression (CPM)")
+         + xlab("Bidirectional Genomic Position (Mbp)")
+         + scale_y_log10()
+)
+#warning because of zero expression values changed on a log scale
+
+#interactive
+inter_scat <- (scat
+  %>% ggplotly(tooltip="group")
+       %>%  layout(
+                   margin = list(b = 50, l = 50)) # to fully display the x and y axis labels
+  %>% highlight(on="plotly_hover",
+                off=NULL,
+                color="#0083FF")
+)
+inter_scat
+```
+
+**BMB: I had a little trouble with tooltip responsiveness, but that may be my system**
+
+
+### Discussion
+
+Overall, I think the the graph has readable font size, a good aspect ratio, and appropriate point size.
+With respect to the Cleveland hierarchy, I am showing data as position along a common scale, which is what humans are best at distinguishing.
+
+I chose to anchor the the x-axis at zero because this denotes the beginning of the origin of replication, so it makes sense for there to be an anchor at zero.
+I additionally chose to scale the numbers on the x-axis to ensure that they were easier to read by dividing them by 1,000,000bp.
+Typically genomes are discussed in terms of Millions of base pairs (Mbp) so this was an appropriate number to choose.
+For the y-axis, I chose a log scale.
+**BMB: I would also consider a sqrt scale for counts (it helps to show zero-count data), but log is probably more common, and it looks like it works well in this case. On the other hand, a sqrt scale would 'squash' the data less, and might help for emphasizing highly expressed genes more**
+Majority of the genes in the genome will not be highly expressed and have values of 100 CPM or lower.
+However, there are some genes that are extremely highly expressed; these are often genes encoding for proteins that are involved in replication and repair like riboproteins.
+These proteins need to be produced to help with important housekeeping functions like cell metabolism or cell division.
+It therefore makes sense that some of these genes are highly expressed.
+With such a large range in expression values, a log base 10 scale was the best choice to show all the data points, while still allowing to see changes between majority of the genes that would have be squished near the x-axis on a linear scale.
+Additionally, my axis labels are informative and contain units.
+
+With respect to colour, I kept the colour simple with black for the background points and blue for the "hover" point colour.
+I chose blue so that it would be colour-blind friendly and easy to distinguish from black when a point was hovered over. **BMB: this generally isn't too hard. Maybe red to be more prominent?**
+Since there are about 3500 data points, I decided to use slightly transparent points so that most of the points could still be seen when looking at the graph without using the interactive graphics.
+I chose the specific transparency because I still wanted to highlight the fact that bacterial genomes often have genes that overlap partially or completely because they are extremely space efficient creatures when it comes to their genomes!
+So, I wanted an transparent value that would still allow for sections of the graph to be densely coloured with these overlapping genes, but for the most part have all points visible.
+
+One of the benefits of interactive graphics is that the user is able to zoom in on any area of the graph they wish.
+So, segments of the genome that do have high gene density can be zoomed in on and looked at in more detail until the overlap is reduced.
+My main reason for making this simple scatter plot interactive is that it is biologically interesting.
+People are often interested in genes that have very high or very low gene expression.
+With this interactive graph, users can hover over any expression value and get the gene Id that is associated with this gene.
+This Id can then be searched in [NCBI](https://www.ncbi.nlm.nih.gov/gene/) to find out more about that gene like what protein product it makes, the length, and non-bidirectional genomic location.
+**BMB: it would be interesting to figure out a way to make the NCBI search link show up directly in the tooltip ("click here for NCBI information")**
+For example, the gene in the graph below is gene fusA.
+```{r example_gene}
+#colouring just fusA
+fusA <- which(exp_data$Id == "fusA")
+ex_gene_colours <- rep("#D2D1D6", length(exp_data$Id))
+ex_gene_colours[fusA] <- "#0083FF"
+newtitle <- substitute(italic(bac_name)~replicon, list(bac_name="E.coli", replicon="Chromosome"))
+
+## BMB: could you have repeated less code?
+#plot
+fusA_altplot <- (exp_data
+         %>% ggplot(aes(tmp_pos, Exp, group=Id)) 
+         + ggtitle(newtitle)
+         + geom_point(colour = ex_gene_colours)
+         + ylab("Expression (CPM)")
+         + xlab("Bidirectional Genomic Position (Mbp)")
+         + scale_y_log10()
+         + scale_color_manual(values=c("#0083FF","#D2D1D6"))
+         #cheated a bit here but it worked!
+         + annotate(geom = "text", x = 0.5, y = 10000, label = "fusA", hjust = "left", colour = "#0083FF")
+)
+#warning because of zero expression values changed on a log scale
+fusA_altplot
+
+## just curious ...
+fusA_altplot + geom_smooth(group=1,method="loess",span=0.1,fill="red")
+## I think the loess is done on the log-scaled data ...
+
+#tried to get it working with gghighlight...
+#I tried to get the point in the graph to be the same colour as my interactive graph but I could not figure out how to do it in gghighlight
+#fusA_plot <- (exp_data
+#         %>% ggplot(aes(tmp_pos, Exp, group=Id)) 
+#         + ggtitle(newtitle)
+#         #+ geom_point(alpha = 0.1)
+#         + geom_point()
+#         + ylab("Expression (CPM)")
+#         + xlab("Bidirectional Genomic Position (Mbp)")
+#         + scale_y_log10()
+#         #tried to get the point to be the same colour as in my interactive graph, failed.
+#         #+ scale_color_manual(values=c("#0083FF","#D2D1D6"))
+#         + gghighlight(Id %in% c("fusA"), 
+#                  label_key = Id)
+#)
+##warning because of zero expression values changed on a log scale
+#fusA_plot
+## BMB: maybe we can work on this in class
+```
+
+
+This gene encodes an elongation factor which facilitates the translocation of the ribosome and is essential for DNA replication.
+Therefore, it makes sense that it is one of the most highly expressed genes in the genome!
+This would be particularly interesting for gene expression experiments performed under stressful conditions.
+You could easily see which genes were highly expressed in one treatment compared to another (with the help of some differential gene expression analysis) and highlight these genes on the graph.
+
+### Other Things That Would Be Cool
+
+I thought it would be really neat if I could colour the genes based on their protein product.
+For example, most genes are annotated by COG categories which tell you about the function of those genes such as Translation, Cell Motility, and Replication and Repair.
+It would be cool to have this information associated with each gene and then be able to have the user select and highlight all genes from one COG category to see how they are dispersed across the genome as well as their associated gene expression.
+Unfortunately, I would have to do a bit more analysis and Python coding to obtain this information and add it to my data set.
+
+I also think it would be neat to add on a search bar where the user could specify a particular gene, and then highlight that on the graph.
+I think that I would need to develop a shiny app in order to do this, but it would be really useful for people who study a particular gene or set of genes and they wanted to see where they fall relative to the origin of replication and what their associated gene expression value is.
+
+**well, you have a project coming up ...  score: 2.2**

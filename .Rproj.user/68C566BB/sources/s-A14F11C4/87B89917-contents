@@ -1,0 +1,54 @@
+#bio720 Ians stuff on beetles
+
+setRepositories()
+library(DESeq2)
+library("RColorBrewer")
+library("gplots")
+setwd("C:/Users/Daniella/Documents/Bio720/IansStuff/data")
+
+in_dir = dir(, pattern="_results.xprs")
+system(paste("wc -l ",in_dir[[1]])) #do word count for first file in directory
+
+counts_in <- lapply(in_dir, function(x) read.table(x, header=T, sep = "", nrows=5077)) #deals with importing all the data. it will go and list all the files and then it will go through each of them
+
+head(counts_in[[1]])
+head(counts_in[[2]])
+#remember that this progam express that generated out data dosent sort our samples so we have to sort it so that all samples contain the genes in the same order
+counts_sorted <- lapply(counts_in, function(x) x <- x[order(x[,2]),]) #make matrix of counts, ordering based on the gene
+tot_count_matrix <- matrix(unlist(lapply(counts_sorted, function(x) x$tot_counts)), nrow=5076, ncol=16) ## of rows are the number of genes, and the 16 is the number of samples
+
+#run across many lanes so we want to take this into account
+parse_names <- strsplit(in_dir, split="_")#his files names have all the treatment types in it so we can split it and get all the info and not have to load/make a new file
+parse_names
+parse_names <- matrix(unlist(parse_names), nrow=16, ncol=7, byrow=T) #now going to put everything in a matrix, 16 samples and 7 cols because we have 7 treatment info (found in the name)
+
+col_names_counts <- paste(parse_names[,1], "_", parse_names[,2], "_", parse_names[,3], "_", parse_names[,4], sep="") #renamning it in to a format that matches the name. in the matrix
+#all this is so we have proper formats for subsequent programs
+colnames(tot_count_matrix) = col_names_counts # sample names as column names
+# add contig names as row names
+rownames(tot_count_matrix) = counts_sorted[[1]]$target_id
+#now our matrix has intuitive names for the rows and columns
+
+
+dim(tot_count_matrix)#check to make sure it did it right
+#same but we should see a linear relationship
+plot(log(tot_count_matrix[,1]),log(tot_count_matrix[,2]) )
+
+#below puts it in a data frame so we have it all sorted and automated
+experimental_design = data.frame(
+  sample_names = col_names_counts,  # sample name
+  individual = factor(parse_names[,1]), # each individual beetle
+  size = factor(parse_names[,2]),  # small or large beetle
+  sex = factor(parse_names[,3]),   # male or females
+  #tissue = factor(parse_names[,4]),  # tissue type, we don't need it.
+  lane = factor(parse_names[,6])      # Whick lane on the Illumina flowcell.
+)
+
+test_lane_effects <- DESeqDataSetFromMatrix(tot_count_matrix, experimental_design, design = formula(~ lane))
+
+test_lane_effects2 <- DESeq(test_lane_effects) # We know fit the simple model
+
+
+test_lane_effects2_results <- results(test_lane_effects2)
+summary(test_lane_effects2_results) # No evidence, but this is a bit incomplete
+plotDispEsts(test_lane_effects2)
