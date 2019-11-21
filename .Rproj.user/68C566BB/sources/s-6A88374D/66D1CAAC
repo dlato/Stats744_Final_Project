@@ -5,13 +5,15 @@
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "61658485",
+    "hash" : "0",
     "id" : "66D1CAAC",
     "lastKnownWriteTime" : 1573600264,
     "last_content_update" : 1573600264,
     "path" : "~/Stat744/hw3.Rmd",
     "project_path" : null,
     "properties" : {
+        "cursorPosition" : "48,3",
+        "scrollLine" : "32"
     },
     "read_only" : false,
     "read_only_alternatives" : [

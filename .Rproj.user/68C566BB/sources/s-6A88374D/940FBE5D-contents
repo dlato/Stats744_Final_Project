@@ -58,3 +58,34 @@ selection_df_no_NA <- (selection_df_no_NA
              %>% select(-omegaval)
 )
 
+#number of bacterial replicons
+num_of_plots <- length(levels(selection_df_no_NA$bacteria))
+
+#italic bacteria names
+  levels(selection_df_no_NA$bacteria) <- c("ecoli" = expression(paste(italic("E.coli"), "")),
+                          "bass" = expression(paste(italic("B. subtilis"), "")),
+                          "sinoC" = expression(paste(italic("S.meliloti"), "")),
+                          "pSymA" = expression(paste(italic("S.meliloti"), " pSymA")),
+                          "strep" = expression(paste(italic("Streptomyces"), " Chromosome`")),
+                          "pSymB" = expression(paste(italic("S.meliloti"), " pSymB")))
+
+#choose colours
+colours_arr <- rep(c("#CFE7C8","#D2E4DC","#A0747A"),num_of_plots)
+#plot
+vio_str<-(ggplot(selection_df_no_NA, aes(x=sel_class, y=val, fill=sel_class)) 
+          + geom_violin() 
+          + geom_jitter(position=position_jitter(0.2))
+          + geom_boxplot(width=.1, outlier.shape=NA, fill = colours_arr) 
+          + stat_boxplot(geom = "errorbar", width = 0.2) 
+          + facet_wrap(~bacteria, labeller=label_parsed)
+          + xlab("") 
+          + ylab("Value") 
+          + scale_color_manual(values=colours_arr)
+          #make the omega a math symbol in both the legend and x-axis
+          + scale_x_discrete(breaks = c("dN", "dS", "omega"),labels = c("dN","dS", expression(omega))) 
+          #log scale
+          #+ scale_y_continuous(trans='log10')
+          + scale_fill_manual(values=c("#CFE7C8","#D2E4DC","#A0747A"), labels = c(" dN", " dS", expression(omega))) 
+)
+
+vio_str
