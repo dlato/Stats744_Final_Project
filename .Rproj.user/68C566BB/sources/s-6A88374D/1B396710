@@ -1,24 +1,22 @@
 {
     "collab_server" : "",
     "contents" : "",
-    "created" : 1574215947654.000,
+    "created" : 1574295012980.000,
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "0",
-    "id" : "E4D6F2AE",
-    "lastKnownWriteTime" : 1573609743,
-    "last_content_update" : 1573609743,
-    "path" : "~/Stat744/hw6.rmd",
+    "hash" : "1292093316",
+    "id" : "1B396710",
+    "lastKnownWriteTime" : 1573600264,
+    "last_content_update" : 1573600264,
+    "path" : "~/Stat744/hw4.rmd",
     "project_path" : null,
     "properties" : {
-        "cursorPosition" : "88,0",
-        "scrollLine" : "65"
     },
     "read_only" : false,
     "read_only_alternatives" : [
     ],
-    "relative_order" : 5,
+    "relative_order" : 4,
     "source_on_save" : false,
     "source_window" : "",
     "type" : "r_markdown"

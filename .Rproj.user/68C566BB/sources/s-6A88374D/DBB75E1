@@ -12,9 +12,9 @@
     "path" : null,
     "project_path" : null,
     "properties" : {
-        "cacheKey" : "9B785F4C",
+        "cacheKey" : "47527A87",
         "caption" : "selection_df",
-        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=selection_df&cache_key=9B785F4C",
+        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=selection_df&cache_key=47527A87",
         "displayedObservations" : "12738",
         "environment" : "",
         "expression" : "selection_df",
@@ -26,7 +26,7 @@
     "read_only" : false,
     "read_only_alternatives" : [
     ],
-    "relative_order" : 4,
+    "relative_order" : 3,
     "source_on_save" : false,
     "source_window" : "",
     "type" : "r_dataframe"

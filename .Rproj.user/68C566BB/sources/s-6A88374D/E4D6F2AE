@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1574215947654.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2064329302",
+    "id" : "E4D6F2AE",
+    "lastKnownWriteTime" : 1573609743,
+    "last_content_update" : 1573609743,
+    "path" : "~/Stat744/hw6.rmd",
+    "project_path" : null,
+    "properties" : {
+        "cursorPosition" : "79,0",
+        "scrollLine" : "63"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 7,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}
