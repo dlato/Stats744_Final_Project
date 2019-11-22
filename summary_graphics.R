@@ -1,6 +1,10 @@
 # Exploratory graphics for selection data
 library(tidyverse)
 library(data.table)
+library(devtools)
+library(cowplot)
+library(ggpubr)
+
 
 options(scipen=10000)
 theme_set(theme_bw() + theme(strip.background =element_rect(fill="#e7e5e2")) +
@@ -96,3 +100,56 @@ vio_str_box <-(ggplot(selection_df_no_NA, aes(x=sel_class, y=val, fill = sel_cla
 )
 
 vio_str_box
+
+
+#hex plot
+library(hexbin)
+omega_data <- selection_df[which(selection_df$sel_class == "omega"),]
+ecol_dat <- selection_df[which(selection_df$bacteria == "ecoli"),]
+pa_dat <- omega_data[which(omega_data$bacteria == "ecoli"),]
+
+hex_p <- (ggplot(omega_data, aes(x=tmp_pos, y=val)) 
+          + facet_wrap(~bacteria, labeller=label_parsed)
+          + geom_hex(bins=30) 
+          #omega = 1 reference line
+          +  geom_hline(yintercept=1, linetype="dashed", color = "red")
+          + xlab("Genomic Position") 
+          + ylab("Value")
+          + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x))
+)
+hex_p
+
+pa_hex <- (ggplot(pa_omeg, aes(x=tmp_pos, y=val)) 
+          #+ geom_hex(bins=30) 
+          + geom_point() 
+          #omega = 1 reference line
+          +  geom_hline(yintercept=1, linetype="dashed", color = "red")
+          + xlab("Genomic Position") 
+          + ylab("Value")
+          + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x))
+)
+pa_hex
+
+
+# Scatter plot colored by groups ("Species")
+#sp <- ggscatter(pa_dat, x = "tmp_pos", y = "val",
+sp <- geom_smooth(method = lm, val ~ tmp_pos, x = "tmp_pos", y = "val", data = pa_dat,
+                color = "sel_class", palette = "jco",
+                size = 3, alpha = 0.6)+
+          scale_y_continuous(trans='log10') +
+  border()                                         
+# Marginal density plot of x (top panel) and y (right panel)
+xplot <- ggdensity(pa_dat, "tmp_pos", fill = "sel_class",
+                   palette = "jco")
+yplot <- ggdensity(pa_dat, "val", fill = "sel_class", 
+                   palette = "jco")+
+  rotate()
+# Cleaning the plots
+sp <- sp + rremove("legend")
+yplot <- yplot + clean_theme() + rremove("legend") 
+xplot <- xplot + clean_theme() + rremove("legend")
+# Arranging the plot using cowplot
+library(cowplot)
+plot_grid(xplot, NULL, sp, yplot, ncol = 2, align = "hv", 
+          rel_widths = c(2, 1), rel_heights = c(1, 2))
+
