@@ -1,0 +1,33 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1574617890626.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "E7ABBD8E",
+    "lastKnownWriteTime" : 1574610433,
+    "last_content_update" : 1574617890626,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "cacheKey" : "75C6D833",
+        "caption" : "median_sel_dat",
+        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=median_sel_dat&cache_key=75C6D833",
+        "displayedObservations" : "4005",
+        "environment" : "",
+        "expression" : "median_sel_dat",
+        "object" : "median_sel_dat",
+        "preview" : "0",
+        "totalObservations" : "4005",
+        "variables" : "5"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 12,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_dataframe"
+}
