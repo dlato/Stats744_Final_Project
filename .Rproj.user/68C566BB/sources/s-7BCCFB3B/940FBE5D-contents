@@ -6,13 +6,14 @@ library(cowplot)
 library(ggpubr)
 library(plyr)
 library(dplyr)
+library(directlabels)
 
 
 options(scipen=10000)
 theme_set(theme_bw() + theme(strip.background =element_rect(fill="#e7e5e2")) +
             theme(strip.text = element_text(size =10)) +
             #theme(plot.title = element_text(hjust = 0.5), 
-            theme(plot.title = element_text(), 
+            theme(plot.title = element_text(hjust = 0.5), 
                   panel.background = element_rect(fill = "white", colour = NA), 
                   panel.grid.major = element_line(colour = "grey90", size = 0.2), 
                   panel.grid.minor = element_line(colour = "grey98", size = 0.5), 
@@ -86,7 +87,7 @@ median_sel_dat
 median_sel_dat <- tidyr::drop_na(median_sel_dat)
 
 #plot just ecoli
-ecol_dat <- median_sel_dat[which(median_sel_dat$bacteria == "ecoli"),]
+ecol_dat <- median_sel_dat[which(median_sel_dat$bacteria == "strep"),]
 head(ecol_dat)
 #scale the genomic position
 ecol_dat$new_sections <- ecol_dat$new_sections / 1000000
@@ -96,25 +97,35 @@ pd <- position_dodge(0.1) # move them .05 to the left and right
 
 ecol_dat$class <- factor(ecol_dat$class, levels = c("dS", "omega", "dN"))
 
+levels(ecol_dat$class) <- c("dS" = " dS",
+                              "omega" = expression(omega),
+                              "dN" = " dN")
+levels(ecol_dat$class)
+
 #choose colours
 #colours_arr <- c("#CFE7C8","#D2E4DC","#A0747A")
 #colours_arr <- c("#7A306C","#8E8DBE","#5EB26D")
 colours_arr <- c("#A0747A","#5EB26D","#8E8DBE")
 colours_arr <- c("#8E8DBE","#A0747A","#5EB26D")
-(ggplot(ecol_dat, aes(x=new_sections, y=value.mean, colour=class))
+span = 0.3
+distg <- (ggplot(ecol_dat, aes(x=new_sections, y=value.mean, colour=class))
 #  geom_errorbar(aes(ymin=value.mean-sd, ymax=value.mean+sd), width=.1, position=pd) +
   + geom_point()
   + geom_smooth(method = lm)
   + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x))
   #omega = 1 reference line
-  +  geom_hline(yintercept=1, linetype="dashed", color = "black")
+  +  geom_hline(yintercept=1, linetype="dashed", color = "black", size=1)
   #+ scale_color_manual(values=colours_arr,labels = c(" dS", " dN", expression(omega)))
-  + scale_color_manual(values=colours_arr,labels = c(" dS", expression(omega), " dN"))
-  #+ scale_color_manual(values=colours_arr)
+  #+ scale_color_manual(values=colours_arr,labels = c(" dS", expression(omega), " dN"))
+  + scale_color_manual(values=colours_arr)
   #axis labels
   + xlab("Genome Position (Mbp)")
   + ylab("Mean Value")
+  + ggtitle(expression(paste(italic("Streptomyces"), " Chromosome")))
 )
+
+direct.label(distg,method="last.points")
+
 
 #italic bacteria names
 levels(sel_dat$bacteria) <- c("ecoli" = expression(paste(italic("E.coli"), "")),
