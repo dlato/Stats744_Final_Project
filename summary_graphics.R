@@ -4,6 +4,7 @@ library(data.table)
 library(devtools)
 library(cowplot)
 library(ggpubr)
+library(plyr)
 
 
 options(scipen=10000)
@@ -54,6 +55,43 @@ selection_df <- selection_df %>%
 
 #remove NAs to avoid warnings
 selection_df_no_NA <- tidyr::drop_na(selection_df,val)
+
+###################################
+#########################
+#chunking the data into sections of the genome
+#########################
+#decreasing order
+selection_df_medians <- arrange(selection_df_no_NA,tmp_pos)
+nmax_pos <- max(selection_df_medians$tmp_pos)
+nmin_pos <- min(selection_df_medians$tmp_pos)
+nmin_pos
+#lenght of section of genome
+chunklen <- 100000
+chunk_len_of_genome <- round_any(nmax_pos, chunklen, f=ceiling)
+chunk_len_of_genome
+chunks <- seq(0, chunk_len_of_genome, chunklen)
+chunks
+
+#expty vec to hold the rows that split the dat into X kb chunks
+exp_rows_to_split_dat <- vector()
+for (i in chunks) {
+  exp_rows <-
+    which(abs(selection_df_medians$tmp_pos-i)==min(abs(selection_df_medians$tmp_pos-i)))
+  # finding the closest number to each 10kb without going over it
+  exp_max_row <- max(exp_rows)
+  #  actual_pos <- data_chrom_ordered$midpoint[max_row]
+  #  rows_to_split_dat <- c(rows_to_split_dat, actual_pos)
+  exp_rows_to_split_dat <- c(exp_rows_to_split_dat, exp_max_row)
+}#for
+#rows_to_split_dat <- rows_to_split_dat + 1
+exp_rows_to_split_dat
+#make new column with "groups" of these chunks
+new_sections <- rep(chunks, times = exp_rows_to_split_dat)
+head(new_sections)                    
+
+selection_df_medians$new_sections <- new_sections
+
+
 
 #reorder by median omega
 selection_df_no_NA <- (selection_df_no_NA
@@ -132,10 +170,11 @@ pa_hex
 
 
 # Scatter plot colored by groups ("Species")
-#sp <- ggscatter(pa_dat, x = "tmp_pos", y = "val",
-sp <- geom_smooth(method = lm, val ~ tmp_pos, x = "tmp_pos", y = "val", data = pa_dat,
+sp <- ggscatter(pa_dat, x = "tmp_pos", y = "val",
+#sp <- geom_smooth(method = lm, val ~ tmp_pos, x = "tmp_pos", y = "val", data = pa_dat,
                 color = "sel_class", palette = "jco",
                 size = 3, alpha = 0.6)+
+  geom_smooth(method = lm) +
           scale_y_continuous(trans='log10') +
   border()                                         
 # Marginal density plot of x (top panel) and y (right panel)
@@ -143,6 +182,8 @@ xplot <- ggdensity(pa_dat, "tmp_pos", fill = "sel_class",
                    palette = "jco")
 yplot <- ggdensity(pa_dat, "val", fill = "sel_class", 
                    palette = "jco")+
+  #this transformation does not look right....
+          scale_y_continuous(trans='log10') +
   rotate()
 # Cleaning the plots
 sp <- sp + rremove("legend")
@@ -153,3 +194,88 @@ library(cowplot)
 plot_grid(xplot, NULL, sp, yplot, ncol = 2, align = "hv", 
           rel_widths = c(2, 1), rel_heights = c(1, 2))
 
+#########################
+#chunking the data into sections of the genome
+#########################
+#adding a fake row for position 0
+pa_dat <- add_row(pa_dat, tmp_pos = 0)
+pa_dat <- arrange(pa_dat, tmp_pos)
+nmax_pos <- max(pa_dat$tmp_pos)
+nmin_pos <- min(pa_dat$tmp_pos)
+nmin_pos
+#lenght of section of genome
+chunklen <- 100000
+chunk_len_of_genome <- round_any(nmax_pos, chunklen, f=ceiling)
+chunk_len_of_genome
+chunks <- seq(nmin_pos, chunk_len_of_genome, chunklen)
+chunks
+
+#expty vec to hold the rows that split the dat into X kb chunks
+exp_rows_to_split_dat <- vector()
+for (i in chunks) {
+  exp_rows <-
+    which(abs(pa_dat$tmp_pos-i)==min(abs(pa_dat$tmp_pos-i)))
+  # finding the closest number to each 10kb without going over it
+  exp_max_row <- max(exp_rows)
+  #  actual_pos <- data_chrom_ordered$midpoint[max_row]
+  #  rows_to_split_dat <- c(rows_to_split_dat, actual_pos)
+  exp_rows_to_split_dat <- c(exp_rows_to_split_dat, exp_max_row)
+}#for
+#rows_to_split_dat <- rows_to_split_dat + 1
+exp_rows_to_split_dat
+#split data by the above specified rows
+#sometimes the closest number was technically in the next 10kb chunk of seq
+#but its fine.
+data_just_exp <- pa_dat$val
+#list_dat_sets <- split(data_chrom_ordered, findInterval(1:nrow(data_chrom_ordered), rows_to_split_dat))
+list_dat_sets_just_exp <- split(data_just_exp, findInterval(1:nrow(pa_dat), exp_rows_to_split_dat))
+list_dat_sets_just_exp
+
+#get median expression in each of the sections
+list_total_exp_level <- lapply(list_dat_sets_just_exp, median)
+print("list_total_exp_level")
+list_total_exp_level
+#as df
+median_gene_exp_10kb <- as.data.frame(matrix(unlist(list_total_exp_level), byrow = F))
+median_gene_exp_10kb <- cbind(median_gene_exp_10kb, new_pos)
+write.csv(median_gene_exp_10kb)
+#write.table(median_gene_exp_10kb, 'median_10kb_exp_data.csv', sep = "\t")
+
+(ggplot(data = median_gene_exp_10kb, aes(x = new_pos, y = V1))
++ geom_point()
+  )
+
+###################################
+#########################
+#chunking the data into sections of the genome
+#########################
+#decreasing order
+selection_df_medians <- arrange(selection_df_no_NA,tmp_pos)
+nmax_pos <- max(selection_df_medians$tmp_pos)
+nmin_pos <- min(selection_df_medians$tmp_pos)
+nmin_pos
+#lenght of section of genome
+chunklen <- 100000
+chunk_len_of_genome <- round_any(nmax_pos, chunklen, f=ceiling)
+chunk_len_of_genome
+chunks <- seq(0, chunk_len_of_genome, chunklen)
+chunks
+
+#expty vec to hold the rows that split the dat into X kb chunks
+exp_rows_to_split_dat <- vector()
+for (i in chunks) {
+  exp_rows <-
+    which(abs(selection_df_medians$tmp_pos-i)==min(abs(selection_df_medians$tmp_pos-i)))
+  # finding the closest number to each 10kb without going over it
+  exp_max_row <- max(exp_rows)
+  #  actual_pos <- data_chrom_ordered$midpoint[max_row]
+  #  rows_to_split_dat <- c(rows_to_split_dat, actual_pos)
+  exp_rows_to_split_dat <- c(exp_rows_to_split_dat, exp_max_row)
+}#for
+#rows_to_split_dat <- rows_to_split_dat + 1
+exp_rows_to_split_dat
+#make new column with "groups" of these chunks
+new_sections <- rep(chunks, times = exp_rows_to_split_dat)
+new_sections                    
+
+selection_df_medians$new_sections <- new_sections
