@@ -136,7 +136,7 @@ levels(sel_dat$bacteria) <- c("ecoli" = expression(paste(italic("E.coli"), "")),
                               "pSymB" = expression(paste(italic("S.meliloti"), " pSymB")))
 
 #choose colours
-colours_arr <- rep(c("#CFE7C8","#D2E4DC","#A0747A"),num_of_plots)
+colours_arr <- rep(c("#5EB26D","#8E8DBE","#A0747A"),num_of_plots)
 #plot
 set.seed(1738)
 vio_str_box <-(ggplot(sel_dat, aes(x=class, y=value, fill = class, colour = class)) 
@@ -150,13 +150,13 @@ vio_str_box <-(ggplot(sel_dat, aes(x=class, y=value, fill = class, colour = clas
                + facet_wrap(~bacteria, labeller=label_parsed)
                + xlab("") 
                + ylab("Value") 
-               + scale_color_manual(values=c("#CFE7C8","#D2E4DC","#A0747A"),labels = c(" dN", " dS", expression(omega)))
-               #+ scale_color_manual(values=c("#CFE7C8","#D2E4DC","#A0747A"))
+               + scale_color_manual(values=c("#5EB26D","#8E8DBE","#A0747A"),labels = c(" dN", " dS", expression(omega)))
                #make the omega a math symbol in x-axis
                + scale_x_discrete(breaks = c("dN", "dS", "omega"),labels = c("dN","dS", expression(omega))) 
                #log scale and removing trailing zeros from y-axis labels
                + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x))
-               #+ scale_fill_manual(values=c("#CFE7C8","#D2E4DC","#A0747A"), labels = c(" dN", " dS", expression(omega))) 
+               #remove weird second legend
+               + guides(fill=FALSE)
 )
 
 vio_str_box
