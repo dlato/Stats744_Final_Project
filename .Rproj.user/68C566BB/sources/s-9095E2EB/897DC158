@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1574724830785.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "897DC158",
+    "lastKnownWriteTime" : 1574381234,
+    "last_content_update" : 1574381234,
+    "path" : "~/Stats744_Final_Project/proposal.rmd",
+    "project_path" : "proposal.rmd",
+    "properties" : {
+        "cursorPosition" : "85,141",
+        "scrollLine" : "76"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 15,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

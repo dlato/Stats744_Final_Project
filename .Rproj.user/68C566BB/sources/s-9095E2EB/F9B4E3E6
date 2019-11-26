@@ -1,0 +1,26 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1574724539919.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "F9B4E3E6",
+    "lastKnownWriteTime" : 1574726248,
+    "last_content_update" : 1574726248725,
+    "path" : "~/Stats744_Final_Project/writeup_final_project.Rmd",
+    "project_path" : "writeup_final_project.Rmd",
+    "properties" : {
+        "cursorPosition" : "31,45",
+        "scrollLine" : "23",
+        "tempName" : "Untitled1"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 14,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}
