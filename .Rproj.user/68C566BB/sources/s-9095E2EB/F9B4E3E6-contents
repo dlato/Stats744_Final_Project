@@ -15,6 +15,8 @@ header-includes: \usepackage{xspace, longtable, booktabs}
 
 # Insert Clever title here
 
+**INSERT SOMETHING ABOUT SMEL BEING MULTI-REP**
+
 **The Data:**
 Our data is biologically based and mostly deals with genome wide trends.
 We have gene expression data for all genes from four bacterial genomes: \ecol, \bass, \strep, and \smel.
@@ -81,6 +83,28 @@ The rest of the genome is part of the accessory genome which primaraly consists 
 It is therefore conceivable that this area of the genome is mostly under positive selection and trying to "hold on" to benificial mutations.
 
 # Graphical Decisions
+**INSERT DECISIONS ABOUT GENE EXPRESSION GRAPHS HERE**
 
+For all the graphs we kept a consistant colour scheme so they all look nice together.
+The selection graphs in particular have the same colours for dN, dS, and $omega$ in all graphs so that it is easy for the viewer to follow along.
+We also wanted to pick colours that were objectively pretty, but also dichromat-friendly.
+Most of our graphs are based around scatter plots, so the colours needed to be fairly saturated so they would be easy to identify points.
+Since the values for both the gene expression and the selection data have a wide range of values, we chose to use a log scale to make it easier to read.
+When considering genomic distance from the origin of replication we scaled the points by 1 million base pairs to make the values on the x-axis more readable.
+Additionally, all axis labels are clear and have units where applicable.
+We ensured that greek letters and italic bacteria names were used.
+The arrangement of bacteria in the facet plots was mostly guided by biological relievance. 
+\ecol
+and \bass 
+are the "lab rats", and therefore people often care about them the most, so we put them first.
+\strep
+is similar to \ecol 
+and \bass
+because it has it's genome in one chromosome.
+\smel 
+is a multi-repliconic bacteria (has more than one chromosome-like structure), and therefore we wanted to keep the replicons of this bacteria close together so they could be easily compaired to one another.
+In the selection summary graphic we decided to add in a redundant legend to aid viewers in determining what colours were linked to which selection measure.
+We also used direct labeling when we could to avoid the need for a legend.
+Finally, we utilized trend lines, box-plots, violin plots and reference lines to aid in showing summary statistics and patterns in the data.
 
 
