@@ -119,7 +119,7 @@ distg <- (ggplot(ecol_dat, aes(x=new_sections, y=value.mean, colour=class))
   #+ scale_color_manual(values=colours_arr,labels = c(" dS", expression(omega), " dN"))
   + scale_color_manual(values=colours_arr)
   #axis labels
-  + xlab("Genome Position (Mbp)")
+  + xlab("Distance from the Origin of Replication (Mbp)")
   + ylab("Mean Value")
   + ggtitle(expression(paste(italic("Streptomyces"), " Chromosome")))
 )
