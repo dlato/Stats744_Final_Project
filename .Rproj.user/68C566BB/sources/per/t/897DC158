@@ -5,7 +5,7 @@
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "0",
+    "hash" : "1256484482",
     "id" : "897DC158",
     "lastKnownWriteTime" : 1574381234,
     "last_content_update" : 1574381234,
@@ -13,7 +13,8 @@
     "project_path" : "proposal.rmd",
     "properties" : {
         "cursorPosition" : "22,55",
-        "scrollLine" : "12"
+        "marks" : "<:64,0\n>:67,121",
+        "scrollLine" : "0"
     },
     "read_only" : false,
     "read_only_alternatives" : [
