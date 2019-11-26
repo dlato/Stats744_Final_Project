@@ -12,15 +12,44 @@ header-includes: \usepackage{xspace, longtable, booktabs}
 \newcommand{\ecol}{\textit{E.\,coli}\xspace}
 \newcommand{\strep}{\textit{Streptomyces}\xspace}
 
+```{r setup, include=FALSE}
+library(tidyverse)
+library(data.table)
+library(devtools)
+library(cowplot)
+library(ggpubr)
+library(plyr)
+library(dplyr)
+library(directlabels)
+options(scipen=10000)
+theme_set(theme_bw() + theme(strip.background =element_rect(fill="#e7e5e2")) +
+            theme(strip.text = element_text(size =10)) +
+            #theme(plot.title = element_text(hjust = 0.5), 
+            theme(plot.title = element_text(hjust = 0.5), 
+                  panel.background = element_rect(fill = "white", colour = NA), 
+                  panel.grid.major = element_line(colour = "grey90", size = 0.2), 
+                  panel.grid.minor = element_line(colour = "grey98", size = 0.5), 
+                  panel.spacing = unit(0.25, "lines"), 
+                  axis.text=element_text(size=10),
+                  legend.title = element_blank(),
+                  legend.key = element_blank(),
+                  legend.background=element_blank(),
+                  legend.position="top") 
+)
+#prevent overflow of code boxes
+library(knitr)
+opts_chunk$set(tidy.opts=list(width.cutoff=70),tidy=TRUE)
+```
 
 # Insert Clever title here
 
-**INSERT SOMETHING ABOUT SMEL BEING MULTI-REP**
-
 **The Data:**
 Our data is biologically based and mostly deals with genome wide trends.
-We have gene expression data for all genes from four bacterial genomes: \ecol, \bass, \strep, and \smel.
-This dataset has information about the average expression value of the gene (averaged across multiple datasets) and the genomic location of that gene relative to the origin of replication.
+We will be looking at gene expression and selection in four bacterial genomes: \ecol, \bass, \strep, and \smel.
+All of the bacteria have their genome contained in one chromosome except \smel 
+which is a multirepliconic bacteria. A multirepliconic bacteria means that the genome is made up of multiple replicons or chromosome like structures. For this reason, each replicon of \smel 
+(chromosome, pSymA, pSymB) will be analyzed separately.
+The gene expression dataset has information about the average expression value of the gene (averaged across multiple datasets) and the genomic location of that gene relative to the origin of replication.
 Additionally, we have obtained selection information on a few of these genes from each bacterial genome.
 This selection information tells us about the synonomous substitution rate (dS, mutations that do not cause a change in the amino acid sequence), the non-synonomous substitution rate (dN, mutations that cause a change in the amino acid sequence), and $omega$ (dN/dS).
 The $\omega$ ratio allows us to determine if these changes in the sequence cause beneficial or deleterious traits to arise.
