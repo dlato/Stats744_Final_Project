@@ -122,7 +122,7 @@
 	\end{textblock*}}
 
 \mode<presentation>
-\title{\Huge Spatial Patterns of Molecular Trends in Bacterial Genomes}
+\title{\Huge Clever title here}
 
 \author[Daniella Lato]{\\ \textbf{Daniella Lato and Jana Taha}\\ Stats 744: Final Project\\ December 3, 2019}
 \date[2017]{}
@@ -204,6 +204,191 @@
 	%\end{center}
 	%\end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{The Organism}
+	\begin{columns}[t]
+	\column{0.5\textwidth}	
+	Bacteria:
+	\bi
+	\itm \ecoli
+	\itm \bas
+	\itm \strep
+	\itm \sm
+	\ei
+	\column{0.5\textwidth}
+	\textbf{insert pic of bacteria here! probs sino bc its beautiful}
+	\end{columns}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[t]{Biological Background}
+	\bigskip
+	\begin{columns}[t]
+		\column{0.30\textwidth}
+		\textbf{1) Circular}
+		\centering
+		\begin{tikzpicture}
+		%circle
+		\draw[thick] (4,0) circle (1cm);
+		%origin tick
+		\draw[thick] (4,0.8) -- (4,1.2);
+		\tikzstyle{none}=[draw = none, minimum width=2cm, minimum height=0.3cm, rounded corners]
+		\node[none] (first reservoir) at (4,-4) {\ecoli};
+		\tikzstyle{ntwo}=[draw = none, minimum width=2cm, minimum height=0.3cm, rounded corners]
+		\node[ntwo] (second reservoir) at (4,-4.5) {\bas};
+		\end{tikzpicture}
+		
+		\column{0.30\textwidth}
+		\textbf{2) Linear}
+		\centering
+		
+		\bigskip
+		\begin{tikzpicture}
+		%line
+		\draw[thick] (3.5,0) -- (6.5,0);
+		%origin tick
+		\draw[thick] (4.5,-.2) -- (4.5,.2);
+		\tikzstyle{none}=[draw = none, minimum width=2cm, minimum height=0.3cm, rounded corners]
+		\node[none] (first reservoir) at (5,-5.1) {\strep};
+		\end{tikzpicture}
+		
+		\column{0.4\textwidth}
+		\textbf{3) Multi-repliconic}
+		\centering
+		\begin{tikzpicture}
+		%chrom
+		\draw[thick] (0,0) circle (1cm) node {\tiny Chromosome};
+		%ori tick
+		\draw[thick] (0,0.8) -- (0,1.2);
+		%pSymA
+		\draw[thick] (0,-1.75) circle (0.5cm) node {\tiny \pa};
+		%ori tick
+		\draw[thick] (0,-1.1) -- (0,-1.4);
+		%pSymB
+		\draw[thick] (0,-3.25) circle (0.75cm) node {\tiny \pb};
+		%ori tick
+		\draw[thick] (0,-2.35) -- (0,-2.65);
+		\tikzstyle{none}=[draw = none, minimum width=2cm, minimum height=0.3cm, rounded corners]
+		\node[none] (first reservoir) at (0,-4.5) {\sm};
+		\end{tikzpicture}
+	\end{columns}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[t]{Bacterial Genome Properties}
+	\begin{columns}[t]
+		\begin{column}{0.5\textwidth}
+	Bidirectional Replication
+		\bi
+		\itm Gene dosage
+		\itm Sequence composition
+		\itm Codon bias
+		\itm Replication errors
+		\itm Strand differences
+		\ei
+	\bigskip
+	
+		\centering{
+			\resizebox{\textwidth}{!}{%
+				\begin{tikzpicture}
+			
+	%new DNA label
+	\node[berry] at (0.15,-2) {\fontsize{1}{1}\selectfont \textbf{-- new DNA}};
+	%old DNA label
+	\node[] at (0.15,-2.05) {\fontsize{1}{1}\selectfont \textbf{-- old DNA}};
+				\end{tikzpicture}
+			}%resiebox
+		}%centering
+\end{column}
+\begin{column}{0.5\textwidth}
+%	\centering{
+%		\resizebox{\textwidth}{!}{%
+%			\begin{tikzpicture}
+%			%fig lable A
+%			\node[berry] at (0,0) {\fontsize{10}{3}\selectfont \textbf{-- new DNA}};
+%			\end{tikzpicture}
+%		}%resiebox
+%	}%centering
+		\centering{
+			\resizebox{\textwidth}{!}{%
+				\begin{tikzpicture}[x=0.5cm, y=0.5cm]
+				\tikzstyle{neleven}=[draw = none, minimum width=0.05cm, minimum height=0.05cm, berry]
+				%new DNA label
+%				\node[neleven] at (0.15,-3) {\fontsize{1}{1}\selectfont \textbf{-- new DNA}};
+%				\draw[line width=0.01mm,
+%				postaction={decorate}, fill=black] (0,-2.5) circle (0.008cm);
+%				\draw[line width=0.01mm,
+%				postaction={decorate}, fill=pink] (0.15,-2.9) circle (0.008cm);
+				%%% TOP CIRCLE %%%
+				%rep bubble circle
+%				\draw[line width=0.01mm,
+%				postaction={decorate}] (0,-2.3) ellipse (0.05cm and 0.02cm);
+				%old DNA outter circle
+				\draw[line width=0.05mm,
+				postaction={decorate}] (0,-2.5) circle (0.1cm);
+				%old DNA top arc
+				\draw[line width=0.05mm] (0.153,-2.4) arc (-80:-100:0.44cm);
+				%old DNA bottom arc
+				\draw[line width=0.05mm] (0.15,-2.4) arc (30:-210:0.086cm);
+				%new DNA top arc
+				\draw[line width=0.05mm, berry] (0.136,-2.383) arc (40:140:0.09cm);
+				%new DNA bottom arc
+				\draw[line width=0.05mm, berry] (0.136,-2.38) arc (-80:-100:0.394cm);
+				%old DNA inner circle
+%				\draw[line width=0.01mm,
+%				postaction={decorate}] (0,-2.5) circle (0.09cm);
+				%arrow inbtwn circles
+				\draw[-{Latex[width=0.1mm,length=0.2mm]},line width = 0.03mm] (0,-2.72) -- (0,-2.79);
+				%%% BOTTOM CIRCLE %%%
+				%old DNA outter circle
+				\draw[line width=0.05mm,
+				postaction={decorate}] (0,-3) circle (0.1cm);
+%				%old DNA inner circle
+%				\draw[line width=0.01mm,
+%				postaction={decorate}] (0,-3) circle (0.09cm);
+				%old DNA bottom arc
+				\draw[line width=0.05mm] (0.15,-2.9) arc (0:-180:0.0748cm);
+				%old DNA Inner arc
+				\draw[line width=0.05mm] (0.15,-2.9) arc (30:-210:0.086cm);
+				%new DNA top arc
+				\draw[line width=0.05mm, berry] (0.1369,-2.882) arc (40:140:0.089cm);
+				%new DNA bottom arc
+				\draw[line width=0.05mm, berry] (0.1369,-2.881) arc (0:-180:0.068cm);
+				%arrow for rep to the right
+				\draw[-{Latex[width=0.1mm,length=0.2mm]},line width = 0.03mm] (0.05,-2.881) -- (0.13,-2.881);
+				%arrow for rep to the left
+				\draw[-{Latex[width=0.1mm,length=0.2mm]},line width = 0.03mm] (-0.05,-2.881) -- (-0.13,-2.881);
+
+				\end{tikzpicture}
+			}%resiebox
+		}%centering
+
+
+	\end{column}
+\end{columns}
+	\btVFill
+		\tiny \vspace{-\baselineskip}\color{berry}{Rocha 2004, Quax et al. 2015, Hyrien et al. 2013}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{Spatial Molecular Trends}
+	\begin{columns}[t]
+		\column{.5\textwidth}
+		\centering
+		\includegraphics[width=0.67\textwidth]{C:/Users/Daniella/Documents/Sinorhizobium2015/LabMeetingPresentations/Spatial_genome_trends_graphs/mut_graph.pdf}\\
+		\includegraphics[width=0.67\textwidth]{C:/Users/Daniella/Documents/Sinorhizobium2015/LabMeetingPresentations/Spatial_genome_trends_graphs/exp_graph.pdf}
+		\column{.5\textwidth}
+		\centering
+		\includegraphics[width=0.67\textwidth]{C:/Users/Daniella/Documents/Sinorhizobium2015/LabMeetingPresentations/Spatial_genome_trends_graphs/ess_graph.pdf}\\
+		\includegraphics[width=0.67\textwidth]{C:/Users/Daniella/Documents/Sinorhizobium2015/LabMeetingPresentations/Spatial_genome_trends_graphs/cons_graph.pdf}
+	\end{columns}
+	
+	\btVFill
+	\tiny \vspace{-\baselineskip}\color{berry}{Couturier et al. 2006, Cooper et al. 2010, Sharp et al. 2005, Morrow et al. 2012, Cooper and Rocha 2006}
+	%		\sourceright{Couturier et al. 2006, Cooper et al. 2010, Sharp et al. 2005, Morrow et al. 2012, Cooper and Rocha 2006}
+	
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 %\begin{frame}{}
 %	\centering
 %	\Huge
