@@ -21,6 +21,7 @@ library(ggpubr)
 library(plyr)
 library(dplyr)
 library(directlabels)
+library(formatR)
 options(scipen=10000)
 theme_set(theme_bw() + theme(strip.background =element_rect(fill="#e7e5e2")) +
             theme(strip.text = element_text(size =10)) +
@@ -42,6 +43,67 @@ opts_chunk$set(tidy.opts=list(width.cutoff=70),tidy=TRUE)
 ```
 
 # Insert Clever title here
+
+```{r selection_dat, include=FALSE}
+#read in data'
+sel_dat <- read.csv("./data/all_bac_selection_data.csv", header = FALSE)
+#drop first column because it is just the row numbers
+sel_dat <- sel_dat[,-1]
+#col names
+colnames(sel_dat) <- c("value", "position", "class", "bacteria")
+#remove NAs
+sel_dat <- sel_dat[!is.na(sel_dat$value),]
+#number of bacterial replicons
+num_of_plots <- length(levels(sel_dat$bacteria))
+
+###################################
+#########################
+#chunking the data into sections of the genome
+#########################
+#decreasing order
+sel_dat_ord <- arrange(sel_dat,position)
+nmax_pos <- max(sel_dat_ord$position)
+nmin_pos <- min(sel_dat_ord$position)
+#lenght of section of genome
+chunklen <- 10000
+chunk_len_of_genome <- round_any(nmax_pos, chunklen, f=ceiling)
+chunks <- seq(chunklen, chunk_len_of_genome, chunklen)
+
+#expty vec to hold the rows that split the dat into X kb chunks
+exp_rows_to_split_dat <- vector()
+for (i in chunks) {
+  exp_rows <-
+    which(abs(sel_dat_ord$position-i)==min(abs(sel_dat$position-i)))
+  # finding the closest number to each 10kb without going over it
+  exp_max_row <- max(exp_rows)
+  exp_rows_to_split_dat <- c(exp_rows_to_split_dat, exp_max_row)
+}#for
+exp_rows_to_split_dat
+diff <- c(exp_rows_to_split_dat[-1],NA)
+tmp_df <- as.data.frame(cbind(exp_rows_to_split_dat,diff))
+tmp_df$rep_vec <- tmp_df$diff - tmp_df$exp_rows_to_split_dat
+head(tmp_df)
+tail(tmp_df)
+#make rep vector
+rep_vec <- c(exp_rows_to_split_dat[1],tmp_df$rep_vec[-length(tmp_df$rep_vec)])
+rep_vec
+#make new column with "groups" of these chunks
+new_sections <- rep(chunks, times = rep_vec)
+sel_dat_ord$new_sections <- new_sections
+
+#mean for each genome chunk
+median_sel_dat <- sel_dat_ord %>%
+  dplyr::group_by(bacteria,class,new_sections) %>%
+  dplyr::summarise(value.mean = mean(value), value.sd = sd(value))
+#remove NAs
+median_sel_dat <- tidyr::drop_na(median_sel_dat)
+
+#plot just strep
+strep_dat <- median_sel_dat[which(median_sel_dat$bacteria == "strep"),]
+#scale the genomic position
+strep_dat$new_sections <- strep_dat$new_sections / 1000000
+
+```
 
 **The Data:**
 Our data is biologically based and mostly deals with genome wide trends.
@@ -80,6 +142,7 @@ To begin assessing these predictions we first created some summary graphs of the
 
 **Selection Data**
 
+
 **INSERT FINAL R CODE AND GRAPH HERE FOR SELECTION SUMMARY**
 
 When looking at dN and dS substitution rates, we expect that the rate of synonymous substitutions (dS) should be higher than the rate of non-synonymous substitutions.
@@ -99,7 +162,37 @@ would generally benefit from positive selection, where mutations that confer a b
 Since we have some theory about how genes are organized on bacterial genomes, we decided to take a closer look at the selection values for \strep
 and see where these genes fall relative to the origin of replication.
 
-**INSERT GRAPH AND R CODE FOR STREP SELECTION GRAPH**
+```{r selection, include=FALSE}
+strep_dat$class <- factor(strep_dat$class, levels = c("dS", "omega", "dN"))
+
+levels(strep_dat$class) <- c("dS" = " dS",
+                              "omega" = expression(omega),
+                              "dN" = " dN")
+#choose colours
+colours_arr <- c("#5EB26D","#A0747A","#8E8DBE")
+distg <- (ggplot(strep_dat, aes(x=new_sections, y=value.mean, colour=class))
+  + geom_point()
+  + geom_smooth(method = lm)
+  #labels for the colours/selection categories
+  + annotate("text", x=5.4,y=0.4,label="omega", parse=TRUE, colour = "#A0747A", size = 10)
+  + annotate("text", x=5.4,y=0.015,label="dS", colour = "#5EB26D", size = 6)
+  + annotate("text", x=5.4,y=0.0035,label="dN", colour = "#8E8DBE", size = 6)
+  + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.1, 1, 10))
+  #omega = 1 reference line
+  +  geom_hline(yintercept=1, linetype="dashed", color = "black", size=1)
+  + scale_color_manual(values=colours_arr)
+  #axis labels
+  + xlab("Distance from the Origin of Replication (Mbp)")
+  + ylab("Mean Value")
+  + ggtitle(expression(paste(italic("Streptomyces"), " Chromosome")))
+  + theme(legend.position = "none")
+)
+```
+
+```{r, selection_graph}
+distg
+```
+
 
 This graph shows the mean selection value (dN, dS, or $omega$) calculated over each 10,000 base pairs (bp) region of the \strep 
 genome.
@@ -135,5 +228,10 @@ is a multi-repliconic bacteria (has more than one chromosome-like structure), an
 In the selection summary graphic we decided to add in a redundant legend to aid viewers in determining what colours were linked to which selection measure.
 We also used direct labeling when we could to avoid the need for a legend.
 Finally, we utilized trend lines, box-plots, violin plots and reference lines to aid in showing summary statistics and patterns in the data.
+
+Any graphs that involve the distance from the origin of replication and the response variables, we chose to focus on one bacteria.
+All the bacterial replicons vary greatly in length from 1Mbp to ~5Mbp.
+If we had used a facet to show how for example gene expression changes with distance from the origin of replication in all replicons, some of the replicons would be "squished" on the x-axis and we would be unable to see any of the results.
+We therefore chose to focus on the most interesting bacteria for storytelling.
 
 
