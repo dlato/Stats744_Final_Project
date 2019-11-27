@@ -105,26 +105,29 @@ levels(ecol_dat$class)
 #choose colours
 #colours_arr <- c("#CFE7C8","#D2E4DC","#A0747A")
 #colours_arr <- c("#7A306C","#8E8DBE","#5EB26D")
-colours_arr <- c("#A0747A","#5EB26D","#8E8DBE")
-colours_arr <- c("#8E8DBE","#A0747A","#5EB26D")
+#colours_arr <- c("#A0747A","#5EB26D","#8E8DBE")
+colours_arr <- c("#5EB26D","#A0747A","#8E8DBE")
 span = 0.3
 distg <- (ggplot(ecol_dat, aes(x=new_sections, y=value.mean, colour=class))
 #  geom_errorbar(aes(ymin=value.mean-sd, ymax=value.mean+sd), width=.1, position=pd) +
   + geom_point()
   + geom_smooth(method = lm)
-  + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x))
+  #labels for the colours
+  + annotate("text", x=5.4,y=0.4,label="omega", parse=TRUE, colour = "#A0747A", size = 10)
+  + annotate("text", x=5.4,y=0.015,label="dS", colour = "#5EB26D", size = 6)
+  + annotate("text", x=5.4,y=0.0035,label="dN", colour = "#8E8DBE", size = 6)
+  + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.1, 1, 10))
   #omega = 1 reference line
   +  geom_hline(yintercept=1, linetype="dashed", color = "black", size=1)
-  #+ scale_color_manual(values=colours_arr,labels = c(" dS", " dN", expression(omega)))
-  #+ scale_color_manual(values=colours_arr,labels = c(" dS", expression(omega), " dN"))
   + scale_color_manual(values=colours_arr)
   #axis labels
   + xlab("Distance from the Origin of Replication (Mbp)")
   + ylab("Mean Value")
   + ggtitle(expression(paste(italic("Streptomyces"), " Chromosome")))
+  + theme(legend.position = "none")
 )
 
-direct.label(distg,method="last.points")
+distg
 
 levels(sel_dat$bacteria)
 #italic bacteria names
@@ -136,9 +139,10 @@ levels(sel_dat$bacteria) <- c("ecoli" = expression(paste(italic("E.coli"), "")),
                               "pSymB" = expression(paste(italic("S.meliloti"), " pSymB")))
 
 #choose colours
-colours_arr <- rep(c("#5EB26D","#8E8DBE","#A0747A"),num_of_plots)
+#colours_arr <- rep(c("#5EB26D","#8E8DBE","#A0747A"),num_of_plots)
+colours_arr <- rep(c("#8E8DBE","#89C794","#A0747A"),num_of_plots)
 #plot
-set.seed(1738)
+set.seed(1738);
 vio_str_box <-(ggplot(sel_dat, aes(x=class, y=value, fill = class, colour = class)) 
                + geom_jitter(position=position_jitter(0.2))
                + geom_violin(colour = "black", fill = NA) 
@@ -146,15 +150,16 @@ vio_str_box <-(ggplot(sel_dat, aes(x=class, y=value, fill = class, colour = clas
                + geom_boxplot(width=.1, outlier.shape=NA, colour = "black", fill = colours_arr) 
                + stat_boxplot(geom = "errorbar", width = 0.2, colour = "black") 
                #omega = 1 reference line
-               +  geom_hline(yintercept=1, linetype="dashed", color = "#023C40")
+               +  geom_hline(yintercept=1, linetype="dashed", color = "black")
                + facet_wrap(~bacteria, labeller=label_parsed)
                + xlab("") 
                + ylab("Value") 
-               + scale_color_manual(values=c("#5EB26D","#8E8DBE","#A0747A"),labels = c(" dN", " dS", expression(omega)))
+               + scale_color_manual(values=c("#8E8DBE","#89C794","#A0747A"),labels = c(" dN", " dS", expression(omega)))
                #make the omega a math symbol in x-axis
                + scale_x_discrete(breaks = c("dN", "dS", "omega"),labels = c("dN","dS", expression(omega))) 
                #log scale and removing trailing zeros from y-axis labels
-               + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x))
+               #and have label at omega = 1 for reference
+               + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.1, 1, 10,1000))
                #remove weird second legend
                + guides(fill=FALSE)
 )
