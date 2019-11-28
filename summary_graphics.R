@@ -127,7 +127,9 @@ distg <- (ggplot(ecol_dat, aes(x=new_sections, y=value.mean, colour=class))
   + theme(legend.position = "none")
 )
 
+pdf("strep_selection.pdf")
 distg
+dev.off()
 
 levels(sel_dat$bacteria)
 #italic bacteria names
@@ -163,8 +165,9 @@ vio_str_box <-(ggplot(sel_dat, aes(x=class, y=value, fill = class, colour = clas
                #remove weird second legend
                + guides(fill=FALSE)
 )
-
+pdf("selection_vio_box.pdf")
 vio_str_box
+dev.off()
 
 
 #for (i in (length(exp_rows_to_split_dat)-1)){
