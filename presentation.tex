@@ -166,6 +166,7 @@
 \newcommand{\hal}{\textit{Haloquadratum walsbyi}\xspace}
 \newcommand{\pa}{pSymA\xspace}
 \newcommand{\pb}{pSymB\xspace}
+\newcommand{\ch}{$\checkmark$}
 \setbeamertemplate{navigation symbols}{}
 \newcommand*{\NodeSize}{0.5cm}%
 \newcommand*{\YShiftBetweenRows}{-1cm}% Subsequent rows are shited down so they don't overlap
@@ -447,7 +448,12 @@
 			\itm dN (change in amino acid), dS (no change in amino acid), and $\omega$ (ratio) + distance from the origin of replication
 			\bi
 			\itm $\omega$ $>$ 1 (positive selection), $\omega$ = 1 (neutral), $\omega$ $<$ 1 (negative selection)
-			\itm \textbf{Expectation:} Most genes are under neutral or negative selection, genes that are under positive selection should be accessory genes
+			\itm \textbf{Expectations:} 
+			\begin{enumerate}
+				\item dS $>$ dN
+				\item Most genes are under neutral or negative selection
+				\item Genes that are under positive selection should most likely be accessory genes
+			\end{enumerate}
 			\bi
 			\itm Core genes are near the origin of replication
 			\itm Accessory genes are usually near the terminus
@@ -457,6 +463,30 @@
 	\end{columns}
 \end{frame}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Gene Expression}
+	Insert gene expression graphs here!!!!!
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Selection Summary}
+	
+	\includegraphics[width=0.67\textwidth]{selection_vio_box.pdf}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{\strep Selection}
+	\includegraphics[width=0.67\textwidth]{strep_selection.pdf}
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}{Summary}
+	\ch Gene expression decreases (slightly) with increasing distance from the origin of replication
+	\ch dS $>$ dN
+	\ch Most genes are under neutral or negative selection ($\omega$ $\le$ 1)
+	\ch In \strep, genes under positive selection ($\omega$ $>$ 1) were near the terminus and most likely accessory genome
+\end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\begin{frame}{}
 %	\centering
