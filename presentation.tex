@@ -88,8 +88,8 @@
 \usepackage{xspace}
 \usepackage{varwidth}
 \usepackage{array} %make columns all same width
-\newcolumntype{C}{>{\centering\arraybackslash}p{0.2\linewidth}}
-\usepackage{scrtime} % for \thistime (this package MUST be listed first!)
+%\newcolumntype{C}{>{\centering\arraybackslash}p{0.2\linewidth}}
+%\usepackage{scrtime} % for \thistime (this package MUST be listed first!)
 \usepackage{amsmath} % essential for cases environment
 \usepackage{amsthm} % for theorems and proofs
 \usepackage{amsfonts} % mathbb
@@ -170,7 +170,7 @@
 \setbeamertemplate{navigation symbols}{}
 \newcommand*{\NodeSize}{0.5cm}%
 \newcommand*{\YShiftBetweenRows}{-1cm}% Subsequent rows are shited down so they don't overlap
-\tikzset{DNA Style/.style={minimum size=0.5cm, draw=gray, line width=1pt}}{}
+%\tikzset{DNA Style/.style={minimum size=0.5cm, draw=gray, line width=1pt}}{}
 \providecommand{\e}[1]{\ensuremath{\times 10^{#1}}}
 \newlength{\YShift}% 
 \newcounter{ColumnCounter}% Prefix for node labels
@@ -204,7 +204,7 @@
 	
 	%\end{center}
 	%\end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{The Organism}
 	\begin{columns}[t]
 	\column{0.5\textwidth}	
@@ -219,7 +219,7 @@
 	\textbf{insert pic of bacteria here! probs sino bc its beautiful}
 	\end{columns}
 \end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[t]{Biological Background}
 	\bigskip
 	\begin{columns}[t]
@@ -243,7 +243,7 @@
 		
 		\bigskip
 		\begin{tikzpicture}
-		%line
+	%line
 		\draw[thick] (3.5,0) -- (6.5,0);
 		%origin tick
 		\draw[thick] (4.5,-.2) -- (4.5,.2);
@@ -261,7 +261,7 @@
 		\draw[thick] (0,0.8) -- (0,1.2);
 		%pSymA
 		\draw[thick] (0,-1.75) circle (0.5cm) node {\tiny \pa};
-		%ori tick
+	%ori tick
 		\draw[thick] (0,-1.1) -- (0,-1.4);
 		%pSymB
 		\draw[thick] (0,-3.25) circle (0.75cm) node {\tiny \pb};
@@ -272,8 +272,8 @@
 		\end{tikzpicture}
 	\end{columns}
 \end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[t]{Bacterial Genome Properties}
 	\begin{columns}[t]
 		\begin{column}{0.5\textwidth}
@@ -369,8 +369,8 @@
 		\tiny \vspace{-\baselineskip}\color{berry}{Rocha 2004, Quax et al. 2015, Hyrien et al. 2013}
 \end{frame}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{Bacterial Genomes}
 \Large
 \centering
@@ -379,7 +379,7 @@
 	
 \end{frame}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{frame}{Spatial Molecular Trends}
 	\begin{columns}[t]
@@ -398,31 +398,31 @@
 	%		\sourceright{Couturier et al. 2006, Cooper et al. 2010, Sharp et al. 2005, Morrow et al. 2012, Cooper and Rocha 2006}
 	
 \end{frame}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{Selection}
 	Measuring what evolutionary forces are acting on genes
 	\bi
-	\itm dN = non-synonymous substitution rate
+	\itm \textbf{dN} = non-synonymous substitution rate
 		\bi
 		\itm change in amino acid sequence
 		\itm can alter function of the protein
 		\ei
-	\itm dS = synonymous substitution rate
+	\itm \textbf{dS} = synonymous substitution rate
 		\bi
 		\itm no change in amino acid sequence
 		\itm will not alter function of protein
 		\ei
-	\itm $\omega$ = (dN/dS)
+	\itm \textbf{ $\omega$ = (dN/dS)}
 		\bi
-		\itm $\omega$ $>$ 1 $\rightarrow$ positive selection
+		\itm \textbf{$\omega$ $>$ 1} $\rightarrow$ positive selection
 			\bi
 			\itm beneficial to the organism and will likely be maintained over time
 			\ei
-		\itm $\omega$ = 1 $\rightarrow$ neutral selection
+		\itm \textbf{$\omega$ = 1} $\rightarrow$ neutral selection
 			\bi
 			\itm neither beneficial nor deleterious to the organism
 			\ei
-		\itm $\omega$ $<$ 1 $\rightarrow$ negative selection
+		\itm \textbf{$\omega$ $<$ 1} $\rightarrow$ negative selection
 			\bi
 			\itm deleterious to the organism and will likely not be maintained over time
 			\ei
@@ -431,22 +431,20 @@
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}[t]{The Data}
-	\begin{columns}[t]
-		\begin{column}{0.5\textwidth}
-			Gene Expression
+			\textbf{Gene Expression}
 			\bi
 			\itm \ecol, \bass, \strep, and \smel
 			\itm Gene expression + distance from the origin of replication
 			\itm \textbf{Expectation:} Near the origin or replication = Higher Expression
 			\ei
 		
-		\end{column}
-		\begin{column}{0.5\textwidth}
-			Selection
+\end{frame}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}[t]{The Data}
+			\textbf{Selection}
 			\bi
 			\itm \ecol, \bass, \strep, and \smel
-			\itm dN (change in amino acid), dS (no change in amino acid), and $\omega$ (ratio) + distance from the origin of replication
-			\bi
+			\itm dN, dS, and $\omega$ $+$ distance from the origin of replication
 			\itm $\omega$ $>$ 1 (positive selection), $\omega$ = 1 (neutral), $\omega$ $<$ 1 (negative selection)
 			\itm \textbf{Expectations:} 
 			\begin{enumerate}
@@ -459,10 +457,7 @@
 			\itm Accessory genes are usually near the terminus
 			\ei
 			\ei
-		\end{column}
-	\end{columns}
 \end{frame}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{Gene Expression}
 	Insert gene expression graphs here!!!!!
@@ -470,21 +465,28 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{Selection Summary}
-	
-	\includegraphics[width=0.67\textwidth]{selection_vio_box.pdf}
+	\centering
+	\includegraphics[width=0.8\textwidth]{selection_vio_box.pdf}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{\strep Selection}
-	\includegraphics[width=0.67\textwidth]{strep_selection.pdf}
+	\centering
+	\includegraphics[width=0.77\textwidth]{strep_selection.pdf}
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}{Summary}
 	\ch Gene expression decreases (slightly) with increasing distance from the origin of replication
+	\bi
+	\itm But we see more of a wave like pattern!
+	\ei
+
 	\ch dS $>$ dN
+
 	\ch Most genes are under neutral or negative selection ($\omega$ $\le$ 1)
+
 	\ch In \strep, genes under positive selection ($\omega$ $>$ 1) were near the terminus and most likely accessory genome
 \end{frame}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
