@@ -131,43 +131,10 @@ pdf("strep_selection.pdf")
 distg
 dev.off()
 
-levels(sel_dat$bacteria)
-tmp_dat <- sel_dat
-levels(tmp_dat$bacteria)
 #get levels into order we want
-levels(tmp_dat$bacteria) <- c("ecoli","bass","strep","sinoC","pSymA","pSymB")
-levels(tmp_dat$bacteria)
-#italic bacteria names
-levels(tmp_dat$bacteria) <- c("ecoli" = expression(paste(italic("E.coli"), "")),
-                              "bass" = expression(paste(italic("B. subtilis"), "")),
-                              "strep" = expression(paste(italic("Streptomyces"), "")),
-                              "sinoC" = expression(paste(italic("S.meliloti"), " Chromosome")),
-                              "pSymA" = expression(paste(italic("S.meliloti"), " pSymA")),
-                              "pSymB" = expression(paste(italic("S.meliloti"), " pSymB")))
-
-
-
-class(tmp_dat$bacteria)
-levels(tmp_dat$bacteria)
-
-new_levels <- as.factor(c("ecoli" = expression(paste(italic("E.coli"), "")),
-                              "bass" = expression(paste(italic("B. subtilis"), "")),
-                              "strep" = expression(paste(italic("Streptomyces"), "")),
-                              "sinoC" = expression(paste(italic("S.meliloti"), " Chromosome")),
-                              "pSymA" = expression(paste(italic("S.meliloti"), " pSymA")),
-                              "pSymB" = expression(paste(italic("S.meliloti"), " pSymB"))))
-class(new_levels)
-
-
-levels(tmp_dat$bacteria) <- newlevels[match(names(newlevels), levels(x))] <- newlevels
-
-fct_recode(tmp_dat$bacteria,"ecoli" = expression(paste(italic("E.coli"), "")),
-                              "bass" = expression(paste(italic("B. subtilis"), "")),
-                              "strep" = expression(paste(italic("Streptomyces"), "")),
-                              "sinoC" = expression(paste(italic("S.meliloti"), " Chromosome")),
-                              "pSymA" = expression(paste(italic("S.meliloti"), " pSymA")),
-                              "pSymB" = expression(paste(italic("S.meliloti"), " pSymB")))
-
+levels(sel_dat$bacteria)
+sel_dat$bacteria <- fct_relevel(sel_dat$bacteria,"ecoli","bass","strep","sinoC","pSymA","pSymB")
+levels(sel_dat$bacteria)
 #italic bacteria names
 levels(sel_dat$bacteria) <- c("ecoli" = expression(paste(italic("E.coli"), "")),
                               "bass" = expression(paste(italic("B. subtilis"), "")),
@@ -176,12 +143,17 @@ levels(sel_dat$bacteria) <- c("ecoli" = expression(paste(italic("E.coli"), "")),
                               "pSymA" = expression(paste(italic("S.meliloti"), " pSymA")),
                               "pSymB" = expression(paste(italic("S.meliloti"), " pSymB")))
 
+
+
+class(sel_dat$bacteria)
+levels(sel_dat$bacteria)
+
 #choose colours
 #colours_arr <- rep(c("#5EB26D","#8E8DBE","#A0747A"),num_of_plots)
 colours_arr <- rep(c("#8E8DBE","#89C794","#A0747A"),num_of_plots)
 #plot
 set.seed(1738);
-vio_str_box <-(ggplot(tmp_dat, aes(x=class, y=value, fill = class, colour = class)) 
+vio_str_box <-(ggplot(sel_dat, aes(x=class, y=value, fill = class, colour = class)) 
                + geom_jitter(position=position_jitter(0.2))
                + geom_violin(colour = "black", fill = NA) 
                #+ geom_boxplot(width=.1, outlier.shape=NA, fill = colours_arr) 
