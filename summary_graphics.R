@@ -18,6 +18,7 @@ theme_set(theme_bw() + theme(strip.background =element_rect(fill="#e7e5e2")) +
                   panel.grid.major = element_line(colour = "grey90", size = 0.2), 
                   panel.grid.minor = element_line(colour = "grey98", size = 0.5), 
                   panel.spacing = unit(0.25, "lines"), 
+                  strip.background = element_rect(fill = "#E6E1EA"),
                   axis.text=element_text(size=10),
                   legend.title = element_blank(),
                   legend.key = element_blank(),
@@ -163,7 +164,7 @@ vio_str_box <-(ggplot(sel_dat, aes(x=class, y=value, fill = class, colour = clas
                +  geom_hline(yintercept=1, linetype="dashed", color = "black")
                + facet_wrap(~bacteria, labeller=label_parsed)
                + xlab("") 
-               + ylab("Value") 
+               + ylab("Number of Changes per Site") 
                + scale_color_manual(values=c("#8E8DBE","#89C794","#A0747A"),labels = c(" dN", " dS", expression(omega)))
                #make the omega a math symbol in x-axis
                + scale_x_discrete(breaks = c("dN", "dS", "omega"),labels = c("dN","dS", expression(omega))) 
