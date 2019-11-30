@@ -123,7 +123,7 @@ distg <- (ggplot(ecol_dat, aes(x=new_sections, y=value.mean, colour=class))
   + scale_color_manual(values=colours_arr)
   #axis labels
   + xlab("Distance from the Origin of Replication (Mbp)")
-  + ylab("Mean Value")
+  + ylab("Mean Number of Changes per 10Kbp")
   + ggtitle(expression(paste(italic("Streptomyces"), " Chromosome")))
   + theme(legend.position = "none")
 )
