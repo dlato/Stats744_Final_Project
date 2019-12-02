@@ -261,9 +261,9 @@ It is therefore conceivable that this area of the genome is mostly under positiv
 **Gene Expression Data**
 
 Now we are going to see whether our prediction, that the Gene expression should decease when moving away from the origin of replication, holds.
-In Daniella's thesis, she fit models and analized how gene expression changes with distance from the origin of replication for all of the bacterial replicons.
+In Daniella's thesis, she fit models and analyzed how gene expression changes with distance from the origin of replication for all of the bacterial replicons.
 To avoid repetition, we decided to graph the gene expression of only the \strep
-genome versus the distance from the origin of replication and to be consistant with the selection analysis. 
+genome versus the distance from the origin of replication and to be consistent with the selection analysis. 
 
 
 ```{r, expression_graph, include=FALSE}
@@ -297,13 +297,13 @@ g1
 
 ```
 
-From the summary of our dataset, we saw that the distance from the origin of replication ranges from 219 to 5,247,360. Since we have in total 7,762 total observations, it will be more appropriate to bin our data. We decided to group by each 100,000 base pairs (bp) region of the \strep 
+From the summary of our data set, we saw that the distance from the origin of replication ranges from 219 to 5,247,360. Since we have in total 7,762 total observations, it will be more appropriate to bin our data. We decided to group by each 100,000 base pairs (bp) region of the \strep 
 genome, and ended up with 53 bins.
 
 In the plot above, the brown points on the graph shows the mean expression value calculated over each 10,000 base pairs (bp) region of the \strep 
 genome.
 
-From the trend line above, we see that in general Expression decreases as we move further away from the origin of replication. This decrease is definetly not linear, we observe some jumps through out the graph. When we are 3,600,000 bp away from the origin, we start to see more of a wave-like pattern.
+From the trend line above, we see that in general Expression decreases as we move further away from the origin of replication. This decrease is definitely not linear, we observe some jumps through out the graph. When we are 3,600,000 bp away from the origin, we start to see more of a wave-like pattern.
 
 # Graphical Decisions
 
@@ -326,7 +326,7 @@ We therefore chose to focus on the most interesting bacteria (\strep
 ## Selection:
 
 With regards to colour, the selection graphs have the same colours for dN, dS, and $omega$ in all graphs so that it is easy for the viewer to follow along when switching between graphs.
-We chose to show the data points as a strip plot with a boxplot and violin plot overlayed.
+We chose to show the data points as a strip plot with a box plot and violin plot overlayed.
 This allows for the maximum amount of information about the distribution of the selection values to be shown.
 We chose to use the facet_wrap() function in R to allow for overarching similarities or differences between the bacterial replicons to be visible.
 
