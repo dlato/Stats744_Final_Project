@@ -1,7 +1,7 @@
 ---
 title: "Final Project Write-Up"
 author: "Daniella Lato and Jana Taha"
-date: "25/11/2019"
+date: "December 2019"
 output: pdf_document
 fontsize: 12pt
 header-includes: \usepackage{xspace, longtable, booktabs}
@@ -137,7 +137,7 @@ which is a multi-repliconic bacteria. A multi-repliconic bacteria means that the
 The gene expression data set has information about the average expression value of the gene (averaged across multiple data sets) and the genomic location of that gene relative to the origin of replication.
 Additionally, we have obtained selection information on a few of these genes from each bacterial genome.
 This selection information tells us about the synonymous substitution rate (dS, mutations that do not cause a change in the amino acid sequence), the non-synonymous substitution rate (dN, mutations that cause a change in the amino acid sequence), and $omega$ (dN/dS).
-The $\omega$ ratio allows us to determine if these changes in the sequence cause beneficial or deleterious traits to arise.
+The $\omega$ ratio allows us to determine if these substitutions in the sequence will be maintained or deleted over time.
 If $\omega$ for a gene is larger than 1, the gene is under positive selection and therefore is beneficial to the organism and will likely be maintained in the genome over time.
 If $\omega$ is less than 1, the gene is under purifying or negative selection, and therefore is deleterious to the organism and will likely not be maintained in the genome over time.
 If $\omega$ is equal to 1, the gene is under neutral selection, and is neither beneficial nor deleterious to the organism.
@@ -155,9 +155,11 @@ This leaves us with three predictions for our data sets:
 
 2. Most genes should be under neutral or purifying selection, any genes that are under positive selection should be located near the terminus
 
-To begin assessing these predictions we first created some summary graphs of the data.
 
 **Selection Data**
+
+We first present a graph showing the distributions of dN, dS and $\omega$ values in each of the bacterial replicons.
+
 ```{r selection_summary_graph, include=FALSE}
 
 #choose colours
@@ -246,7 +248,7 @@ distg
 ```
 
 
-This graph shows the mean selection value (dN, dS, or $omega$) calculated over each 10,000 base pairs (bp) region of the \strep 
+This graph shows the mean selection value (dN, dS, or $omega$) calculated over each 10,000 base pair (bp) region of the \strep 
 genome.
 We observe again that dS is generally higher than dN and most of the $omega$ values are less than 1.
 However, we see that regions of the genome that have an average $omega$ value larger than 1 are mostly concentrated near the terminus of the genome.
@@ -258,8 +260,10 @@ It is therefore conceivable that this area of the genome is mostly under positiv
 
 **Gene Expression Data**
 
-Now we are going to see whether our prediction, that the Gene expression should decease when moving away from the origin of replication, holds. We decided to graph the gene expression of the \strep
-genome versus the distance from the origin of replication. 
+Now we are going to see whether our prediction, that the Gene expression should decease when moving away from the origin of replication, holds.
+In Daniella's thesis, she fit models and analized how gene expression changes with distance from the origin of replication for all of the bacterial replicons.
+To avoid repetition, we decided to graph the gene expression of only the \strep
+genome versus the distance from the origin of replication and to be consistant with the selection analysis. 
 
 
 ```{r, expression_graph, include=FALSE}
@@ -296,32 +300,38 @@ g1
 From the summary of our dataset, we saw that the distance from the origin of replication ranges from 219 to 5,247,360. Since we have in total 7,762 total observations, it will be more appropriate to bin our data. We decided to group by each 100,000 base pairs (bp) region of the \strep 
 genome, and ended up with 53 bins.
 
-In the plot above, the brown points on the graph shows the mean Expression value calculated over each 10,000 base pairs (bp) region of the \strep 
+In the plot above, the brown points on the graph shows the mean expression value calculated over each 10,000 base pairs (bp) region of the \strep 
 genome.
 
-From the trend line above, we see that in general Expression decreases as we move further away from the origin of replication. This decrease is definetly not linear, we observe some jumps through out the graph. When we are 360,000 bp away from the origin, we start to see more of a wave-like pattern.
+From the trend line above, we see that in general Expression decreases as we move further away from the origin of replication. This decrease is definetly not linear, we observe some jumps through out the graph. When we are 3,600,000 bp away from the origin, we start to see more of a wave-like pattern.
 
 # Graphical Decisions
 
-In our Expression plot, we used geom_jitter() and plotted all the observations within each group. We then calculated the mean Expression value of each bin and plotted it as a point on top of the observations. We used the same color brown, but in two different shades to represent the observations and the mean value. That is, because both represent the same response variable, the Expression value. 
 
-We included all of the the observations along with the mean, because taking means alone could ignore some unusual data points that could be of importance to us. 
-We chose the width of our bins and median values in a way that would reduce the overall noise of the graph, but still allow for a signal to be seen.
-We also used geom_smooth() in our plot, this made it easier for us to see any trends in our plot.
-For the gene expression graph we wanted to have as much information as possible, without it being too distracting.
-So, we chose a lighter colour (light brown) for the raw data and a darker colour (dark brown) for the median values for each bin.
-We additionally chose a bold colour (blue) for the trend line.
-All these colour components help the viewer focus on the median values, which is what we were trying to highlight, but still have access to all the data points.
-
-For all the graphs we kept a consistent colour scheme so they all look nice together.
-The selection graphs in particular have the same colours for dN, dS, and $omega$ in all graphs so that it is easy for the viewer to follow along.
-We also wanted to pick colours that were objectively pretty, but also dichromat-friendly.
-Most of our graphs are based around scatter plots, so the colours needed to be fairly saturated so they would be easy to identify points.
-Since the values for both the gene expression and the selection data have a wide range of values, we chose to use a log scale to make it easier to read.
+## General:
+Since the response variables for both the gene expression and the selection data have a wide range of values, we chose to use a log scale to make it easier to read.
 When considering genomic distance from the origin of replication we scaled the points by 1 million base pairs to make the values on the x-axis more readable.
 Additionally, all axis labels are clear and have units where applicable.
 We ensured that Greek letters and italic bacteria names were used.
-The arrangement of bacteria in the facet plots was mostly guided by biological relevance. 
+We utilized trend lines, box-plots, violin plots and reference lines to aid in showing summary statistics and patterns in the data.
+We also wanted to pick colours that were subjectively pretty, but also dichromat-friendly.
+Most of our graphs are based around scatter plots, so the colours needed to be fairly saturated to easily identify points/elements of the graph that we wanted to have stand out.
+
+Any graphs that involve the distance from the origin of replication and the response variables, we chose to focus on one bacteria.
+All the bacterial replicons vary greatly in length from 1Mbp to ~5Mbp.
+If we had used a facet to show for example, how gene expression changes with distance from the origin of replication in all replicons, some of the replicons would be "squished" on the x-axis and we would be unable to see any of the results.
+We therefore chose to focus on the most interesting bacteria (\strep
+) for storytelling.
+
+## Selection:
+
+With regards to colour, the selection graphs have the same colours for dN, dS, and $omega$ in all graphs so that it is easy for the viewer to follow along when switching between graphs.
+We chose to show the data points as a strip plot with a boxplot and violin plot overlayed.
+This allows for the maximum amount of information about the distribution of the selection values to be shown.
+We chose to use the facet_wrap() function in R to allow for overarching similarities or differences between the bacterial replicons to be visible.
+
+For the facet selection graph we chose to add in another y-axis to show the values of $\omega$, since the units are different than the units for dN and dS.
+The arrangement of bacteria in the facet plot was mostly guided by biological relevance. 
 \ecol
 and \bass 
 are the "lab rats", and therefore people often care about them the most, so we put them first.
@@ -333,11 +343,18 @@ because it has it's genome in one chromosome.
 is a multi-repliconic bacteria (has more than one chromosome-like structure), and therefore we wanted to keep the replicons of this bacteria close together so they could be easily compared to one another.
 In the selection summary graphic we decided to add in a redundant legend to aid viewers in determining what colours were linked to which selection measure.
 We also used direct labeling when we could to avoid the need for a legend.
-Finally, we utilized trend lines, box-plots, violin plots and reference lines to aid in showing summary statistics and patterns in the data.
 
-Any graphs that involve the distance from the origin of replication and the response variables, we chose to focus on one bacteria.
-All the bacterial replicons vary greatly in length from 1Mbp to ~5Mbp.
-If we had used a facet to show how for example gene expression changes with distance from the origin of replication in all replicons, some of the replicons would be "squished" on the x-axis and we would be unable to see any of the results.
-We therefore chose to focus on the most interesting bacteria for storytelling.
 
+## Gene Expression: 
+
+In our expression plot, we used geom_jitter() and plotted all the observations within each group. 
+We then calculated the mean expression value of each bin and plotted it as a point on top of the observations. We used the same color brown, but in two different shades to represent the observations and the mean value. That is, because both represent the same response variable, the expression value. 
+
+We included all of the the observations along with the mean, because taking means alone could ignore some unusual data points that could be of importance to us. 
+We chose the width of our bins and median values in a way that would reduce the overall noise of the graph, but still allow for a signal to be seen.
+We also used geom_smooth() in our plot, this made it easier for us to see any trends in our plot.
+For the gene expression graph we wanted to have as much information as possible, without it being too distracting.
+So, we chose a lighter colour (light brown) for the raw data and a darker colour (dark brown) for the median values for each bin.
+We additionally chose a bold colour (blue) for the trend line.
+All these colour components help the viewer focus on the median values, which is what we were trying to highlight, but still have access to all the data points.
 
