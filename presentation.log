@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (MiKTeX 2.9.7200 64-bit) (preloaded format=pdflatex 2019.11.12)  2 DEC 2019 17:07
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (MiKTeX 2.9.7200 64-bit) (preloaded format=pdflatex 2019.11.12)  2 DEC 2019 17:15
 entering extended mode
 **./presentation.tex
 (presentation.tex
@@ -1937,57 +1937,72 @@ Package pdftex.def Info: ./exp_graph.pdf  used on input line 452.
 
 ]
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10> on input line 484.
+(Font)              <10> on input line 491.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <7> on input line 484.
+(Font)              <7> on input line 491.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <5> on input line 484.
+(Font)              <5> on input line 491.
 LaTeX Font Info:    Font shape `OT1/lmss/m/it' in size <10> not available
-(Font)              Font shape `OT1/lmss/m/sl' tried instead on input line 484.
+(Font)              Font shape `OT1/lmss/m/sl' tried instead on input line 491.
 
 LaTeX Font Info:    Font shape `OT1/lmss/m/it' in size <7> not available
-(Font)              Font shape `OT1/lmss/m/sl' tried instead on input line 484.
+(Font)              Font shape `OT1/lmss/m/sl' tried instead on input line 491.
 
 LaTeX Font Info:    Font shape `OT1/lmss/m/it' in size <5> not available
-(Font)              Font shape `OT1/lmss/m/sl' tried instead on input line 484.
+(Font)              Font shape `OT1/lmss/m/sl' tried instead on input line 491.
 
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <9> on input line 484.
+(Font)              <9> on input line 491.
 LaTeX Font Info:    Font shape `OT1/lmss/m/it' in size <9> not available
-(Font)              Font shape `OT1/lmss/m/sl' tried instead on input line 484.
+(Font)              Font shape `OT1/lmss/m/sl' tried instead on input line 491.
 
  [10
 
 ] [11
 
+] [12
+
+] [13
+
+] [14
+
+] [15
+
+] [16
+
 ]
-<selection_vio_box.pdf, id=116, 505.89pt x 505.89pt>
+[17
+
+] [18
+
+]
+<selection_vio_box.pdf, id=152, 505.89pt x 505.89pt>
 File: selection_vio_box.pdf Graphic file (type pdf)
 <use selection_vio_box.pdf>
-Package pdftex.def Info: selection_vio_box.pdf  used on input line 510.
+Package pdftex.def Info: selection_vio_box.pdf  used on input line 517.
 (pdftex.def)             Requested size: 245.83282pt x 245.83493pt.
 
-Overfull \vbox (21.6533pt too high) detected at line 510
+Overfull \vbox (21.6533pt too high) detected at line 517
  []
 
-[12
+[19
 
  <./selection_vio_box.pdf>]
-<strep_selection.pdf, id=130, 505.89pt x 505.89pt>
+<strep_selection.pdf, id=167, 505.89pt x 505.89pt>
 File: strep_selection.pdf Graphic file (type pdf)
 <use strep_selection.pdf>
-Package pdftex.def Info: strep_selection.pdf  used on input line 516.
+Package pdftex.def Info: strep_selection.pdf  used on input line 523.
 (pdftex.def)             Requested size: 236.6145pt x 236.61815pt.
 LaTeX Font Info:    Font shape `OT1/lmss/m/it' in size <14.4> not available
-(Font)              Font shape `OT1/lmss/m/sl' tried instead on input line 516.
+(Font)              Font shape `OT1/lmss/m/sl' tried instead on input line 523.
 
 
-Overfull \vbox (12.43652pt too high) detected at line 516
+Overfull \vbox (12.43652pt too high) detected at line 523
  []
 
-[13
+[20
 
- <./strep_selection.pdf>] [14
+ <./strep_selection.pdf>] [21
 
 ]
 \tf@nav=\write7
@@ -1999,19 +2014,19 @@ Overfull \vbox (12.43652pt too high) detected at line 516
 \tf@snm=\write9
 \openout9 = `presentation.snm'.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 533.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 533.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 540.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 540.
  (presentation.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 533.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 533.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 540.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 540.
 Package rerunfilecheck Info: File `presentation.out' has not changed.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
  ) 
 Here is how much of TeX's memory you used:
- 45266 strings out of 492452
- 1008591 string characters out of 3120063
- 1218989 words of memory out of 3000000
- 48873 multiletter control sequences out of 15000+200000
+ 45281 strings out of 492452
+ 1008739 string characters out of 3120063
+ 1221989 words of memory out of 3000000
+ 48874 multiletter control sequences out of 15000+200000
  613185 words of font info for 88 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
  58i,14n,84p,1619b,1095s stack positions out of 5000i,500n,10000p,200000b,50000s
@@ -2032,9 +2047,9 @@ rograms/MiKTeX 2.9/fonts/type1/public/lm/lmsso8.pfb><C:/Users/synch/AppData/Loc
 al/Programs/MiKTeX 2.9/fonts/type1/public/lm/lmsy10.pfb><C:/Users/synch/AppData
 /Local/Programs/MiKTeX 2.9/fonts/type1/public/lm/lmsy9.pfb><C:/Users/synch/AppD
 ata/Local/Programs/MiKTeX 2.9/fonts/type1/public/amsfonts/symbols/msam10.pfb>
-Output written on presentation.pdf (14 pages, 1788257 bytes).
+Output written on presentation.pdf (21 pages, 1803133 bytes).
 PDF statistics:
- 206 PDF objects out of 1000 (max. 8388607)
- 29 named destinations out of 1000 (max. 500000)
+ 247 PDF objects out of 1000 (max. 8388607)
+ 43 named destinations out of 1000 (max. 500000)
  83 words of extra memory for PDF output out of 10000 (max. 10000000)
 
