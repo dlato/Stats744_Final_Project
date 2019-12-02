@@ -44,7 +44,7 @@ library(knitr)
 opts_chunk$set(tidy.opts=list(width.cutoff=70),tidy=TRUE,fig.width=10, fig.height=7)
 ```
 
-# Insert Clever title here
+#  Visualizing Molecular Trends in Bacterial Genomes
 
 ```{r selection_dat, include=FALSE}
 #read in data'
