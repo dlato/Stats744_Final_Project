@@ -1,0 +1,388 @@
+\documentclass[12pt,]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdftitle={Final Project Write-Up},
+            pdfauthor={Daniella Lato and Jana Taha},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\providecommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+
+  \title{Final Project Write-Up}
+    \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+    \author{Daniella Lato and Jana Taha}
+    \preauthor{\centering\large\emph}
+  \postauthor{\par}
+      \predate{\centering\large\emph}
+  \postdate{\par}
+    \date{25/11/2019}
+
+\usepackage{xspace, longtable, booktabs}
+
+\begin{document}
+\maketitle
+
+\newcommand{\smel}{\textit{S.\,meliloti}\xspace}
+\newcommand{\bass}{\textit{B.\,subtilis}\xspace}
+\newcommand{\ecol}{\textit{E.\,coli}\xspace}
+\newcommand{\strep}{\textit{Streptomyces}\xspace}
+
+\hypertarget{insert-clever-title-here}{%
+\section{Insert Clever title here}\label{insert-clever-title-here}}
+
+\textbf{The Data:} Our data is biologically based and mostly deals with
+genome wide trends. We will be looking at gene expression and selection
+in four bacterial genomes: \textit{E.\,coli}\xspace,
+\textit{B.\,subtilis}\xspace, \textit{Streptomyces}\xspace, and
+\textit{S.\,meliloti}\xspace. All of the bacteria have their genome
+contained in one chromosome except \textit{S.\,meliloti}\xspace which is
+a multi-repliconic bacteria. A multi-repliconic bacteria means that the
+genome is made up of multiple replicons or chromosome like structures.
+For this reason, each replicon of \textit{S.\,meliloti}\xspace
+(chromosome, pSymA, pSymB) will be analyzed separately. The gene
+expression data set has information about the average expression value
+of the gene (averaged across multiple data sets) and the genomic
+location of that gene relative to the origin of replication.
+Additionally, we have obtained selection information on a few of these
+genes from each bacterial genome. This selection information tells us
+about the synonymous substitution rate (dS, mutations that do not cause
+a change in the amino acid sequence), the non-synonymous substitution
+rate (dN, mutations that cause a change in the amino acid sequence), and
+\(omega\) (dN/dS). The \(\omega\) ratio allows us to determine if these
+changes in the sequence cause beneficial or deleterious traits to arise.
+If \(\omega\) for a gene is larger than 1, the gene is under positive
+selection and therefore is beneficial to the organism and will likely be
+maintained in the genome over time. If \(\omega\) is less than 1, the
+gene is under purifying or negative selection, and therefore is
+deleterious to the organism and will likely not be maintained in the
+genome over time. If \(\omega\) is equal to 1, the gene is under neutral
+selection, and is neither beneficial nor deleterious to the organism.
+This selection data is again linked to the relative distance from the
+origin of replication.
+
+Both data sets are looking at how the response variables change with
+distance from the origin of replication. Near the origin of replication
+we expect genes to be more conserved and encoding for essential
+functions than genes located near the terminus of replication. Genes
+near the origin typically therefore, have higher gene expression and
+less mutations or substitutions, because they are important to the
+function of the organism. We expect that most genes (in any genome) are
+under neutral or purifying selection (removing deleterious traits),
+regardless of their genomic location (neutral theory or nearly neutral
+theory). Since genes near the terminus are changing often (mutations)
+and involved in local environmental adaptation, we could suppose that
+these genes might be the best candidates for positive selection
+(increase beneficial traits).
+
+This leaves us with three predictions for our data sets:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  Gene expression should decrease when moving away from the origin of
+  replication
+\item
+  Most genes should be under neutral or purifying selection, any genes
+  that are under positive selection should be located near the terminus
+\end{enumerate}
+
+To begin assessing these predictions we first created some summary
+graphs of the data.
+
+\textbf{Selection Data}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{vio_str_box}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: Transformation introduced infinite values in continuous y-axis
+
+## Warning: Transformation introduced infinite values in continuous y-axis
+
+## Warning: Transformation introduced infinite values in continuous y-axis
+
+## Warning: Transformation introduced infinite values in continuous y-axis
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 10021 rows containing non-finite values (stat_ydensity).
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 10021 rows containing non-finite values (stat_boxplot).
+
+## Warning: Removed 10021 rows containing non-finite values (stat_boxplot).
+\end{verbatim}
+
+\includegraphics{writeup_final_project_files/figure-latex/unnamed-chunk-1-1.pdf}
+
+When looking at dN and dS substitution rates, we expect that the rate of
+synonymous substitutions (dS) should be higher than the rate of
+non-synonymous substitutions. Biologically, mutations that cause a
+change in an amino acid are more likely to alter the function of the
+protein than mutations that do not cause a change in an amino acid. As
+mentioned, a non-functional protein could have catastrophic consequences
+on the well being of the organism. Across all the bacterial replicons we
+see that indeed, dS \textgreater{} dN.
+
+We also notice that most of the \(omega\) values for each bacterial
+replicon are below 1, this is what we expected. An \(omega\) value below
+one means that the genes are likely neutral or under negative selection,
+meaning that mutations having deleterious impact on the organism will be
+removed. The notable exception to this is \textit{Streptomyces}\xspace ,
+which appears to have a bi-modal distribution of \(omega\) values with a
+high number of genes with omega values at or above 1.
+\textit{Streptomyces}\xspace creates 80\% of the antibiotics that we
+currently use. This means that the genome of
+\textit{Streptomyces}\xspace would generally benefit from positive
+selection, where mutations that confer a benefit to the organism are
+retained.
+
+Since we have some theory about how genes are organized on bacterial
+genomes, we decided to take a closer look at the selection values for
+\textit{Streptomyces}\xspace and see where these genes fall relative to
+the origin of replication.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{distg}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: Transformation introduced infinite values in continuous y-axis
+
+## Warning: Transformation introduced infinite values in continuous y-axis
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 15 rows containing non-finite values (stat_smooth).
+\end{verbatim}
+
+\includegraphics{writeup_final_project_files/figure-latex/selection_graph-1.pdf}
+
+This graph shows the mean selection value (dN, dS, or \(omega\))
+calculated over each 10,000 base pairs (bp) region of the
+\textit{Streptomyces}\xspace genome. We observe again that dS is
+generally higher than dN and most of the \(omega\) values are less than
+1. However, we see that regions of the genome that have an average
+\(omega\) value larger than 1 are mostly concentrated near the terminus
+of the genome. This is reflected in the trend line which is increasing
+with increasing distance from the origin of replication. Interestingly,
+the majority of the core and well conserved portion of the
+\textit{Streptomyces}\xspace genome is located in the first
+\textasciitilde2 million base pairs (Mbp) near the origin of
+replication. The rest of the genome is part of the accessory genome
+which primarily consists of genes involved in local environmental
+adaptation and production of antibiotics. It is therefore conceivable
+that this area of the genome is mostly under positive selection and
+trying to ``hold on'' to beneficial mutations.
+
+\textbf{Gene Expression Data}
+
+Now we are going to see whether our prediction, that the Gene expression
+should decease when moving away from the origin of replication, holds.
+We decided to graph the gene expression of the
+\textit{Streptomyces}\xspace genome versus the distance from the origin
+of replication.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{g1}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: Transformation introduced infinite values in continuous y-axis
+\end{verbatim}
+
+\begin{verbatim}
+## `geom_smooth()` using method = 'gam' and formula 'y ~ s(x, bs = "cs")'
+\end{verbatim}
+
+\includegraphics{writeup_final_project_files/figure-latex/expression_graph2-1.pdf}
+
+From the summary of our dataset, we saw that the distance from the
+origin of replication ranges from 219 to 5,247,360. Since we have in
+total 7,762 total observations, it will be more appropriate to bin our
+data. We decided to group by each 100,000 base pairs (bp) region of the
+\textit{Streptomyces}\xspace genome, and ended up with 53 bins.
+
+In the plot above, the brown points on the graph shows the mean
+Expression value calculated over each 10,000 base pairs (bp) region of
+the \textit{Streptomyces}\xspacegenome.
+
+From the trend line above, we see that in general Expression decreases
+as we move further away from the origin of replication. This decrease is
+definetly not linear, we observe some jumps through out the graph. When
+we are 360,000 bp away from the origin, we start to see more of a
+wave-like pattern.
+
+\hypertarget{graphical-decisions}{%
+\section{Graphical Decisions}\label{graphical-decisions}}
+
+In our Expression plot, we used geom\_jitter() and plotted all the
+observations within each group. We then calculated the mean Expression
+value of each bin and plotted it as a point on top of the observations.
+We used the same color brown, but in two different shades to represent
+the observations and the mean value. That is, because both represent the
+same response variable, the Expression value.
+
+We included all of the the observations along with the mean, because
+taking means alone could ignore some unusual data points that could be
+of importance to us. We chose the width of our bins in a way that we do
+not get a lot of bins that will crowd our graph, and neither a small
+amount of bins that wont take into account any unusual points. We also
+used geom\_smooth() in our plot, this made it easier for us to see any
+trends in our plot.
+
+For all the graphs we kept a consistent colour scheme so they all look
+nice together. The selection graphs in particular have the same colours
+for dN, dS, and \(omega\) in all graphs so that it is easy for the
+viewer to follow along. We also wanted to pick colours that were
+objectively pretty, but also dichromat-friendly. Most of our graphs are
+based around scatter plots, so the colours needed to be fairly saturated
+so they would be easy to identify points. Since the values for both the
+gene expression and the selection data have a wide range of values, we
+chose to use a log scale to make it easier to read. When considering
+genomic distance from the origin of replication we scaled the points by
+1 million base pairs to make the values on the x-axis more readable.
+Additionally, all axis labels are clear and have units where applicable.
+We ensured that Greek letters and italic bacteria names were used. The
+arrangement of bacteria in the facet plots was mostly guided by
+biological relevance. \textit{E.\,coli}\xspace and
+\textit{B.\,subtilis}\xspace are the ``lab rats'', and therefore people
+often care about them the most, so we put them first.
+\textit{Streptomyces}\xspace is similar to \textit{E.\,coli}\xspace and
+\textit{B.\,subtilis}\xspace because it has it's genome in one
+chromosome. \textit{S.\,meliloti}\xspace is a multi-repliconic bacteria
+(has more than one chromosome-like structure), and therefore we wanted
+to keep the replicons of this bacteria close together so they could be
+easily compared to one another. In the selection summary graphic we
+decided to add in a redundant legend to aid viewers in determining what
+colours were linked to which selection measure. We also used direct
+labeling when we could to avoid the need for a legend. Finally, we
+utilized trend lines, box-plots, violin plots and reference lines to aid
+in showing summary statistics and patterns in the data.
+
+Any graphs that involve the distance from the origin of replication and
+the response variables, we chose to focus on one bacteria. All the
+bacterial replicons vary greatly in length from 1Mbp to
+\textasciitilde5Mbp. If we had used a facet to show how for example gene
+expression changes with distance from the origin of replication in all
+replicons, some of the replicons would be ``squished'' on the x-axis and
+we would be unable to see any of the results. We therefore chose to
+focus on the most interesting bacteria for storytelling.
+
+
+\end{document}
