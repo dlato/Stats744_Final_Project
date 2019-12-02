@@ -20,6 +20,7 @@ theme_set(theme_bw() + theme(strip.background =element_rect(fill="#e7e5e2")) +
                   panel.spacing = unit(0.25, "lines"), 
                   strip.background = element_rect(fill = "#E6E1EA"),
                   axis.text=element_text(size=10),
+                  axis.text.y.right = element_text(size=10),
                   legend.title = element_blank(),
                   legend.key = element_blank(),
                   legend.background=element_blank(),
@@ -123,7 +124,7 @@ distg <- (ggplot(ecol_dat, aes(x=new_sections, y=value.mean, colour=class))
   + scale_color_manual(values=colours_arr)
   #axis labels
   + xlab("Distance from the Origin of Replication (Mbp)")
-  + ylab("Mean Number of Changes per 10Kbp")
+  + ylab("Mean Expected Number of Substitutions per 10Kbp")
   + ggtitle(expression(paste(italic("Streptomyces"), " Chromosome")))
   + theme(legend.position = "none")
 )
@@ -164,18 +165,22 @@ vio_str_box <-(ggplot(sel_dat, aes(x=class, y=value, fill = class, colour = clas
                +  geom_hline(yintercept=1, linetype="dashed", color = "black")
                + facet_wrap(~bacteria, labeller=label_parsed)
                + xlab("") 
-               + ylab("Number of Changes per Site") 
+               + ylab("Expected Number of Substitutions per Site") 
                + scale_color_manual(values=c("#8E8DBE","#89C794","#A0747A"),labels = c(" dN", " dS", expression(omega)))
                #make the omega a math symbol in x-axis
                + scale_x_discrete(breaks = c("dN", "dS", "omega"),labels = c("dN","dS", expression(omega))) 
                #log scale and removing trailing zeros from y-axis labels
                #and have label at omega = 1 for reference
-               + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.1, 1, 10,1000))
+               + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.1, 1, 10,1000),
+                                    #adding a second axis for omega!
+                                    sec.axis = sec_axis(trans = ~ . * 1,
+                                                        name = 'Ratio of dN/dS \n',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.1, 1, 10,1000)))
                #remove weird second legend
                + guides(fill=FALSE)
 )
 pdf("selection_vio_box.pdf")
 vio_str_box
+
 dev.off()
 
 
