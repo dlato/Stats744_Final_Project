@@ -41,7 +41,7 @@ theme_set(theme_bw() + theme(strip.background =element_rect(fill="#e7e5e2")) +
 )
 #prevent overflow of code boxes
 library(knitr)
-opts_chunk$set(tidy.opts=list(width.cutoff=70),tidy=TRUE)
+opts_chunk$set(tidy.opts=list(width.cutoff=70),tidy=TRUE,fig.width=10, fig.height=7)
 ```
 
 # Insert Clever title here
@@ -155,12 +155,6 @@ This leaves us with three predictions for our data sets:
 
 To begin assessing these predictions we first created some summary graphs of the data.
 
-**Gene Expression Data**
-
-**INSERT FINAL R CODE AND GRAPH HERE FOR GENE EXPRESSION SUMMARY**
-
-**INSERT EXPLANATION FOR ABOVE GRAPH AND CODE**
-
 **Selection Data**
 ```{r selection_summary_graph, include=FALSE}
 
@@ -255,8 +249,56 @@ genome is located in the first ~2 million base pairs (Mbp) near the origin of re
 The rest of the genome is part of the accessory genome which primarily consists of genes involved in local environmental adaptation and production of antibiotics.
 It is therefore conceivable that this area of the genome is mostly under positive selection and trying to "hold on" to beneficial mutations.
 
+**Gene Expression Data**
+
+Now we are going to see whether our prediction, that the Gene expression should decease when moving away from the origin of replication, holds. We decided to graph the gene expression of the \strep
+genome versus the distance from the origin of replication. 
+
+
+```{r, expression_graph, include=FALSE}
+data12 <- read.delim("./data/strep_gene_exp_bidirectional_data.txt", sep = "")
+data12$tmp_pos = abs(data12$tmp_pos)
+data12$group<-cut(data12$tmp_pos, breaks = seq(200,5400000,100000),labels = seq(1:53))
+data12$avg = rep(0,7768)
+for (i in 1:53) {
+y = data12$Exp[(data12$group == i)]
+data12$avg[(data12$group == i)] = mean(data12$Exp[(data12$group == i)])
+}
+
+(g1 <- ggplot(data = data12, mapping = aes(x=group,y=Exp)) 
+  +geom_jitter(aes(color="#F3D9B1"),alpha=0.4, width = 0.2) 
+  +geom_point(aes(y = avg, color = "#C29979")) 
+  +geom_smooth(aes(x = as.numeric(group), y = avg,color = "#6494AA"),se=FALSE,span=0.5) 
+  +guides(color=FALSE) 
+  +theme_minimal()  
+  +scale_y_log10()
+  +scale_color_manual(values = c("#6494AA","#C29979","#F3D9B1"))
+  +ylab("log Expression (CPM)") 
+  +xlab("Distance from the origin of replication (10Kbp)")
+  + ggtitle(expression(paste(italic("Streptomyces"), " Chromosome")))
+)
+
+```
+
+```{r, expression_graph2}
+g1
+
+```
+
+From the summary of our dataset, we saw that the distance from the origin of replication ranges from 219 to 5,247,360. Since we have in total 7,762 total observations, it will be more appropriate to bin our data. We decided to group by each 100,000 base pairs (bp) region of the \strep 
+genome, and ended up with 53 bins.
+
+In the plot above, the brown points on the graph shows the mean Expression value calculated over each 10,000 base pairs (bp) region of the \strep genome.
+
+From the trend line above, we see that in general Expression decreases as we move further away from the origin of replication. This decrease is definetly not linear, we observe some jumps through out the graph. When we are 360,000 bp away from the origin, we start to see more of a wave-like pattern.
+
 # Graphical Decisions
-**INSERT DECISIONS ABOUT GENE EXPRESSION GRAPHS HERE**
+
+In our Expression plot, we used geom_jitter() and plotted all the observations within each group. We then calculated the mean Expression value of each bin and plotted it as a point on top of the observations. We used the same color brown, but in two different shades to represent the observations and the mean value. That is, because both represent the same response variable, the Expression value. 
+
+We included all of the the observations along with the mean, because taking means alone could ignore some unusual data points that could be of importance to us. 
+We chose the width of our bins in a way that we do not get a lot of bins that will crowd our graph, and neither a small amount of bins that wont take into account any unusual points.
+We also used geom_smooth() in our plot, this made it easier for us to see any trends in our plot.
 
 For all the graphs we kept a consistent colour scheme so they all look nice together.
 The selection graphs in particular have the same colours for dN, dS, and $omega$ in all graphs so that it is easy for the viewer to follow along.
