@@ -261,10 +261,7 @@ It is therefore conceivable that this area of the genome is mostly under positiv
 **Gene Expression Data**
 
 Now we are going to see whether our prediction, that the Gene expression should decease when moving away from the origin of replication, holds.
-In Daniella's thesis, she fit models and analyzed how gene expression changes with distance from the origin of replication for all of the bacterial replicons.
-To avoid repetition, we decided to graph the gene expression of only the \strep
-genome versus the distance from the origin of replication and to be consistent with the selection analysis. 
-
+To begin we created the same graph for each of the bacterial genomes to explore how gene expression changes with distance from the origin of replication.
 
 ```{r, expression_graph, include=FALSE}
 data12 <- read.delim("./data/strep_gene_exp_bidirectional_data.txt", sep = "")
@@ -297,6 +294,16 @@ g1
 
 ```
 
+For most of the exploration graphs we see that gene expression does decrease with increasing distance from the origin of replication for most of the bacteria. 
+However, there are two notable exceptions, pSymB and pSymA.
+These happen to be the two secondary replicons of \smel
+which in general contain majority of the accessory genome.
+This could be why these replicons appear to have the opposite gene expression trend from the other bacteria.
+We will be focusing on \strep
+and analizing the trends we see in that graph in depth.
+
+
+
 From the summary of our data set, we saw that the distance from the origin of replication ranges from 219 to 5,247,360. Since we have in total 7,762 total observations, it will be more appropriate to bin our data. We decided to group by each 100,000 base pairs (bp) region of the \strep 
 genome, and ended up with 53 bins.
 
@@ -304,6 +311,13 @@ In the plot above, the brown points on the graph shows the mean expression value
 genome.
 
 From the trend line above, we see that in general Expression decreases as we move further away from the origin of replication. This decrease is definitely not linear, we observe some jumps through out the graph. When we are 3,600,000 bp away from the origin, we start to see more of a wave-like pattern.
+
+For \strep
+, the core genome is located within aproximatly 3,000,000 bp from the origin of replication.
+The accessory genome is generally located within the region approximatly 2,000,000 bp from the terminus of replication.
+It makes sense that we are seeing expression dipping down at around the 3,000,000 bp point and staying lower for the remainder of the genome.
+This is where we expect most of the accessory genome to be located.
+
 
 # Graphical Decisions
 
