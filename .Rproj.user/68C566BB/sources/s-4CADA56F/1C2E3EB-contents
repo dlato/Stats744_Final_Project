@@ -31,9 +31,10 @@ theme_set(theme_bw() + theme(strip.background =element_rect(fill="#e7e5e2")) +
                   panel.grid.major = element_line(colour = "grey90", size = 0.2), 
                   panel.grid.minor = element_line(colour = "grey98", size = 0.5), 
                   panel.spacing = unit(0.25, "lines"), 
-                  axis.text=element_text(size=10),
+                  axis.text=element_text(size=15),
+                  axis.title = element_text(size = 15),
                   #for second legend on y-axis
-                  axis.text.y.right = element_text(size=10),
+                  axis.text.y.right = element_text(size=15),
                   legend.title = element_blank(),
                   #change the colour of facet label background
                   strip.background = element_rect(fill = "#E6E1EA"),

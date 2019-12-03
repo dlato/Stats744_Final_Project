@@ -11,7 +11,7 @@ library(directlabels)
 
 options(scipen=10000)
 theme_set(theme_bw() + theme(strip.background =element_rect(fill="#e7e5e2")) +
-            theme(strip.text = element_text(size =10)) +
+            theme(strip.text = element_text(size =15)) +
             #theme(plot.title = element_text(hjust = 0.5), 
             theme(plot.title = element_text(hjust = 0.5), 
                   panel.background = element_rect(fill = "white", colour = NA), 
@@ -19,8 +19,9 @@ theme_set(theme_bw() + theme(strip.background =element_rect(fill="#e7e5e2")) +
                   panel.grid.minor = element_line(colour = "grey98", size = 0.5), 
                   panel.spacing = unit(0.25, "lines"), 
                   strip.background = element_rect(fill = "#E6E1EA"),
-                  axis.text=element_text(size=10),
-                  axis.text.y.right = element_text(size=10),
+                  axis.text=element_text(size=15),
+                  axis.text.y.right = element_text(size=15),
+                  axis.title = element_text(size = 15),
                   legend.title = element_blank(),
                   legend.key = element_blank(),
                   legend.background=element_blank(),
@@ -99,8 +100,8 @@ pd <- position_dodge(0.1) # move them .05 to the left and right
 
 ecol_dat$class <- factor(ecol_dat$class, levels = c("dS", "omega", "dN"))
 
-levels(ecol_dat$class) <- c("dS" = " dS",
-                              "omega" = expression(omega),
+levels(ecol_dat$class) <- c("omega" = expression(omega),
+                            "dS" = " dS",
                               "dN" = " dN")
 levels(ecol_dat$class)
 
@@ -131,6 +132,15 @@ distg <- (ggplot(ecol_dat, aes(x=new_sections, y=value.mean, colour=class))
 
 pdf("strep_selection.pdf")
 distg
+
+(distg + facet_grid(class ~ . , labeller=label_parsed)
+  #removing the facet labels
+  + theme(
+    strip.background = element_blank(),
+    strip.text.y  = element_blank()
+    )
+)
+  
 dev.off()
 
 #get levels into order we want
