@@ -160,7 +160,7 @@ This leaves us with three predictions for our data sets:
 
 **Selection Data**
 
-We first present a graph showing the distributions of dN, dS and $\omega$ values in each of the bacterial replicons.
+We first present a graph showing the distributions of dN, dS and $\omega$ values for all genes in each of the bacterial replicons.
 
 ```{r selection_summary_graph, include=FALSE}
 
@@ -206,6 +206,12 @@ When looking at dN and dS substitution rates, we expect that the rate of synonym
 Biologically, mutations that cause a change in an amino acid are more likely to alter the function of the protein than mutations that do not cause a change in an amino acid. 
 As mentioned, a non-functional protein could have catastrophic consequences on the well being of the organism.
 Across all the bacterial replicons we see that indeed, dS > dN.
+In some of the bacterial replicons such as \bass
+and \ecol
+, there appears to be a high number of genes with dS values larger than 1.
+There is a phylogenetic component to the calculation of dN, dS and $omega$ and the programs are taking an average of all the substitutions that could have occured along any branch within the phylogentic tree, over the total number of sites in the gene.
+This means, there depending on how close or distantly related the taxa are, there could have been multiple substitutions at one (or many) sites within the gene.
+This could cause the value of dS to be estimated to be larger than one substitution per site.
 
 We also notice that most of the $omega$ values for each bacterial replicon are below 1, this is what we expected.
 An $omega$ value below one means that the genes are likely neutral or under negative selection, meaning that mutations having deleterious impact on the organism will be removed.
@@ -271,7 +277,7 @@ omeg_g <- (ggplot(strep_omeg, aes(x=new_sections, y=value.mean, colour=class))
 
 ```
 
-```{r, selection_graph}
+```{r, dS_dN_graph}
 rate_g
 
 ```
@@ -291,7 +297,7 @@ With the location of the accessory genome coenciding with areas where we see dec
 
 
 
-```{r, selection_graph}
+```{r, omega_graph}
 omeg_g
 ```
 
@@ -347,13 +353,14 @@ g1
 
 ```
 
-For most of the exploration graphs we see that gene expression does decrease with increasing distance from the origin of replication for most of the bacteria. 
+THE BELOW BOLDED SECTION NEEDS TO BE FIXED SO THAT IT ACTALLY REFLECTS WHATEVER OTHER EXPLORATORY GRAPHICS ARE BEING MADE.
+**For most of the exploration graphs we see that gene expression does decrease with increasing distance from the origin of replication for most of the bacteria. 
 However, there are two notable exceptions, pSymB and pSymA.
 These happen to be the two secondary replicons of \smel
 which in general contain majority of the accessory genome.
 This could be why these replicons appear to have the opposite gene expression trend from the other bacteria.
 We will be focusing on \strep
-and analizing the trends we see in that graph in depth.
+and analizing the trends we see in that graph in depth.**
 
 
 
@@ -377,8 +384,7 @@ This is where we expect most of the accessory genome to be located.
 
 ## General:
 Since the response variables for both the gene expression and the selection data have a wide range of values, we chose to use a log scale to make it easier to read.
-When considering genomic distance from the origin of replication we scaled the points by 1 million base pairs to make the values on the x-axis more readable.
-Additionally, all axis labels are clear and have units where applicable.
+Additionally, all axis labels are clear, in a large font size, and have units where applicable.
 We ensured that Greek letters and italic bacteria names were used.
 We utilized trend lines, box-plots, violin plots and reference lines to aid in showing summary statistics and patterns in the data.
 We also wanted to pick colours that were subjectively pretty, but also dichromat-friendly.
@@ -393,6 +399,7 @@ We therefore chose to focus on the most interesting bacteria (\strep
 ## Selection:
 
 With regards to colour, the selection graphs have the same colours for dN, dS, and $omega$ in all graphs so that it is easy for the viewer to follow along when switching between graphs.
+When considering genomic distance from the origin of replication we scaled the points by 1 million base pairs to make the values on the x-axis more readable.
 We chose to show the data points as a strip plot with a box plot and violin plot overlayed.
 This allows for the maximum amount of information about the distribution of the selection values to be shown.
 We chose to use the facet_wrap() function in R to allow for overarching similarities or differences between the bacterial replicons to be visible.
