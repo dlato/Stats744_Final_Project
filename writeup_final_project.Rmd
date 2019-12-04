@@ -23,6 +23,7 @@ library(dplyr)
 library(directlabels)
 library(formatR)
 options(scipen=10000)
+#setting up a theme so all graphs are consistant
 theme_set(theme_bw() + theme(strip.background =element_rect(fill="#e7e5e2")) +
             theme(strip.text = element_text(size =15)) +
             #theme(plot.title = element_text(hjust = 0.5), 
@@ -84,12 +85,9 @@ for (i in chunks) {
   exp_max_row <- max(exp_rows)
   exp_rows_to_split_dat <- c(exp_rows_to_split_dat, exp_max_row)
 }#for
-exp_rows_to_split_dat
 diff <- c(exp_rows_to_split_dat[-1],NA)
 tmp_df <- as.data.frame(cbind(exp_rows_to_split_dat,diff))
 tmp_df$rep_vec <- tmp_df$diff - tmp_df$exp_rows_to_split_dat
-head(tmp_df)
-tail(tmp_df)
 #make rep vector
 rep_vec <- c(exp_rows_to_split_dat[1],tmp_df$rep_vec[-length(tmp_df$rep_vec)])
 rep_vec
@@ -123,8 +121,6 @@ levels(sel_dat$bacteria) <- c("ecoli" = expression(paste(italic("E.coli"), "")),
 
 
 
-class(sel_dat$bacteria)
-levels(sel_dat$bacteria)
 
 
 
@@ -165,14 +161,12 @@ We first present a graph showing the distributions of dN, dS and $\omega$ values
 ```{r selection_summary_graph, include=FALSE}
 
 #choose colours
-#colours_arr <- rep(c( "#8BC1C1","#928CAB","#BE6361"),num_of_plots)
 colours_arr <- rep(c( "#8BC1C1","#928CAB","#C29979"),num_of_plots)
 #plot
 set.seed(1738);
 vio_str_box <-(ggplot(sel_dat, aes(x=class, y=value, fill = class, colour = class)) 
                + geom_jitter(position=position_jitter(0.2))
                + geom_violin(colour = "black", fill = NA) 
-               #+ geom_boxplot(width=.1, outlier.shape=NA, fill = colours_arr) 
                + geom_boxplot(width=.1, outlier.shape=NA, colour = "black", fill = colours_arr) 
                + stat_boxplot(geom = "errorbar", width = 0.2, colour = "black") 
                #omega = 1 reference line
@@ -230,6 +224,7 @@ This is dicussed in further detail in the Graphical Decisions section.
 
 
 ```{r selection, include=FALSE}
+#making subsets of data to plot them separately
 strep_omeg <- strep_dat[which(strep_dat$class == "omega"),]
 
 strep_rates <- strep_dat[which(strep_dat$class == "dS" | strep_dat$class == "dN"),]
@@ -253,14 +248,11 @@ rate_g <- (ggplot(strep_rates, aes(x=new_sections, y=value.mean, colour=class))
 )
 
 
-#colours_arr <- c("#B0413E")
 colours_arr <- c("#B18C6E")
 omeg_g <- (ggplot(strep_omeg, aes(x=new_sections, y=value.mean, colour=class))
-           #  geom_errorbar(aes(ymin=value.mean-sd, ymax=value.mean+sd), width=.1, position=pd) +
            + geom_point(alpha = 0.75)
            + geom_smooth()
            #labels for the colours
-           #+ annotate("text", x=5.4,y=0.4,label="omega", parse=TRUE, colour = "#B0413E", size = 10)
            + annotate("text", x=5.4,y=0.4,label="omega", parse=TRUE, colour = "#B18C6E", size = 10)
            + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.1, 1, 10))
            + scale_color_manual(values=colours_arr)
