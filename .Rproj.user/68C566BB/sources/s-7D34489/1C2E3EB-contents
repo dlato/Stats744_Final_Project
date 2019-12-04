@@ -22,11 +22,12 @@ library(plyr)
 library(dplyr)
 library(directlabels)
 library(formatR)
+library(gridExtra)
+library(grid)
 options(scipen=10000)
 #setting up a theme so all graphs are consistant
 theme_set(theme_bw() + theme(strip.background =element_rect(fill="#e7e5e2")) +
             theme(strip.text = element_text(size =15)) +
-            #theme(plot.title = element_text(hjust = 0.5), 
             theme(plot.title = element_text(hjust = 0.5, size = 18), 
                   panel.background = element_rect(fill = "white", colour = NA), 
                   panel.grid.major = element_line(colour = "grey90", size = 0.2), 
@@ -240,11 +241,15 @@ rate_g <- (ggplot(strep_rates, aes(x=new_sections, y=value.mean, colour=class))
           + annotate("text", x=5.4,y=0.0035,label="dN", colour = "#6494AA", size = 6)
           + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.1, 1, 10))
           + scale_color_manual(values=colours_arr)
+          #remove redundant xaxis
+          + theme(axis.title.x = element_blank(),
+                  axis.ticks.x = element_blank(),
+                  axis.text.x = element_blank(),
+                  #remove legend
+                  legend.position = "none")
           #axis labels
-          + xlab("Distance from the Origin of Replication (Mbp)")
-          + ylab("Mean Expected Number of Substitutions per 10Kbp")
+          + ylab("Mean Expeccted\n# of Substitutions\nper 10Kbp\n")
           + ggtitle(expression(paste(italic("Streptomyces"), " Chromosome")))
-          + theme(legend.position = "none")
 )
 
 
@@ -260,8 +265,7 @@ omeg_g <- (ggplot(strep_omeg, aes(x=new_sections, y=value.mean, colour=class))
            +  geom_hline(yintercept=1, linetype="dashed", color = "black", size=1)
            #axis labels
            + xlab("Distance from the Origin of Replication (Mbp)")
-           + ylab("Mean Ratio of dN/dS per 10Kbp")
-           + ggtitle(expression(paste(italic("Streptomyces"), " Chromosome")))
+           + ylab("Mean Ratio\n(dN/dS)\nper 10Kbp")
            + theme(legend.position = "none")
 )
 
@@ -269,11 +273,13 @@ omeg_g <- (ggplot(strep_omeg, aes(x=new_sections, y=value.mean, colour=class))
 ```
 
 ```{r, dS_dN_graph}
-rate_g
+#arrange the graphs on one. since facet will not let you re-lable each axis in a facet
+grid.newpage()
+grid.draw(rbind(ggplotGrob(rate_g), ggplotGrob(omeg_g)))
 
 ```
 
-The points on the above graph represent the mean expected number of substitutions per 10,000 bp (10Kbp) for both dN and dS.
+The points on the top graph represent the mean expected number of substitutions per 10,000 bp (10Kbp) for both dN and dS.
 This was calculated by averaging the dS and dN values respectively over each 10Kbp section of the genome. 
 A non-linear trendline with confidence intervales was added to the plot to show an overall trend about how dN and dS respectively are chaning with distance from the origin of replication.
 As mentioned previously, we see that dS is higher than dN for most of the genes in \strep
@@ -287,13 +293,7 @@ It is conceivable that the accessory genome has more non-synonomous substitution
 With the location of the accessory genome coenciding with areas where we see decreased dS and increased dN, we could infer that biologically this is what is happening.
 
 
-
-```{r, omega_graph}
-omeg_g
-```
-
-
-This graph shows the mean $\omega$ calculated over each 10Kbp region of the \strep 
+The bottom graph shows the mean $\omega$ calculated over each 10Kbp region of the \strep 
 genome.
 As mentioned before, this was calculated by averaging the $\omega$ values of all genes within each 10Kbp section of the genome. 
 A non-linear trendline with confidence intervales was added to the plot to show an overall trend about how $\omega$ changes with distance from the origin of replication.
@@ -427,7 +427,8 @@ We ensured that the legend order matched the order that the selection parameters
 
 ### Individaul Selection Value Graphs
 Since the range of values and units differ between the dN, dS and $\omega$ values, we decided to create two separate graphs.
-One showing the mean dN and dS values over 10Kbp distances from the origin of replication, and another showing the mean $\omega$ values over 10Kbp distances from the origin of replication.
+We then combined these two graphs so that all of the data was in on "figure", but the scales, axis labels, and units remained separate for these two categories.
+The top graph shows the mean dN and dS values over 10Kbp distances from the origin of replication, and another showing the mean $\omega$ values over 10Kbp distances from the origin of replication.
 Separating the data into two graphs allows for a clear separation of units and allows for a "zoomed in" picture of the values.
 Since the $\omega$ values are so much higher than the dN or dS values, having all selection parameters (dN, dS and $\omega$) on the same graph would obscure any subtle changes in the paramaters with respect to distance from the origin of replication.
 By using separate graphs, we are able to see these changes more clearly.
@@ -440,7 +441,9 @@ Again, we are primaraly interested in $\omega$ values that are larger than zero 
 We decided to add a reference line at 1 to help remind viewers about the differences between $\omega$ values that lie above and below this line.
 
 We also used direct labeling when we could to avoid the need for a legend.
-
+We additionally put the dS and dN values on the top graph and the $\omega$ values on the bottom graph because $\omega$ is the ratio of the top graph (dN/dS).
+Although the y-axis titles are lengthy, they are biologically accurate and convey the proper units for each of the selection values.
+We chose to put them on separate lines so they are as readable as possible.
 
 
 ## Gene Expression: 

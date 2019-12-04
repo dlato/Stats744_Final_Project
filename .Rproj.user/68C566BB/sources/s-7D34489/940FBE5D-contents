@@ -7,6 +7,8 @@ library(ggpubr)
 library(plyr)
 library(dplyr)
 library(directlabels)
+library(gridExtra)
+library(grid)
 
 
 options(scipen=10000)
@@ -136,9 +138,13 @@ rate_g <- (ggplot(ecol_rates, aes(x=new_sections, y=value.mean, colour=class))
           + annotate("text", x=5.4,y=0.0035,label="dN", colour = "#6494AA", size = 6)
           + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.1, 1, 10))
           + scale_color_manual(values=colours_arr)
+          #remove redundant xaxis
+          + theme(axis.title.x = element_blank(),
+                  axis.ticks.x = element_blank(),
+                  axis.text.x = element_blank())
           #axis labels
           + xlab("Distance from the Origin of Replication (Mbp)")
-          + ylab("Mean Expected Number of Substitutions per 10Kbp")
+          + ylab("Mean Expected #\nof Substitutions per 10Kbp\n")
           + ggtitle(expression(paste(italic("Streptomyces"), " Chromosome")))
           + theme(legend.position = "none")
 )
@@ -159,17 +165,16 @@ omeg_g <- (ggplot(ecol_omeg, aes(x=new_sections, y=value.mean, colour=class))
            +  geom_hline(yintercept=1, linetype="dashed", color = "black", size=1)
            #axis labels
            + xlab("Distance from the Origin of Replication (Mbp)")
-           + ylab("Mean Expected Number of Substitutions per 10Kbp")
-           + ylab("Mean Ratio of dN/dS per 10Kbp")
-           + ggtitle(expression(paste(italic("Streptomyces"), " Chromosome")))
+           + ylab("Mean Ratio (dN/dS) per 10Kbp")
+           #+ ggtitle(expression(paste(italic("Streptomyces"), " Chromosome")))
            + theme(legend.position = "none")
 )
 
 omeg_g
 
-
-
-
+#arrange the graphs on one. since facet will not let you re-lable each axis in a facet
+grid.newpage()
+grid.draw(rbind(ggplotGrob(rate_g), ggplotGrob(omeg_g)))
 
 ##colours_arr <- c("#CFE7C8","#D2E4DC","#A0747A")
 ##colours_arr <- c("#7A306C","#8E8DBE","#5EB26D")
@@ -211,6 +216,39 @@ omeg_g
 #  )
 #)
 
+strep_tmp <- median_sel_dat[which(median_sel_dat$bacteria == "strep"),]
+levels(strep_tmp$class)
+strep_tmp$fake_class <- factor(ifelse(strep_tmp$class == "omega", 'ome', 'rates'))
+levels(strep_tmp$fake_class)
+class(strep_tmp$fake_class)
+strep_tmp$fake_class <- fct_relevel(strep_tmp$fake_class,"rates","ome")
+levels(strep_tmp$fake_class)
+head(strep_tmp)
+strep_tmp$new_sections <- strep_tmp$new_sections / 1000000
+
+
+colours_arr <- c("#6494AA","#A09ABC", "black")
+#graph with only dS and dN
+facet_g <- (ggplot(strep_tmp, aes(x=new_sections, y=value.mean, colour=class))
+           #  geom_errorbar(aes(ymin=value.mean-sd, ymax=value.mean+sd), width=.1, position=pd) +
+           + geom_point(alpha = 0.75)
+           + geom_smooth()
+           + facet_grid(fake_class ~ ., labeller=label_parsed, scales='free')
+           #labels for the colours
+           + annotate("text", x=5.4,y=0.015,label="dS", colour = "#A09ABC", size = 6)
+           + annotate("text", x=5.4,y=0.0035,label="dN", colour = "#6494AA", size = 6)
+           + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.1, 1, 10))
+           + scale_color_manual(values=colours_arr)
+           #axis labels
+           + xlab("Distance from the Origin of Replication (Mbp)")
+           + ylab("Mean Expected Number of Substitutions per 10Kbp")
+           + ggtitle(expression(paste(italic("Streptomyces"), " Chromosome")))
+           + theme(legend.position = "none")
+)
+
+facet_g
+
+
 
 #get levels into order we want
 levels(sel_dat$bacteria)
@@ -228,6 +266,55 @@ levels(sel_dat$bacteria) <- c("ecoli" = expression(paste(italic("E.coli"), "")),
 
 class(sel_dat$bacteria)
 levels(sel_dat$bacteria)
+
+#make a fake factor to separate dS and dN from omega
+#so it will facet the way I want
+tmp_data <- sel_dat
+levels(tmp_data$class)
+tmp_data$fake_class <- factor(ifelse(tmp_data$class == "omega", 'ome', 'rates'))
+tmp_data$fake_class <- fct_relevel(tmp_data$fake_class, "rates", "ome")
+levels(tmp_data$fake_class)
+class(tmp_data$fake_class)
+#levels(tmp_data$fake_class) <- factor(tmp_data$fake_class, levels= c("omeg", "rates"))
+
+#plot it
+#choose colours
+#colours_arr <- rep(c("#5EB26D","#8E8DBE","#A0747A"),num_of_plots)
+#colours_arr <- rep(c("#8E8DBE","#89C794","#A0747A"),num_of_plots)
+colours_arr <- rep(c( "#8BC1C1","#928CAB","#C29979"),num_of_plots)
+#plot
+set.seed(1738);
+vio_str_box <-(ggplot(tmp_data, aes(x=class, y=value, fill = class, colour = class)) 
+               + geom_jitter(position=position_jitter(0.2))
+               + geom_violin(colour = "black", fill = NA) 
+               #+ geom_boxplot(width=.1, outlier.shape=NA, fill = colours_arr) 
+               + geom_boxplot(width=.1, outlier.shape=NA, colour = "black", fill = colours_arr) 
+               + stat_boxplot(geom = "errorbar", width = 0.2, colour = "black") 
+               #omega = 1 reference line
+               +  geom_hline(yintercept=1, linetype="dashed", color = "black")
+               + facet_grid(fake_class ~bacteria, labeller=label_parsed)
+               + xlab("") 
+               + ylab("Expected Number of Substitutions per Site") 
+               #+ scale_color_manual(values=c("#8E8DBE","#89C794","#A0747A"),labels = c(" dN", " dS", expression(omega)))
+               #+ scale_color_manual(values=c("#8BC1C1","#928CAB","#BE6361"),labels = c(" dN", " dS", expression(omega)))
+               + scale_color_manual(values=c("#8BC1C1","#928CAB","#C29979"),labels = c(" dN", " dS", expression(omega)))
+               #make the omega a math symbol in x-axis
+               + scale_x_discrete(breaks = c("dN", "dS", "omega"),labels = c("dN","dS", expression(omega))) 
+               #log scale and removing trailing zeros from y-axis labels
+               #and have label at omega = 1 for reference
+               + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.1, 1, 10,1000),
+                                    #adding a second axis for omega!
+                                    sec.axis = sec_axis(trans = ~ . * 1,
+                                                        name = 'Ratio of dN/dS \n',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.1, 1, 10,1000)))
+               #remove weird second legend
+               + guides(fill=FALSE)
+)
+
+vio_str_box
+
+
+
+
 
 #choose colours
 #colours_arr <- rep(c("#5EB26D","#8E8DBE","#A0747A"),num_of_plots)
