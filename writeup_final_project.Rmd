@@ -27,7 +27,7 @@ library(grid)
 options(scipen=10000)
 #setting up a theme so all graphs are consistant
 theme_set(theme_bw() + theme(strip.background =element_rect(fill="#e7e5e2")) +
-            theme(strip.text = element_text(size =15)) +
+            theme(strip.text = element_text(size =12)) +
             theme(plot.title = element_text(hjust = 0.5, size = 18), 
                   panel.background = element_rect(fill = "white", colour = NA), 
                   panel.grid.major = element_line(colour = "grey90", size = 0.2), 
@@ -93,7 +93,7 @@ tmp_df$rep_vec <- tmp_df$diff - tmp_df$exp_rows_to_split_dat
 rep_vec <- c(exp_rows_to_split_dat[1],tmp_df$rep_vec[-length(tmp_df$rep_vec)])
 rep_vec
 #make new column with "groups" of these chunks
-new_sections <- rep(chunks, times = rep_vec)
+new_sections <- rep(chunks, rep_vec)
 sel_dat_ord$new_sections <- new_sections
 
 #mean for each genome chunk
@@ -189,6 +189,60 @@ vio_str_box <-(ggplot(sel_dat, aes(x=class, y=value, fill = class, colour = clas
                #remove weird second legend
                + guides(fill=FALSE)
 )
+
+#make a fake factor to separate dS and dN from omega
+#so it will facet the way I want
+tmp_data <- sel_dat
+levels(tmp_data$class)
+tmp_data$fake_class <- factor(ifelse(tmp_data$class == "omega", 'ome', 'rates'))
+tmp_data$fake_class <- fct_relevel(tmp_data$fake_class, "rates", "ome")
+levels(tmp_data$fake_class)
+class(tmp_data$fake_class)
+#levels(tmp_data$fake_class) <- factor(tmp_data$fake_class, levels= c("omeg", "rates"))
+
+#plot it
+#choose colours
+#colours_arr <- rep(c("#5EB26D","#8E8DBE","#A0747A"),num_of_plots)
+#colours_arr <- rep(c("#8E8DBE","#89C794","#A0747A"),num_of_plots)
+colours_arr <- rep(c( "#8BC1C1","#928CAB","#C29979"),num_of_plots)
+rates_arr <- rep(c( "#8BC1C1","#928CAB"),num_of_plots)
+omeg_arr <- rep(c("#C29979"), num_of_plots)
+colours_arr <- c(rates_arr, omeg_arr)
+#plot
+set.seed(1738);
+vio_str_box <-(ggplot(tmp_data, aes(x=class, y=value, fill = class, colour = class)) 
+               + geom_jitter(position=position_jitter(0.2))
+               + geom_violin(colour = "black", fill = NA) 
+               #+ geom_boxplot(width=.1, outlier.shape=NA, fill = colours_arr) 
+               + geom_boxplot(width=.1, outlier.shape=NA, colour = "black", fill = colours_arr) 
+               + stat_boxplot(geom = "errorbar", width = 0.2, colour = "black") 
+               + facet_grid(fake_class ~bacteria, labeller=label_parsed)
+               #omega = 1 reference line only on the omega data
+               #+  geom_hline(yintercept=1, linetype="dashed", color = "black")
+               +  geom_hline(data = data.frame(yint=1,fake_class="ome"), aes(yintercept= yint), linetype="dashed", color = "black")
+               + xlab("") 
+               + ylab("Expected Number of Substitutions per Site") 
+               #+ scale_color_manual(values=c("#8E8DBE","#89C794","#A0747A"),labels = c(" dN", " dS", expression(omega)))
+               #+ scale_color_manual(values=c("#8BC1C1","#928CAB","#BE6361"),labels = c(" dN", " dS", expression(omega)))
+               + scale_color_manual(values=c("#8BC1C1","#928CAB","#C29979"),labels = c(" dN", " dS", expression(omega)))
+               #make the omega a math symbol in x-axis
+               + scale_x_discrete(breaks = c("dN", "dS", "omega"),labels = c("dN","dS", expression(omega))) 
+               #log scale and removing trailing zeros from y-axis labels
+               #and have label at omega = 1 for reference
+               + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.1, 1, 10,1000),
+                                    #adding a second axis for omega!
+                                    sec.axis = sec_axis(trans = ~ . * 1,
+                                                        name = 'Ratio of dN/dS \n',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.1, 1, 10,1000)))
+               #remove weird second legend
+               + guides(fill=FALSE)
+               #remove the y facet labels
+               + theme(
+                 strip.background.y = element_blank(),
+                 strip.text.y = element_blank()
+               )
+)
+
+
 ```
 
 ```{r}

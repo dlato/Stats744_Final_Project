@@ -13,7 +13,7 @@ library(grid)
 
 options(scipen=10000)
 theme_set(theme_bw() + theme(strip.background =element_rect(fill="#e7e5e2")) +
-            theme(strip.text = element_text(size =15)) +
+            theme(strip.text = element_text(size =12)) +
             #theme(plot.title = element_text(hjust = 0.5), 
             theme(plot.title = element_text(hjust = 0.5, size = 15), 
                   panel.background = element_rect(fill = "white", colour = NA), 
@@ -30,6 +30,86 @@ theme_set(theme_bw() + theme(strip.background =element_rect(fill="#e7e5e2")) +
                   legend.background=element_blank(),
                   legend.position="top") 
 )
+
+strwrap_strip_text = function(p, pad=0.05) { 
+  # get facet font attributes
+  th = theme_get()
+  if (length(p$theme) > 0L)
+    th = th + p$theme
+  
+  require("grid")
+  grobs <- ggplotGrob(p)
+  
+  # wrap strip x text
+  if ((class(p$facet)[1] == "grid" && !is.null(names(p$facet$cols))) ||
+      class(p$facet)[1] == "wrap")
+  {
+    ps = calc_element("strip.text.x", th)[["size"]]
+    family = calc_element("strip.text.x", th)[["family"]]
+    face = calc_element("strip.text.x", th)[["face"]]
+    
+    if (class(p$facet)[1] == "wrap") {
+      nm = names(p$facet$facets)
+    } else {
+      nm = names(p$facet$cols)
+    }
+    
+    # get number of facet columns
+    levs = levels(factor(p$data[[nm]]))
+    npanels = length(levs)
+    if (class(p$facet)[1] == "wrap") {
+      cols = n2mfrow(npanels)[1]
+    } else {
+      cols = npanels
+    }
+    
+    # get plot width
+    sum = sum(sapply(grobs$width, function(x) convertWidth(x, "in")))
+    panels_width = par("din")[1] - sum  # inches
+    # determine strwrap width
+    panel_width = panels_width / cols
+    mx_ind = which.max(nchar(levs))
+    char_width = strwidth(levs[mx_ind], units="inches", cex=ps / par("ps"), 
+                          family=family, font=gpar(fontface=face)$font) / 
+      nchar(levs[mx_ind])
+    width = floor((panel_width - pad)/ char_width)  # characters
+    
+    # wrap facet text
+    p$data[[nm]] = unlist(lapply(strwrap(p$data[[nm]], width=width, 
+                                         simplify=FALSE), paste, collapse="\n"))
+  }
+  
+  if (class(p$facet)[1] == "grid" && !is.null(names(p$facet$rows))) {  
+    ps = calc_element("strip.text.y", th)[["size"]]
+    family = calc_element("strip.text.y", th)[["family"]]
+    face = calc_element("strip.text.y", th)[["face"]]
+    
+    nm = names(p$facet$rows)
+    
+    # get number of facet columns
+    levs = levels(factor(p$data[[nm]]))
+    rows = length(levs)
+    
+    # get plot height
+    sum = sum(sapply(grobs$height, function(x) convertWidth(x, "in")))
+    panels_height = par("din")[2] - sum  # inches
+    # determine strwrap width
+    panels_height = panels_height / rows
+    mx_ind = which.max(nchar(levs))
+    char_height = strwidth(levs[mx_ind], units="inches", cex=ps / par("ps"), 
+                           family=family, font=gpar(fontface=face)$font) / 
+      nchar(levs[mx_ind])
+    width = floor((panels_height - pad)/ char_height)  # characters
+    
+    # wrap facet text
+    p$data[[nm]] = unlist(lapply(strwrap(p$data[[nm]], width=width, 
+                                         simplify=FALSE), paste, collapse="\n"))
+  }
+  
+  invisible(p)
+}
+
+
 #read in data'
 sel_dat <- read.csv("./data/all_bac_selection_data.csv", header = FALSE)
 #drop first column because it is just the row numbers
@@ -258,7 +338,7 @@ levels(sel_dat$bacteria)
 levels(sel_dat$bacteria) <- c("ecoli" = expression(paste(italic("E.coli"), "")),
                               "bass" = expression(paste(italic("B. subtilis"), "")),
                               "strep" = expression(paste(italic("Streptomyces"), "")),
-                              "sinoC" = expression(paste(italic("S.meliloti"), " Chromosome")),
+                              "sinoC" = expression(paste(italic("S.meliloti"), "\n Chromosome")),
                               "pSymA" = expression(paste(italic("S.meliloti"), " pSymA")),
                               "pSymB" = expression(paste(italic("S.meliloti"), " pSymB")))
 
@@ -282,6 +362,9 @@ class(tmp_data$fake_class)
 #colours_arr <- rep(c("#5EB26D","#8E8DBE","#A0747A"),num_of_plots)
 #colours_arr <- rep(c("#8E8DBE","#89C794","#A0747A"),num_of_plots)
 colours_arr <- rep(c( "#8BC1C1","#928CAB","#C29979"),num_of_plots)
+rates_arr <- rep(c( "#8BC1C1","#928CAB"),num_of_plots)
+omeg_arr <- rep(c("#C29979"), num_of_plots)
+colours_arr <- c(rates_arr, omeg_arr)
 #plot
 set.seed(1738);
 vio_str_box <-(ggplot(tmp_data, aes(x=class, y=value, fill = class, colour = class)) 
@@ -290,9 +373,10 @@ vio_str_box <-(ggplot(tmp_data, aes(x=class, y=value, fill = class, colour = cla
                #+ geom_boxplot(width=.1, outlier.shape=NA, fill = colours_arr) 
                + geom_boxplot(width=.1, outlier.shape=NA, colour = "black", fill = colours_arr) 
                + stat_boxplot(geom = "errorbar", width = 0.2, colour = "black") 
-               #omega = 1 reference line
-               +  geom_hline(yintercept=1, linetype="dashed", color = "black")
                + facet_grid(fake_class ~bacteria, labeller=label_parsed)
+               #omega = 1 reference line only on the omega data
+               #+  geom_hline(yintercept=1, linetype="dashed", color = "black")
+               +  geom_hline(data = data.frame(yint=1,fake_class="ome"), aes(yintercept= yint), linetype="dashed", color = "black")
                + xlab("") 
                + ylab("Expected Number of Substitutions per Site") 
                #+ scale_color_manual(values=c("#8E8DBE","#89C794","#A0747A"),labels = c(" dN", " dS", expression(omega)))
@@ -308,10 +392,15 @@ vio_str_box <-(ggplot(tmp_data, aes(x=class, y=value, fill = class, colour = cla
                                                         name = 'Ratio of dN/dS \n',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.1, 1, 10,1000)))
                #remove weird second legend
                + guides(fill=FALSE)
+               #remove the y facet labels
+               + theme(
+                 strip.background.y = element_blank(),
+                 strip.text.y = element_blank()
+               )
 )
 
 vio_str_box
-
+strwrap_strip_text(vio_str_box)
 
 
 
