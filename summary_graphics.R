@@ -357,14 +357,26 @@ levels(tmp_data$fake_class)
 class(tmp_data$fake_class)
 #levels(tmp_data$fake_class) <- factor(tmp_data$fake_class, levels= c("omeg", "rates"))
 
+#another fake factor
+tmp_data$bac_class <- factor(paste(tmp_data$bacteria, tmp_data$fake_class, sep=""))
+tmp_data$bac_class <- fct_relevel(tmp_data$bac_class, "ecolirates", "ecoliome",
+                                  "bassrates", "bassome",
+                                  "streprates", "strepome",
+                                  "sinoCrates", "sinoCome",
+                                  "pSymArates", "pSymAome",
+                                  "pSymBrates", "pSymBome")
+class(tmp_data$bac_class)
+levels(tmp_data$bac_class)
+
+
 #plot it
 #choose colours
 #colours_arr <- rep(c("#5EB26D","#8E8DBE","#A0747A"),num_of_plots)
 #colours_arr <- rep(c("#8E8DBE","#89C794","#A0747A"),num_of_plots)
 colours_arr <- rep(c( "#8BC1C1","#928CAB","#C29979"),num_of_plots)
-rates_arr <- rep(c( "#8BC1C1","#928CAB"),num_of_plots)
-omeg_arr <- rep(c("#C29979"), num_of_plots)
-colours_arr <- c(rates_arr, omeg_arr)
+#rates_arr <- rep(c( "#8BC1C1","#928CAB"),num_of_plots)
+#omeg_arr <- rep(c("#C29979"), num_of_plots)
+#colours_arr <- c(rates_arr, omeg_arr)
 #plot
 set.seed(1738);
 vio_str_box <-(ggplot(tmp_data, aes(x=class, y=value, fill = class, colour = class)) 
@@ -373,7 +385,8 @@ vio_str_box <-(ggplot(tmp_data, aes(x=class, y=value, fill = class, colour = cla
                #+ geom_boxplot(width=.1, outlier.shape=NA, fill = colours_arr) 
                + geom_boxplot(width=.1, outlier.shape=NA, colour = "black", fill = colours_arr) 
                + stat_boxplot(geom = "errorbar", width = 0.2, colour = "black") 
-               + facet_grid(fake_class ~bacteria, labeller=label_parsed)
+               #+ facet_grid(fake_class ~bacteria, labeller=label_parsed)
+               + facet_wrap(~bac_class, labeller=label_parsed, scales = "free_x", space = "free_x", ncol = 6)
                #omega = 1 reference line only on the omega data
                #+  geom_hline(yintercept=1, linetype="dashed", color = "black")
                +  geom_hline(data = data.frame(yint=1,fake_class="ome"), aes(yintercept= yint), linetype="dashed", color = "black")
@@ -396,10 +409,13 @@ vio_str_box <-(ggplot(tmp_data, aes(x=class, y=value, fill = class, colour = cla
                + theme(
                  strip.background.y = element_blank(),
                  strip.text.y = element_blank()
+               #  strip.background = element_blank(),
+               #  strip.text = element_blank()
                )
 )
 
 vio_str_box
+
 strwrap_strip_text(vio_str_box)
 
 
