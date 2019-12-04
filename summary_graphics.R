@@ -97,15 +97,15 @@ head(ecol_dat)
 ecol_dat$new_sections <- ecol_dat$new_sections / 1000000
 
 
-# The errorbars overlapped, so use position_dodge to move them horizontally
-pd <- position_dodge(0.1) # move them .05 to the left and right
-
-ecol_dat$class <- factor(ecol_dat$class, levels = c("dS", "omega", "dN"))
-
-levels(ecol_dat$class) <- c("omega" = expression(omega),
-                            "dS" = " dS",
-                              "dN" = " dN")
-levels(ecol_dat$class)
+## The errorbars overlapped, so use position_dodge to move them horizontally
+#pd <- position_dodge(0.1) # move them .05 to the left and right
+#
+#ecol_dat$class <- factor(ecol_dat$class, levels = c("dS", "omega", "dN"))
+#
+#levels(ecol_dat$class) <- c("omega" = expression(omega),
+#                            "dS" = " dS",
+#                              "dN" = " dN")
+#levels(ecol_dat$class)
 ##make fake variable so I can subset the data
 #ecol_dat$fake_class <- factor(ifelse(ecol_dat$class == "omega", 'ome', 'rates'))
 #
@@ -145,7 +145,7 @@ rate_g <- (ggplot(ecol_rates, aes(x=new_sections, y=value.mean, colour=class))
 
 rate_g
 
-colours_arr <- c("#C29979")
+#colours_arr <- c("#C29979")
 colours_arr <- c("#B18C6E")
 omeg_g <- (ggplot(ecol_omeg, aes(x=new_sections, y=value.mean, colour=class))
            #  geom_errorbar(aes(ymin=value.mean-sd, ymax=value.mean+sd), width=.1, position=pd) +
