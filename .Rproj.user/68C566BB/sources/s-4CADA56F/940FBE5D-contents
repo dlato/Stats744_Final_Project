@@ -130,7 +130,7 @@ colours_arr <- c("#6494AA","#A09ABC")
 rate_g <- (ggplot(ecol_rates, aes(x=new_sections, y=value.mean, colour=class))
           #  geom_errorbar(aes(ymin=value.mean-sd, ymax=value.mean+sd), width=.1, position=pd) +
           + geom_point(alpha = 0.75)
-          + geom_smooth(method = lm)
+          + geom_smooth()
           #labels for the colours
           + annotate("text", x=5.4,y=0.015,label="dS", colour = "#A09ABC", size = 6)
           + annotate("text", x=5.4,y=0.0035,label="dN", colour = "#6494AA", size = 6)
@@ -150,7 +150,7 @@ colours_arr <- c("#B18C6E")
 omeg_g <- (ggplot(ecol_omeg, aes(x=new_sections, y=value.mean, colour=class))
            #  geom_errorbar(aes(ymin=value.mean-sd, ymax=value.mean+sd), width=.1, position=pd) +
            + geom_point(alpha = 0.75)
-           + geom_smooth(method = lm)
+           + geom_smooth()
            #labels for the colours
            + annotate("text", x=5.4,y=0.4,label="omega", parse=TRUE, colour = "#B18C6E", size = 10)
            + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.1, 1, 10))
