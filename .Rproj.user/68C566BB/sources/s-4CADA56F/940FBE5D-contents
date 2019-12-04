@@ -13,7 +13,7 @@ options(scipen=10000)
 theme_set(theme_bw() + theme(strip.background =element_rect(fill="#e7e5e2")) +
             theme(strip.text = element_text(size =15)) +
             #theme(plot.title = element_text(hjust = 0.5), 
-            theme(plot.title = element_text(hjust = 0.5), 
+            theme(plot.title = element_text(hjust = 0.5, size = 15), 
                   panel.background = element_rect(fill = "white", colour = NA), 
                   panel.grid.major = element_line(colour = "grey90", size = 0.2), 
                   panel.grid.minor = element_line(colour = "grey98", size = 0.5), 
@@ -23,6 +23,7 @@ theme_set(theme_bw() + theme(strip.background =element_rect(fill="#e7e5e2")) +
                   axis.text.y.right = element_text(size=15),
                   axis.title = element_text(size = 15),
                   legend.title = element_blank(),
+                  legend.text = element_text(size = 15),
                   legend.key = element_blank(),
                   legend.background=element_blank(),
                   legend.position="top") 
@@ -95,6 +96,7 @@ head(ecol_dat)
 #scale the genomic position
 ecol_dat$new_sections <- ecol_dat$new_sections / 1000000
 
+
 # The errorbars overlapped, so use position_dodge to move them horizontally
 pd <- position_dodge(0.1) # move them .05 to the left and right
 
@@ -104,44 +106,111 @@ levels(ecol_dat$class) <- c("omega" = expression(omega),
                             "dS" = " dS",
                               "dN" = " dN")
 levels(ecol_dat$class)
+##make fake variable so I can subset the data
+#ecol_dat$fake_class <- factor(ifelse(ecol_dat$class == "omega", 'ome', 'rates'))
+#
+#
+#
+#head(ecol_dat[which(ecol_dat$class == "omega"),])
+#head(ecol_dat[which(ecol_dat$class == " dN"),])
+#head(ecol_dat[which(ecol_dat$class == " dS"),])
+#levels(ecol_dat$fake_class)
+##levels(ecol_dat$fake_class) <- factor(ecol_dat$fake_class, levels= c("omeg", "rates"))
+ecol_omeg <- ecol_dat[which(ecol_dat$class == "omega"),]
+head(ecol_omeg)
 
+ecol_rates <- ecol_dat[which(ecol_dat$class == "dS" | ecol_dat$class == "dN"),]
+head(ecol_rates)
 #choose colours
-#colours_arr <- c("#CFE7C8","#D2E4DC","#A0747A")
-#colours_arr <- c("#7A306C","#8E8DBE","#5EB26D")
-#colours_arr <- c("#A0747A","#5EB26D","#8E8DBE")
-colours_arr <- c("#5EB26D","#A0747A","#8E8DBE")
-span = 0.3
-distg <- (ggplot(ecol_dat, aes(x=new_sections, y=value.mean, colour=class))
-#  geom_errorbar(aes(ymin=value.mean-sd, ymax=value.mean+sd), width=.1, position=pd) +
-  + geom_point()
-  + geom_smooth(method = lm)
-  #labels for the colours
-  + annotate("text", x=5.4,y=0.4,label="omega", parse=TRUE, colour = "#A0747A", size = 10)
-  + annotate("text", x=5.4,y=0.015,label="dS", colour = "#5EB26D", size = 6)
-  + annotate("text", x=5.4,y=0.0035,label="dN", colour = "#8E8DBE", size = 6)
-  + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.1, 1, 10))
-  #omega = 1 reference line
-  +  geom_hline(yintercept=1, linetype="dashed", color = "black", size=1)
-  + scale_color_manual(values=colours_arr)
-  #axis labels
-  + xlab("Distance from the Origin of Replication (Mbp)")
-  + ylab("Mean Expected Number of Substitutions per 10Kbp")
-  + ggtitle(expression(paste(italic("Streptomyces"), " Chromosome")))
-  + theme(legend.position = "none")
+#colours_arr <- c("#B0413E","#928CAB")
+#colours_arr <- c("#B7524F","#A09ABC")
+#colours_arr <- c("#B7524F","#928CAB")
+colours_arr <- c("#6494AA","#A09ABC")
+#graph with only dS and dN
+rate_g <- (ggplot(ecol_rates, aes(x=new_sections, y=value.mean, colour=class))
+          #  geom_errorbar(aes(ymin=value.mean-sd, ymax=value.mean+sd), width=.1, position=pd) +
+          + geom_point(alpha = 0.75)
+          + geom_smooth(method = lm)
+          #labels for the colours
+          + annotate("text", x=5.4,y=0.015,label="dS", colour = "#A09ABC", size = 6)
+          + annotate("text", x=5.4,y=0.0035,label="dN", colour = "#6494AA", size = 6)
+          + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.1, 1, 10))
+          + scale_color_manual(values=colours_arr)
+          #axis labels
+          + xlab("Distance from the Origin of Replication (Mbp)")
+          + ylab("Mean Expected Number of Substitutions per 10Kbp")
+          + ggtitle(expression(paste(italic("Streptomyces"), " Chromosome")))
+          + theme(legend.position = "none")
 )
 
-pdf("strep_selection.pdf")
-distg
+rate_g
 
-(distg + facet_grid(class ~ . , labeller=label_parsed)
-  #removing the facet labels
-  + theme(
-    strip.background = element_blank(),
-    strip.text.y  = element_blank()
-    )
+colours_arr <- c("#C29979")
+colours_arr <- c("#B18C6E")
+omeg_g <- (ggplot(ecol_omeg, aes(x=new_sections, y=value.mean, colour=class))
+           #  geom_errorbar(aes(ymin=value.mean-sd, ymax=value.mean+sd), width=.1, position=pd) +
+           + geom_point(alpha = 0.75)
+           + geom_smooth(method = lm)
+           #labels for the colours
+           + annotate("text", x=5.4,y=0.4,label="omega", parse=TRUE, colour = "#B18C6E", size = 10)
+           + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.1, 1, 10))
+           + scale_color_manual(values=colours_arr)
+           #omega = 1 reference line
+           +  geom_hline(yintercept=1, linetype="dashed", color = "black", size=1)
+           #axis labels
+           + xlab("Distance from the Origin of Replication (Mbp)")
+           + ylab("Mean Expected Number of Substitutions per 10Kbp")
+           + ylab("Mean Ratio of dN/dS per 10Kbp")
+           + ggtitle(expression(paste(italic("Streptomyces"), " Chromosome")))
+           + theme(legend.position = "none")
 )
-  
-dev.off()
+
+omeg_g
+
+
+
+
+
+##colours_arr <- c("#CFE7C8","#D2E4DC","#A0747A")
+##colours_arr <- c("#7A306C","#8E8DBE","#5EB26D")
+##colours_arr <- c("#A0747A","#5EB26D","#8E8DBE")
+#colours_arr <- c("#5EB26D","#A0747A","#8E8DBE")
+#span = 0.3
+#distg <- (ggplot(ecol_dat, aes(x=new_sections, y=value.mean, colour=class))
+##  geom_errorbar(aes(ymin=value.mean-sd, ymax=value.mean+sd), width=.1, position=pd) +
+#  + geom_point()
+#  + geom_smooth(method = lm)
+#  #labels for the colours
+#  + annotate("text", x=5.4,y=0.4,label="omega", parse=TRUE, colour = "#A0747A", size = 10)
+#  + annotate("text", x=5.4,y=0.015,label="dS", colour = "#5EB26D", size = 6)
+#  + annotate("text", x=5.4,y=0.0035,label="dN", colour = "#8E8DBE", size = 6)
+#  + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.1, 1, 10))
+#  #omega = 1 reference line
+#  +  geom_hline(yintercept=1, linetype="dashed", color = "black", size=1)
+#  + scale_color_manual(values=colours_arr)
+#  #axis labels
+#  + xlab("Distance from the Origin of Replication (Mbp)")
+#  + ylab("Mean Expected Number of Substitutions per 10Kbp")
+#  + ggtitle(expression(paste(italic("Streptomyces"), " Chromosome")))
+#  + theme(legend.position = "none")
+#)
+#
+#pdf("strep_selection.pdf")
+#distg
+#
+#  
+#dev.off()
+#
+#
+#(distg + facet_grid(fake_class ~ .)
+#  #(distg + facet_grid(fake_class ~ . ,scales = "free_x", space = "free_x",labeller=labeller(treatment = labels))
+#  #removing the facet labels
+#  + theme(
+#    strip.background = element_blank(),
+#    #    strip.text.y  = element_blank()
+#  )
+#)
+
 
 #get levels into order we want
 levels(sel_dat$bacteria)
@@ -162,7 +231,8 @@ levels(sel_dat$bacteria)
 
 #choose colours
 #colours_arr <- rep(c("#5EB26D","#8E8DBE","#A0747A"),num_of_plots)
-colours_arr <- rep(c("#8E8DBE","#89C794","#A0747A"),num_of_plots)
+#colours_arr <- rep(c("#8E8DBE","#89C794","#A0747A"),num_of_plots)
+colours_arr <- rep(c( "#8BC1C1","#928CAB","#C29979"),num_of_plots)
 #plot
 set.seed(1738);
 vio_str_box <-(ggplot(sel_dat, aes(x=class, y=value, fill = class, colour = class)) 
@@ -176,7 +246,9 @@ vio_str_box <-(ggplot(sel_dat, aes(x=class, y=value, fill = class, colour = clas
                + facet_wrap(~bacteria, labeller=label_parsed)
                + xlab("") 
                + ylab("Expected Number of Substitutions per Site") 
-               + scale_color_manual(values=c("#8E8DBE","#89C794","#A0747A"),labels = c(" dN", " dS", expression(omega)))
+               #+ scale_color_manual(values=c("#8E8DBE","#89C794","#A0747A"),labels = c(" dN", " dS", expression(omega)))
+               #+ scale_color_manual(values=c("#8BC1C1","#928CAB","#BE6361"),labels = c(" dN", " dS", expression(omega)))
+               + scale_color_manual(values=c("#8BC1C1","#928CAB","#C29979"),labels = c(" dN", " dS", expression(omega)))
                #make the omega a math symbol in x-axis
                + scale_x_discrete(breaks = c("dN", "dS", "omega"),labels = c("dN","dS", expression(omega))) 
                #log scale and removing trailing zeros from y-axis labels
