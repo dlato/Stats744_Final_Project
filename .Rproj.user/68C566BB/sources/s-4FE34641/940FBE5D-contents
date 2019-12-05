@@ -226,7 +226,7 @@ rate_g <- (ggplot(ecol_rates, aes(x=new_sections, y=value.mean, colour=class))
           + xlab("Distance from the Origin of Replication (Mbp)")
           + ylab("Mean Expected #\nof Substitutions per 10Kbp\n")
           + ggtitle(expression(paste(italic("Streptomyces"), " Chromosome")))
-          + theme(legend.position = "none")
+          + theme(legend.position = "none",)
 )
 
 rate_g
@@ -255,6 +255,109 @@ omeg_g
 #arrange the graphs on one. since facet will not let you re-lable each axis in a facet
 grid.newpage()
 grid.draw(rbind(ggplotGrob(rate_g), ggplotGrob(omeg_g)))
+
+
+###get separate datasets for the rates and omega
+rates_dat <- sel_dat[which(sel_dat$class == "dN" | sel_dat$class == "dS"),]
+omega_dat <- sel_dat[which(sel_dat$class == "omega"),]
+### separate those again by the non-multirepliconic and multirepliconic bacteria
+single_rates_dat <- rates_dat[which(rates_dat$bacteria == "ecoli" | rates_dat$bacteria == "bass" | rates_dat$bacteria == "strep"),]
+multi_rates_dat <- rates_dat[which(rates_dat$bacteria == "sinoC" | rates_dat$bacteria == "pSymA" | rates_dat$bacteria == "pSymB"),]
+
+single_omega_dat <- omega_dat[which(omega_dat$bacteria == "ecoli" | omega_dat$bacteria == "bass" | omega_dat$bacteria == "strep"),]
+multi_omega_dat <- omega_dat[which(omega_dat$bacteria == "sinoC" | omega_dat$bacteria == "pSymA" | omega_dat$bacteria == "pSymB"),]
+
+
+#get levels into order we want
+levels(single_rates_dat$bacteria)
+single_rates_dat$bacteria <- fct_relevel(single_rates_dat$bacteria,"ecoli","bass","strep")
+#italic bacteria names
+levels(single_rates_dat$bacteria) <- c("ecoli" = expression(paste(italic("E.coli"), "")),
+                                       "bass" = expression(paste(italic("B. subtilis"), "")),
+                                       "strep" = expression(paste(italic("Streptomyces"), "")))
+
+single_omega_dat$bacteria <- fct_relevel(single_omega_dat$bacteria,"ecoli","bass","strep")
+#italic bacteria names
+levels(single_omega_dat$bacteria) <- c("ecoli" = expression(paste(italic("E.coli"), "")),
+                                       "bass" = expression(paste(italic("B. subtilis"), "")),
+                                       "strep" = expression(paste(italic("Streptomyces"), "")))
+
+multi_rates_dat$bacteria <- fct_relevel(multi_rates_dat$bacteria,"sinoC","pSymA","pSymB")
+#italic bacteria names
+levels(multi_rates_dat$bacteria) <- c("sinoC" = expression(paste(italic("S.meliloti"), " Chromosome")),
+                                      "pSymA" = expression(paste(italic("S.meliloti"), " pSymA")),
+                                      "pSymB" = expression(paste(italic("S.meliloti"), " pSymB")))
+
+multi_omega_dat$bacteria <- fct_relevel(multi_omega_dat$bacteria,"sinoC","pSymA","pSymB")
+#italic bacteria names
+levels(multi_omega_dat$bacteria) <- c("sinoC" = expression(paste(italic("S.meliloti"), " Chromosome")),
+                                      "pSymA" = expression(paste(italic("S.meliloti"), " pSymA")),
+                                      "pSymB" = expression(paste(italic("S.meliloti"), " pSymB")))
+
+
+
+
+
+
+
+#### separate facet for rates for non-multi rep bacteria
+colours_arr <- rep(c("#8BC1C1","#928CAB"), num_of_plots/2)
+single_rates_summary <-(ggplot(single_rates_dat, aes(x=class, y=value, fill = class, colour = class)) 
+               + geom_jitter(position=position_jitter(0.2))
+               + geom_violin(colour = "black", fill = NA) 
+               + geom_boxplot(width=.1, outlier.shape=NA, colour = "black", fill = colours_arr) 
+               + stat_boxplot(geom = "errorbar", width = 0.2, colour = "black") 
+               + facet_wrap(~bacteria, labeller=label_parsed)
+               + xlab("") 
+               + ylab("Expected Number\nof Substitutions\nper Site") 
+               + scale_color_manual(values=c("#8BC1C1","#928CAB"),labels = c(" dN", " dS"))
+               + scale_x_discrete(breaks = c("dN", "dS"),labels = c("dN","dS")) 
+               #log scale and removing trailing zeros from y-axis labels
+               + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.1, 1, 10,1000))
+                 #remove all legends
+                 + theme(legend.position = "none")
+)
+
+single_rates_summary
+
+### summary graph for omega values for non-multi-rep bacteria
+colours_arr <- rep(c("#B18C6E"), num_of_plots/2)
+single_omega_summary <-(ggplot(single_omega_dat, aes(x=class, y=value, fill = class, colour = class)) 
+                 + geom_jitter(position=position_jitter(0.2))
+                 + geom_violin(colour = "black", fill = NA) 
+                 + geom_boxplot(width=.1, outlier.shape=NA, colour = "black", fill = colours_arr) 
+                 + stat_boxplot(geom = "errorbar", width = 0.2, colour = "black") 
+                 + facet_wrap(~bacteria, labeller=label_parsed)
+                 #omega = 1 reference line only on the omega data
+                 +  geom_hline(data = data.frame(yint=1,fake_class="ome"), aes(yintercept= yint), linetype="dashed", color = "black")
+                 + xlab("") 
+                 + ylab("Ratio of dN/dS") 
+                 + scale_color_manual(values=c("#C29979"),labels = c(expression(omega)))
+                 #make the omega a math symbol in x-axis
+                 + scale_x_discrete(breaks = c("omega"),labels = c(expression(omega))) 
+                 #log scale and removing trailing zeros from y-axis labels
+                 ##remove the axis ticks
+                 #+ theme(axis.ticks.y = element_blank(),
+                 #        axis.title.y = element_blank(),
+                 #        axis.text.y = element_blank() )
+                 #and have label at omega = 1 for reference
+                 + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.1, 1, 10,1000))
+                 #+ scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.1, 1, 10,1000),
+                  #                  #adding a second axis for omega!
+                  #                    sec.axis = sec_axis(trans = ~ . * 1,
+                  #                                       name = 'Ratio of dN/dS \n',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.1, 1, 10,1000)))
+                 #remove all legends and facet labels (redundant)
+                 + theme(legend.position = "none",
+                         strip.background = element_blank(),
+                         strip.text.x = element_blank())
+)
+
+single_omega_summary
+
+#arrange the graphs for non-multi rep bac
+grid.newpage()
+grid.draw(rbind(ggplotGrob(single_rates_summary), ggplotGrob(single_omega_summary)))
+
 
 ##colours_arr <- c("#CFE7C8","#D2E4DC","#A0747A")
 ##colours_arr <- c("#7A306C","#8E8DBE","#5EB26D")
