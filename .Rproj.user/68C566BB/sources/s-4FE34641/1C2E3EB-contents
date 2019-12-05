@@ -159,42 +159,6 @@ This leaves us with three predictions for our data sets:
 
 We first present a graph showing the distributions of dN, dS and $\omega$ values for all genes in each of the bacterial replicons.
 
-```{r selection_summary_graph, include=FALSE}
-
-#choose colours
-colours_arr <- rep(c( "#8BC1C1","#928CAB","#C29979"),num_of_plots)
-#plot
-set.seed(1738);
-vio_str_box <-(ggplot(sel_dat, aes(x=class, y=value, fill = class, colour = class)) 
-               + geom_jitter(position=position_jitter(0.2))
-               + geom_violin(colour = "black", fill = NA) 
-               + geom_boxplot(width=.1, outlier.shape=NA, colour = "black", fill = colours_arr) 
-               + stat_boxplot(geom = "errorbar", width = 0.2, colour = "black") 
-               #omega = 1 reference line
-               +  geom_hline(yintercept=1, linetype="dashed", color = "black")
-               + facet_wrap(~bacteria, labeller=label_parsed)
-               + xlab("") 
-               + ylab("Expected Number of Substitutions per Site") 
-               + scale_color_manual(values=c("#8BC1C1","#928CAB","#C29979"),labels = c(" dN", " dS", expression(omega)))
-               #make the omega a math symbol in x-axis
-               + scale_x_discrete(breaks = c("dN", "dS", "omega"),labels = c("dN","dS", expression(omega))) 
-               #log scale and removing trailing zeros from y-axis labels
-               #and have label at omega = 1 for reference
-               + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.1, 1, 10,1000),
-                                    #adding a second axis for omega!
-                                    sec.axis = sec_axis(trans = ~ . * 1,
-                                                        name = 'Ratio of dN/dS \n',
-                                                        labels = function(x) ifelse(x == 0, "0", x),
-                                                        breaks=c(0.001,0.1, 1, 10,1000)))
-               #remove weird second legend
-               + guides(fill=FALSE)
-)
-
-```
-
-```{r}
-vio_str_box
-```
 
 
 When looking at dN and dS substitution rates, we expect that the rate of synonymous substitutions (dS) should be higher than the rate of non-synonymous substitutions.
@@ -466,3 +430,43 @@ So, we chose a lighter colour (light brown) for the raw data and a darker colour
 We additionally chose a bold colour (blue) for the trend line.
 All these colour components help the viewer focus on the median values, which is what we were trying to highlight, but still have access to all the data points.
 
+# Appendix:
+
+```{r selection_summary_graph, include=FALSE}
+
+#choose colours
+colours_arr <- rep(c( "#8BC1C1","#928CAB","#C29979"),num_of_plots)
+#plot
+set.seed(1738);
+vio_str_box <-(ggplot(sel_dat, aes(x=class, y=value, fill = class, colour = class)) 
+               + geom_jitter(position=position_jitter(0.2))
+               + geom_violin(colour = "black", fill = NA) 
+               + geom_boxplot(width=.1, outlier.shape=NA, colour = "black", fill = colours_arr) 
+               + stat_boxplot(geom = "errorbar", width = 0.2, colour = "black") 
+               #omega = 1 reference line
+               +  geom_hline(yintercept=1, linetype="dashed", color = "black")
+               + facet_wrap(~bacteria, labeller=label_parsed)
+               + xlab("") 
+               + ylab("Expected Number of Substitutions per Site") 
+               + scale_color_manual(values=c("#8BC1C1","#928CAB","#C29979"),labels = c(" dN", " dS", expression(omega)))
+               #make the omega a math symbol in x-axis
+               + scale_x_discrete(breaks = c("dN", "dS", "omega"),labels = c("dN","dS", expression(omega))) 
+               #log scale and removing trailing zeros from y-axis labels
+               #and have label at omega = 1 for reference
+               + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.1, 1, 10,1000),
+                                    #adding a second axis for omega!
+                                    sec.axis = sec_axis(trans = ~ . * 1,
+                                                        name = 'Ratio of dN/dS \n',
+                                                        labels = function(x) ifelse(x == 0, "0", x),
+                                                        breaks=c(0.001,0.1, 1, 10,1000)))
+               #remove weird second legend
+               + guides(fill=FALSE)
+)
+
+```
+
+```{r}
+vio_str_box
+```
+
+Above is an alterantive summary graphic for the selection data set.
