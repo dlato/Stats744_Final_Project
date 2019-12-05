@@ -270,34 +270,43 @@ multi_omega_dat <- omega_dat[which(omega_dat$bacteria == "sinoC" | omega_dat$bac
 
 #get levels into order we want
 levels(single_rates_dat$bacteria)
-single_rates_dat$bacteria <- fct_relevel(single_rates_dat$bacteria,"ecoli","bass","strep")
+single_rates_dat$bacteria <- fct_relevel(single_rates_dat$bacteria,"ecoli","bass","strep","sinoC","pSymA","pSymB")
+levels(single_rates_dat$bacteria)
 #italic bacteria names
 levels(single_rates_dat$bacteria) <- c("ecoli" = expression(paste(italic("E.coli"), "")),
-                                       "bass" = expression(paste(italic("B. subtilis"), "")),
-                                       "strep" = expression(paste(italic("Streptomyces"), "")))
+                              "bass" = expression(paste(italic("B. subtilis"), "")),
+                              "strep" = expression(paste(italic("Streptomyces"), "")),
+                              "sinoC" = expression(paste(italic("S.meliloti"), " Chromosome")),
+                              "pSymA" = expression(paste(italic("S.meliloti"), " pSymA")),
+                              "pSymB" = expression(paste(italic("S.meliloti"), " pSymB")))
 
-single_omega_dat$bacteria <- fct_relevel(single_omega_dat$bacteria,"ecoli","bass","strep")
+single_omega_dat$bacteria <- fct_relevel(single_omega_dat$bacteria,"ecoli","bass","strep","sinoC","pSymA","pSymB")
 #italic bacteria names
 levels(single_omega_dat$bacteria) <- c("ecoli" = expression(paste(italic("E.coli"), "")),
                                        "bass" = expression(paste(italic("B. subtilis"), "")),
-                                       "strep" = expression(paste(italic("Streptomyces"), "")))
+                                       "strep" = expression(paste(italic("Streptomyces"), "")),
+                                       "sinoC" = expression(paste(italic("S.meliloti"), " Chromosome")),
+                                       "pSymA" = expression(paste(italic("S.meliloti"), " pSymA")),
+                                       "pSymB" = expression(paste(italic("S.meliloti"), " pSymB")))
 
-multi_rates_dat$bacteria <- fct_relevel(multi_rates_dat$bacteria,"sinoC","pSymA","pSymB")
+
+multi_rates_dat$bacteria <- fct_relevel(multi_rates_dat$bacteria,"ecoli","bass","strep","sinoC","pSymA","pSymB")
 #italic bacteria names
-levels(multi_rates_dat$bacteria) <- c("sinoC" = expression(paste(italic("S.meliloti"), " Chromosome")),
+levels(multi_rates_dat$bacteria) <- c("ecoli" = expression(paste(italic("E.coli"), "")),
+                                       "bass" = expression(paste(italic("B. subtilis"), "")),
+                                       "strep" = expression(paste(italic("Streptomyces"), "")),
+                                       "sinoC" = expression(paste(italic("S.meliloti"), " Chromosome")),
+                                       "pSymA" = expression(paste(italic("S.meliloti"), " pSymA")),
+                                       "pSymB" = expression(paste(italic("S.meliloti"), " pSymB")))
+
+multi_omega_dat$bacteria <- fct_relevel(multi_omega_dat$bacteria,"ecoli","bass","strep","sinoC","pSymA","pSymB")
+#italic bacteria names
+levels(multi_omega_dat$bacteria) <- c("ecoli" = expression(paste(italic("E.coli"), "")),
+                                      "bass" = expression(paste(italic("B. subtilis"), "")),
+                                      "strep" = expression(paste(italic("Streptomyces"), "")),
+                                      "sinoC" = expression(paste(italic("S.meliloti"), " Chromosome")),
                                       "pSymA" = expression(paste(italic("S.meliloti"), " pSymA")),
                                       "pSymB" = expression(paste(italic("S.meliloti"), " pSymB")))
-
-multi_omega_dat$bacteria <- fct_relevel(multi_omega_dat$bacteria,"sinoC","pSymA","pSymB")
-#italic bacteria names
-levels(multi_omega_dat$bacteria) <- c("sinoC" = expression(paste(italic("S.meliloti"), " Chromosome")),
-                                      "pSymA" = expression(paste(italic("S.meliloti"), " pSymA")),
-                                      "pSymB" = expression(paste(italic("S.meliloti"), " pSymB")))
-
-
-
-
-
 
 
 #### separate facet for rates for non-multi rep bacteria
@@ -315,7 +324,11 @@ single_rates_summary <-(ggplot(single_rates_dat, aes(x=class, y=value, fill = cl
                #log scale and removing trailing zeros from y-axis labels
                + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.1, 1, 10,1000))
                  #remove all legends
-                 + theme(legend.position = "none")
+                 + theme(legend.position = "none",
+                         #removing space at bottom of plot
+                         plot.margin=unit(c(1,1,-0.5,1), "cm"),
+                         #remove space between facest
+                         panel.spacing.x=unit(0, "lines"))
 )
 
 single_rates_summary
@@ -349,7 +362,9 @@ single_omega_summary <-(ggplot(single_omega_dat, aes(x=class, y=value, fill = cl
                  #remove all legends and facet labels (redundant)
                  + theme(legend.position = "none",
                          strip.background = element_blank(),
-                         strip.text.x = element_blank())
+                         strip.text.x = element_blank(),
+                         #specify plot margins
+                         plot.margin=unit(c(0.1,1,0.5,1), "cm"))
 )
 
 single_omega_summary
