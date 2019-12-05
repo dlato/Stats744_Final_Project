@@ -201,7 +201,9 @@ This leaves us with three predictions for our data sets:
 
 1. Gene expression should decrease when moving away from the origin of replication
 
-2. Most genes should be under neutral or purifying selection, any genes that are under positive selection should be located near the terminus
+2. We should have dS $>$ dN for most genes in all bacteria
+
+3. Most genes should be under neutral or purifying selection, any genes that are under positive selection should be located near the terminus
 
 
 **Selection Data**
@@ -222,7 +224,7 @@ single_rates_summary <-(ggplot(single_rates_dat, aes(x=class, y=value, fill = cl
                + scale_color_manual(values=c("#8BC1C1","#928CAB"),labels = c(" dN", " dS"))
                + scale_x_discrete(breaks = c("dN", "dS"),labels = c("dN","dS")) 
                #log scale and removing trailing zeros from y-axis labels
-               + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.1, 1, 10,1000))
+               + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.01,0.1, 1, 10,1000))
                  #remove all legends
                  + theme(legend.position = "none",
                          #removing space at bottom of plot
@@ -254,7 +256,7 @@ single_omega_summary <-(ggplot(single_omega_dat, aes(x=class, y=value, fill = cl
                  #        axis.title.y = element_blank(),
                  #        axis.text.y = element_blank() )
                  #and have label at omega = 1 for reference
-                 + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.1, 1, 10,1000))
+                 + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.01, 0.1, 1, 10,1000))
                  #+ scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.1, 1, 10,1000),
                   #                  #adding a second axis for omega!
                   #                    sec.axis = sec_axis(trans = ~ . * 1,
@@ -272,7 +274,7 @@ single_omega_summary
 ```
 
 
-```{r, single_sel_summary_graph}
+```{r, single_sel_summary_graph, warning=FALSE}
 
 #arrange the graphs for non-multi rep bac
 grid.newpage()
@@ -326,7 +328,7 @@ multi_omega_summary <-(ggplot(multi_omega_dat, aes(x=class, y=value, fill = clas
                  #        axis.title.y = element_blank(),
                  #        axis.text.y = element_blank() )
                  #and have label at omega = 1 for reference
-                 + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.1, 1, 10,1000))
+                 + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.01, 0.1, 1, 10,1000))
                  #+ scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.1, 1, 10,1000),
                   #                  #adding a second axis for omega!
                   #                    sec.axis = sec_axis(trans = ~ . * 1,
@@ -343,7 +345,7 @@ multi_omega_summary <-(ggplot(multi_omega_dat, aes(x=class, y=value, fill = clas
 ```
 
 
-```{r, multi_sel_summary_graph}
+```{r, multi_sel_summary_graph, warning=FALSE}
 
 #arrange the graphs for non-multi rep bac
 grid.newpage()
@@ -396,7 +398,7 @@ rate_g <- (ggplot(strep_rates, aes(x=new_sections, y=value.mean, colour=class))
           #labels for the colours
           + annotate("text", x=5.4,y=0.015,label="dS", colour = "#A09ABC", size = 6)
           + annotate("text", x=5.4,y=0.0035,label="dN", colour = "#6494AA", size = 6)
-          + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.1, 1, 10))
+          + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.01,0.1, 1, 10))
           + scale_color_manual(values=colours_arr)
           #remove redundant xaxis
           + theme(axis.title.x = element_blank(),
@@ -416,7 +418,7 @@ omeg_g <- (ggplot(strep_omeg, aes(x=new_sections, y=value.mean, colour=class))
            + geom_smooth()
            #labels for the colours
            + annotate("text", x=5.4,y=0.4,label="omega", parse=TRUE, colour = "#B18C6E", size = 10)
-           + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.1, 1, 10))
+           + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.01,0.1, 1, 10))
            + scale_color_manual(values=colours_arr)
            #omega = 1 reference line
            +  geom_hline(yintercept=1, linetype="dashed", color = "black", size=1)
@@ -429,7 +431,7 @@ omeg_g <- (ggplot(strep_omeg, aes(x=new_sections, y=value.mean, colour=class))
 
 ```
 
-```{r, dS_dN_graph}
+```{r, dS_dN_graph, warning=FALSE}
 #arrange the graphs on one. since facet will not let you re-lable each axis in a facet
 grid.newpage()
 grid.draw(rbind(ggplotGrob(rate_g), ggplotGrob(omeg_g)))
@@ -496,7 +498,7 @@ data12$avg[(data12$group == i)] = mean(data12$Exp[(data12$group == i)])
 
 ```
 
-```{r, expression_graph2}
+```{r, expression_graph2, warning=FALSE}
 g1
 
 ```
@@ -650,14 +652,14 @@ vio_str_box <-(ggplot(sel_dat, aes(x=class, y=value, fill = class, colour = clas
                                     sec.axis = sec_axis(trans = ~ . * 1,
                                                         name = 'Ratio of dN/dS \n',
                                                         labels = function(x) ifelse(x == 0, "0", x),
-                                                        breaks=c(0.001,0.1, 1, 10,1000)))
+                                                        breaks=c(0.001,0.01,0.1, 1, 10,1000)))
                #remove weird second legend
                + guides(fill=FALSE)
 )
 
 ```
 
-```{r}
+```{r, warning=FALSE}
 vio_str_box
 ```
 
