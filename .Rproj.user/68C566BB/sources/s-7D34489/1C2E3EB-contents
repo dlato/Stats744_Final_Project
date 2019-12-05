@@ -190,59 +190,6 @@ vio_str_box <-(ggplot(sel_dat, aes(x=class, y=value, fill = class, colour = clas
                + guides(fill=FALSE)
 )
 
-#make a fake factor to separate dS and dN from omega
-#so it will facet the way I want
-tmp_data <- sel_dat
-levels(tmp_data$class)
-tmp_data$fake_class <- factor(ifelse(tmp_data$class == "omega", 'ome', 'rates'))
-tmp_data$fake_class <- fct_relevel(tmp_data$fake_class, "rates", "ome")
-levels(tmp_data$fake_class)
-class(tmp_data$fake_class)
-#levels(tmp_data$fake_class) <- factor(tmp_data$fake_class, levels= c("omeg", "rates"))
-
-#plot it
-#choose colours
-#colours_arr <- rep(c("#5EB26D","#8E8DBE","#A0747A"),num_of_plots)
-#colours_arr <- rep(c("#8E8DBE","#89C794","#A0747A"),num_of_plots)
-colours_arr <- rep(c( "#8BC1C1","#928CAB","#C29979"),num_of_plots)
-rates_arr <- rep(c( "#8BC1C1","#928CAB"),num_of_plots)
-omeg_arr <- rep(c("#C29979"), num_of_plots)
-colours_arr <- c(rates_arr, omeg_arr)
-#plot
-set.seed(1738);
-vio_str_box <-(ggplot(tmp_data, aes(x=class, y=value, fill = class, colour = class)) 
-               + geom_jitter(position=position_jitter(0.2))
-               + geom_violin(colour = "black", fill = NA) 
-               #+ geom_boxplot(width=.1, outlier.shape=NA, fill = colours_arr) 
-               + geom_boxplot(width=.1, outlier.shape=NA, colour = "black", fill = colours_arr) 
-               + stat_boxplot(geom = "errorbar", width = 0.2, colour = "black") 
-               + facet_grid(fake_class ~bacteria, labeller=label_parsed)
-               #omega = 1 reference line only on the omega data
-               #+  geom_hline(yintercept=1, linetype="dashed", color = "black")
-               +  geom_hline(data = data.frame(yint=1,fake_class="ome"), aes(yintercept= yint), linetype="dashed", color = "black")
-               + xlab("") 
-               + ylab("Expected Number of Substitutions per Site") 
-               #+ scale_color_manual(values=c("#8E8DBE","#89C794","#A0747A"),labels = c(" dN", " dS", expression(omega)))
-               #+ scale_color_manual(values=c("#8BC1C1","#928CAB","#BE6361"),labels = c(" dN", " dS", expression(omega)))
-               + scale_color_manual(values=c("#8BC1C1","#928CAB","#C29979"),labels = c(" dN", " dS", expression(omega)))
-               #make the omega a math symbol in x-axis
-               + scale_x_discrete(breaks = c("dN", "dS", "omega"),labels = c("dN","dS", expression(omega))) 
-               #log scale and removing trailing zeros from y-axis labels
-               #and have label at omega = 1 for reference
-               + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.1, 1, 10,1000),
-                                    #adding a second axis for omega!
-                                    sec.axis = sec_axis(trans = ~ . * 1,
-                                                        name = 'Ratio of dN/dS \n',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.1, 1, 10,1000)))
-               #remove weird second legend
-               + guides(fill=FALSE)
-               #remove the y facet labels
-               + theme(
-                 strip.background.y = element_blank(),
-                 strip.text.y = element_blank()
-               )
-)
-
-
 ```
 
 ```{r}
@@ -478,6 +425,12 @@ In the selection summary graphic we decided to add in a redundant legend to aid 
 We chose to arrange the selection parameters (dN, dS and $\omega$) in that particular order because $\omega$ is the ratio of dN/dS, we thought that it would be appropriate to put dN first in an attempt to match the ratio order.
 Likewise, $\omega$ was chosen as the right most value because it is a combination of the first two values.
 We ensured that the legend order matched the order that the selection parameters appear in the graph.
+
+We experimented with many many versions of this graph including separating the data into rates (dS and dN) and $\omega$ (unpolished versions of this code can be found in the selection_summary.R file).
+However, getting the axis labels exactly the way we wanted while also avoiding white space was not optimal.
+We believe that the facet graph presented here is the clearest version of this graph.
+The other option would be to plot the values on separate graphs, but again, we wanted to have it all in one figure for comparison.
+
 
 ### Individaul Selection Value Graphs
 Since the range of values and units differ between the dN, dS and $\omega$ values, we decided to create two separate graphs.
