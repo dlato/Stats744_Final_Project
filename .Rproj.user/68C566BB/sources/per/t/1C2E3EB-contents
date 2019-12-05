@@ -210,6 +210,7 @@ This leaves us with three predictions for our data sets:
 **Selection Data**
 
 We first present a graph showing the distributions of dN, dS and $\omega$ values for all genes in each of the bacterial replicons.
+Graphical decisions for this figure are discussed more in the *Graphical Decisions* section.
 ```{r selection_summary_graph, include=FALSE}
 
 #choose colours
@@ -250,7 +251,6 @@ vio_str_box
 ```
 
 
-
 When looking at dN and dS substitution rates, we expect that the rate of synonymous substitutions (dS) should be higher than the rate of non-synonymous substitutions.
 Biologically, mutations that cause a change in an amino acid are more likely to alter the function of the protein than mutations that do not cause a change in an amino acid. 
 As mentioned, a non-functional protein could have catastrophic consequences on the well being of the organism.
@@ -274,9 +274,6 @@ would generally benefit from positive selection, where mutations that confer a b
 Since we have some theory about how genes are organized on bacterial genomes, we decided to take a closer look at the selection values for \strep
 and see where these genes fall relative to the origin of replication.
 
-
-We decided to make two separate graphs for the selection rate values (dS and dN), and the ratio values ($\omega$).
-This is discussed in further detail in the Graphical Decisions section.
 
 
 ```{r selection, include=FALSE}
@@ -337,21 +334,7 @@ grid.draw(rbind(ggplotGrob(omeg_g), ggplotGrob(rate_g)))
 
 ```
 
-The points on the top graph represent the mean expected number of substitutions per 10,000 bp (10Kbp) for both dN and dS.
-This was calculated by averaging the dS and dN values respectively over each 10Kbp section of the genome. 
-A non-linear trend line with confidence intervals was added to the plot to show an overall trend about how dN and dS respectively are changing with distance from the origin of replication.
-As mentioned previously, we see that dS is higher than dN for most of the genes in \strep
-.
-dS appears to be slightly decreasing with increased distance from the origin of replication, while dN appears to be slightly increasing.
-we also see that the pattern for dN and dS are non-linear, although only slightly.
-Biologically, we know that the majority of the core genome for \strep
-(the part of the genome containing functionally important genes), is located about 3 million base pairs (Mbp) from the origin of replication, while the accessory genome is located approximately 2Mbp from the terminus or replication.
-It is therefore plausible that core genes should have more synonymous substitutions, so the amino acid sequence is not altered, compared to the accessory genome.
-It is conceivable that the accessory genome has more non-synonymous substitutions which could provide increased genetic diversity, assisting in for example producing new antibiotics.
-With the location of the accessory genome coinciding with areas where we see decreased dS and increased dN, we could infer that biologically this is what is happening.
-
-
-The bottom graph shows the mean $\omega$ calculated over each 10Kbp region of the \strep 
+The top graph shows the mean $\omega$ calculated over each 10Kbp region of the \strep 
 genome.
 As mentioned before, this was calculated by averaging the $\omega$ values of all genes within each 10Kbp section of the genome. 
 A non-linear trend line with confidence intervals was added to the plot to show an overall trend about how $\omega$ changes with distance from the origin of replication.
@@ -365,6 +348,22 @@ Interestingly, the majority of the core and well conserved portion of the \strep
 genome is located in the first ~3Mbp near the origin of replication.
 The rest of the genome is part of the accessory genome which primarily consists of genes involved in local environmental adaptation and production of antibiotics.
 It is therefore conceivable that this area of the genome is mostly under positive selection and trying to "hold on" to mutations that are beneficial to the organism.
+
+The points on the bottom graph represent the mean expected number of substitutions per 10,000 bp (10Kbp) for both dN and dS.
+This was calculated by averaging the dS and dN values respectively over each 10Kbp section of the genome. 
+A non-linear trend line with confidence intervals was added to the plot to show an overall trend about how dN and dS respectively are changing with distance from the origin of replication.
+As mentioned previously, we see that dS is higher than dN for most of the genes in \strep
+.
+dS appears to be slightly decreasing with increased distance from the origin of replication, while dN appears to be slightly increasing.
+we also see that the pattern for dN and dS are non-linear, although only slightly.
+Biologically, we know that the majority of the core genome for \strep
+(the part of the genome containing functionally important genes), is located about 3 million base pairs (Mbp) from the origin of replication, while the accessory genome is located approximately 2Mbp from the terminus or replication.
+It is therefore plausible that core genes should have more synonymous substitutions, so the amino acid sequence is not altered, compared to the accessory genome.
+It is conceivable that the accessory genome has more non-synonymous substitutions which could provide increased genetic diversity, assisting in for example producing new antibiotics.
+With the location of the accessory genome coinciding with areas where we see decreased dS and increased dN, we could infer that biologically this is what is happening.
+
+Discussion of our graphical choices for this graph can be found in the *Graphical Decisions* section.
+
 
 **Gene Expression Data**
 
@@ -458,8 +457,9 @@ Since $\omega$ provides important information about the selective pressures acti
 We also wanted dN and dS to be similar colours (blue and purple) because they have the same units are both represent substitution rates.
 
 ### Facet Graph
-For this graph we wanted to be able to compare the dS, dN and $\omega$ values across all bacterial replicons, so we decided on a facet graph.
-This allows us to highlight overarching similarities or differences between the bacterial replicons.
+For this graph we wanted to be able to compare the dS, dN and $\omega$ values within each bacterial replicon, and across all bacterial replicons, so we decided on a facet graph.
+This allows us to see differences between dN, dS and $\omega$ within each bacterial replicon while also highlight overarching similarities or differences between the bacterial replicons.
+We decided to facet based on bacteria because primarally we wanted to show differences within bacterial replicons rather than between all bacterial replicons.
 We chose to show the data points as a strip plot with a box plot and violin plot overlayed.
 This allows for the maximum amount of information about the distribution of the selection values to be shown.
 
@@ -481,27 +481,44 @@ In the selection summary graphic we decided to add in a redundant legend to aid 
 
 We chose to arrange the selection parameters (dN, dS and $\omega$) in that particular order because $\omega$ is the ratio of dN/dS, we thought that it would be appropriate to put dN first in an attempt to match the ratio order.
 Likewise, $\omega$ was chosen as the right most value because it is a combination of the first two values.
-We ensured that the legend order matched the order that the selection parameters appear in the graph.
+We removed the legend as we thought it to be redundant.
+We also removed any space between the facets to ensure there was less unecessary white space.
 
-We experimented with many many versions of this graph including separating the data into rates (dS and dN) and $\omega$ (unpolished versions of this code can be found in the selection_summary.R file).
-However, getting the axis labels exactly the way we wanted while also avoiding white space was not optimal.
-We believe that the facet graph presented here is the clearest version of this graph.
-The other option would be to plot the values (dN, dS and $\omega$) on separate graphs, but again, we wanted to have it all in one figure for comparison.
+We experimented with many many versions of this graph, prominant versions can be found in the *Appendix* section.
+Although $\omega$ is "unitless", dN and dS are not.
+It was therefore necessary to have multiple lables for both sets of values.
+We experimented with having facets for both the bacteria and selection variables (see Figures A1 and A2 in *Appendix*).
+These graphs allow for the scales to be "tighter" around the values for the rates (dN and dS) and $\omega$, since both facets are allowed to have varying scales.
+These graphs also make it clear which units correspond to which values, which could be confusing in the figure presented in the main part of this write up.
+Since there are more sections to this graph, we decided to separate the bacteria into two groups so that the bacterial name and replicon would be readable without having to use abbreviations.
+We also chose to make 2 of these graphs so that the data was not un-readable.
+However, we believe that the version of this figure found in the main part of the write up represents the best figure for biologists.
+Since the selection values (dN, dS and $\omega$) are very similar and based on one another, we wanted to have them all in one graph so we could compare their values to one another.
+When they are separated as in Figures A1 and A2, it is difficult to see how $\omega$ relates to dN and dS.
+Additionally, we wanted to have all bacterial replicons in the same figure so we could look at any similarities or differences between the bacteria.
+As mentioned previously, this would not be possible with the supplemental graphs (A1 and A2) because we would be sacrificing readability.
+The choice for faceting by bacteria or by selection value is difficult because most biologists will want to look at what is happening within each bacterial replicon first, and then look at over arching trends.
+This again is difficult to determine with Figures A1 and A2.
+Therefore, we believe that the figure presented in the main part of the document provides a compact, accurate, and prefereable depiction of the selection values.
 
 
-### Individual Selection Value Graphs
-Since the range of values and units differ between the dN, dS and $\omega$ values, we decided to create two separate graphs.
-We then combined these two graphs so that all of the data was in on "figure", but the scales, axis labels, and units remained separate for these two categories.
-The top graph shows the mean dN and dS values over 10Kbp distances from the origin of replication, and another showing the mean $\omega$ values over 10Kbp distances from the origin of replication.
+
+### Example Selection Values Graph
+Since the range of values and units differ between the dN, dS and $\omega$ values, we decided to "facet" the values to allow for two scales.
+The top graph shows the mean $\omega$ values over 10Kbp distances from the origin of replication, and the bottom graph depicts the mean dN and dS values over 10Kbp distances from the origin of replication.
 Separating the data into two graphs allows for a clear separation of units and allows for a "zoomed in" picture of the values.
 Since the $\omega$ values are so much higher than the dN or dS values, having all selection parameters (dN, dS and $\omega$) on the same graph would obscure any subtle changes in the parameters with respect to distance from the origin of replication.
 By using separate graphs, we are able to see these changes more clearly.
+
+We chose to put $\omega$ on the top part of the figure and the rates (dS and dN) on the bottom part.
+This is partially because we are interested primaraly in the distribution of $\omega$ as distance from the origin of replication increases, and partially because the values of $\omega$ are generally larger than the values for the rates.
+It therefore is logical to have $\omega$ at a higher "height" in the graphic than dN and dS.
 
 We chose to include a non-linear trend line to help show what overall patterns are happening as the selection parameters change with distance from the origin of replication.
 This allows us to see peaks and valleys that we would not necessarily see with a simple linear model.
 We allowed for confidence intervals on the line to help show the fit of the geom_smooth() line.
 
-Again, we are primarily interested in $\omega$ values that are larger than zero (see intro on positive selection).
+Again, we are primarily interested in $\omega$ values that are larger than zero (see *The Data* section on positive selection).
 We decided to add a reference line at 1 to help remind viewers about the differences between $\omega$ values that lie above and below this line.
 
 We also used direct labeling when we could to avoid the need for a legend.
@@ -509,6 +526,22 @@ We additionally put the dS and dN values on the top graph and the $\omega$ value
 Although the y-axis titles are lengthy, they are biologically accurate and convey the proper units for each of the selection values.
 We chose to put them on separate lines so they are as readable as possible.
 
+For this graphic we also had many itterations (see *Appendix* Figure A3).
+In general, humans are better at determining the slope of a line when it is near a 45 degree angle.
+By changing the arrangement of these figures on the graphic, we can adjust the aspect ratio so the trend lines appear to be at an angle closer to 45 degrees.
+This can be seen in Figure A3 in the *Appendix*.
+Indeed, this figure does accentuate the trend lines and it is easier to see the peaks and valleys.
+However, from a genomic perspective it is difficult to see any patterns.
+Someone that is interested in \strep
+would have issues determining which portions of the genome (relative to the origin of replication) have certain values for dN, dS and $\omega$.
+Additionally, it is difficult to establish which portions of the genome (relative to the origin of replication) fall within a peak or valley of high or low selection values.
+We believe that this supplemental graph A3 does not capture this information.
+In the graph presented in this main portion of this document, it is clear which portions of the genome have high or low selection values.
+It is particularaly easy to determine the locations of the core (~3Mbp from the origin of replication) and accessory genome (~ the last 2Mbp of the graph) in \strep
+, which carry important predications about how selection might be acting upon those regions of the genome.
+Showing the graphs in a horizontal manner gives a more indepth picture about the distribution of the selection values across the genome (relative to the origin of replication).
+A vertical layout (Figure A3) of these graphs loses information about the genomic location of the selection values.
+We therefore believe that the graph presented in the main text is the best option for conveying the most amount of information and staying biologically relevant.
 
 ## Gene Expression: 
 
@@ -664,7 +697,7 @@ colours_arr <- c("#6494AA","#A09ABC")
 #graph with only dS and dN
 rate_g2 <- (ggplot(strep_rates, aes(x=new_sections, y=value.mean, colour=class))
           #  geom_errorbar(aes(ymin=value.mean-sd, ymax=value.mean+sd), width=.1, position=pd) +
-          + geom_point(alpha = 0.75)
+          + geom_point(alpha = 0.65)
           + geom_smooth()
           #labels for the colours
           + annotate("text", x=5.4,y=0.015,label="dS", colour = "#A09ABC", size = 6)
@@ -676,7 +709,7 @@ rate_g2 <- (ggplot(strep_rates, aes(x=new_sections, y=value.mean, colour=class))
                   #remove legend
                   legend.position = "none")
           #axis labels
-          + ylab("Mean Expected\n# of Substitutions\nper 10Kbp")
+          + ylab("Mean Expected # of Substitutions per 10Kbp")
            + xlab("Distance from the Origin\nof Replication (Mbp)")
           #+ ggtitle(expression(paste(italic("Streptomyces"), " Chromosome")))
 )
@@ -684,7 +717,7 @@ rate_g2 <- (ggplot(strep_rates, aes(x=new_sections, y=value.mean, colour=class))
 
 colours_arr <- c("#C29979")
 omeg_g2 <- (ggplot(strep_omeg, aes(x=new_sections, y=value.mean, colour=class))
-           + geom_point(alpha = 0.75)
+           + geom_point(alpha = 0.65)
            + geom_smooth()
            #labels for the colours
            + annotate("text", x=5.4,y=0.4,label="omega", parse=TRUE, colour = "#C29979", size = 10)
@@ -694,7 +727,7 @@ omeg_g2 <- (ggplot(strep_omeg, aes(x=new_sections, y=value.mean, colour=class))
            +  geom_hline(yintercept=1, linetype="dashed", color = "black", size=1)
            #axis labels
            + xlab("Distance from the Origin\nof Replication (Mbp)")
-           + ylab("Mean Ratio\n(dN/dS)\nper 10Kbp")
+           + ylab("Mean Ratio (dN/dS) per 10Kbp")
            + theme(legend.position = "none")
 )
 
