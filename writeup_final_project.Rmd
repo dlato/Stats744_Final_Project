@@ -859,8 +859,8 @@ rate_g2 <- (ggplot(strep_rates, aes(x=new_sections, y=value.mean, colour=class))
           + geom_point(alpha = 0.65)
           + geom_smooth()
           #labels for the colours
-          + annotate("text", x=5.5,y=0.015,label="dS", colour = "#A09ABC", size = 4)
-          + annotate("text", x=5.6,y=0.0035,label="dN", colour = "#6494AA", size = 4)
+          + annotate("text", x=5.55,y=0.016,label="dS", colour = "#A09ABC", size = 5)
+          + annotate("text", x=5.55,y=0.003,label="dN", colour = "#6494AA", size = 5)
           + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.01,0.1, 1, 10))
           + scale_color_manual(values=colours_arr)
           #remove redundant xaxis
@@ -879,7 +879,7 @@ omeg_g2 <- (ggplot(strep_omeg, aes(x=new_sections, y=value.mean, colour=class))
            + geom_point(alpha = 0.65)
            + geom_smooth()
            #labels for the colours
-           + annotate("text", x=5.5,y=0.3,label="omega", parse=TRUE, colour = "#C29979", size = 8)
+           + annotate("text", x=5.55,y=0.25,label="omega", parse=TRUE, colour = "#C29979", size = 9)
            + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.01,0.1, 1, 10))
            + scale_color_manual(values=colours_arr)
            #omega = 1 reference line
