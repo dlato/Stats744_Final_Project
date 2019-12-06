@@ -1,0 +1,29 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1575312149684.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "4155654042",
+    "id" : "1C2E3EB",
+    "lastKnownWriteTime" : 1575639821,
+    "last_content_update" : 1575639821300,
+    "path" : "~/Stats744_Final_Project/writeup_final_project.Rmd",
+    "project_path" : "writeup_final_project.Rmd",
+    "properties" : {
+        "cursorPosition" : "652,236",
+        "ignored_words" : "bp,Mbp,multi,colours,Daniella,Lato,Taha,meliloti,subtilis,Streptomyces,colour,bac,csv,ecoli,sinoC,errorbar,Kbp,Daniella's,txt,dichromat,overlayed,jitter,phylogenetic,phylogentic,nper,jittering\n",
+        "last_setup_crc32" : "",
+        "marks" : "<:0,0\n>:0,0",
+        "scrollLine" : "634",
+        "tempName" : "Untitled1"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 4,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

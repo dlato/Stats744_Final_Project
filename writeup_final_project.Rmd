@@ -30,7 +30,7 @@ library(grid)
 options(scipen=10000)
 #setting up a theme so all graphs are consistant
 theme_set(theme_bw() + theme(strip.background =element_rect(fill="#e7e5e2")) +
-            theme(strip.text = element_text(size =15)) +
+            theme(strip.text = element_text(size =12)) +
             theme(plot.title = element_text(hjust = 0.5, size = 18), 
                   panel.background = element_rect(fill = "white", colour = NA), 
                   panel.grid.major = element_line(colour = "grey90", size = 0.2), 
@@ -186,10 +186,17 @@ We will be looking at gene expression and selection in four bacterial genomes: \
 All of the bacteria have their genome contained in one chromosome except \smel 
 which is a multi-repliconic bacteria. A multi-repliconic bacteria means that the genome is made up of multiple replicons or chromosome like structures. For this reason, each replicon of \smel 
 (chromosome, pSymA, pSymB) will be analyzed separately.
+
+When bacterial genomes replicate, they begin replication at the origin and continue in both directions until the terminus (in the case of circular genomes), or until the ends of the chromosome arms (in the case of linear genomes).
+Our data sets have genomic position relative to the origin of replication.
+This means that values of 0 are located closest to the origin, and the largest values represent areas near the terminus of replication.
+
 The gene expression data set has information about the average expression value of the gene (averaged across multiple data sets) and the genomic location of that gene relative to the origin of replication.
 Additionally, we have obtained selection information on a few of these genes from each bacterial genome.
 This selection information tells us about the synonymous substitution rate (dS, mutations that do not cause a change in the amino acid sequence), the non-synonymous substitution rate (dN, mutations that cause a change in the amino acid sequence), and $\omega$ (dN/dS).
-The $\omega$ ratio allows us to determine if these substitutions in the sequence will be maintained or deleted over time.
+Since synonomous substitutions do not cause a change in an amino acid sequence, we expect most genes to have a synonomous rate (dS) larger than non-synonomoys rate (dN). 
+
+The $\omega$ ratio allows us to determine if the genes will be maintained or deleted over time.
 If $\omega$ for a gene is larger than 1, the gene is under positive selection and therefore is beneficial to the organism and will likely be maintained in the genome over time.
 If $\omega$ is less than 1, the gene is under purifying or negative selection, and therefore is deleterious to the organism and will likely not be maintained in the genome over time.
 If $\omega$ is equal to 1, the gene is under neutral selection, and is neither beneficial nor deleterious to the organism.
@@ -257,7 +264,7 @@ vio_str_box
 When looking at dN and dS substitution rates, we expect that the rate of synonymous substitutions (dS) should be higher than the rate of non-synonymous substitutions.
 Biologically, mutations that cause a change in an amino acid are more likely to alter the function of the protein than mutations that do not cause a change in an amino acid. 
 As mentioned, a non-functional protein could have catastrophic consequences on the well being of the organism.
-Across all the bacterial replicons we see that indeed, dS > dN.
+Across all the bacterial replicons we see that indeed, dS > dN for most genes.
 In some of the bacterial replicons such as \bass
 and \ecol
 , there appears to be a high number of genes with dS values larger than 1.
@@ -266,7 +273,7 @@ This means, there depending on how close or distantly related the taxa are, ther
 This could cause the value of dS to be estimated to be larger than one substitution per site.
 
 We also notice that most of the $\omega$ values for each bacterial replicon are below 1, this is what we expected.
-An $\omega$ value below one means that the genes are likely neutral or under negative selection, meaning that mutations having deleterious impact on the organism will be removed.
+An $\omega$ value below one means that the genes are likely neutral or under negative selection, meaning that mutations having deleterious impact on the organism will be removed over time.
 The notable exception to this is \strep
 , which appears to have a bi-modal distribution of $\omega$ values with a high number of genes with $\omega$ values at or above 1.
 \strep
@@ -274,6 +281,8 @@ creates 80% of the antibiotics that we currently use.
 This means that the genome of \strep
 would generally benefit from positive selection, where mutations that confer a benefit to the organism are retained.
 
+As metioned previously, genes that are highly conserved and essential to the function of the organism are usually found near the origin of replication and part of the core genome.
+Genes that are less conserved and essential are usually found near the terminus of replication and are used in local environmental adaptation, these are a part of the accessory genome.
 Since we have some theory about how genes are organized on bacterial genomes, we decided to take a closer look at the selection values for \strep
 and see where these genes fall relative to the origin of replication.
 
@@ -339,28 +348,29 @@ grid.draw(rbind(ggplotGrob(omeg_g), ggplotGrob(rate_g)))
 
 The top graph shows the mean $\omega$ calculated over each 10Kbp region of the \strep 
 genome.
+This was calculated by averaging the $\omega$ values over each 10,000 bp (10Kbp) section of the genome. 
 As mentioned before, this was calculated by averaging the $\omega$ values of all genes within each 10Kbp section of the genome. 
 A non-linear trend line with confidence intervals was added to the plot to show an overall trend about how $\omega$ changes with distance from the origin of replication.
 As mentioned previously, we see that most sections of the genome have a mean $\omega$ value of less than 1, as expected.
 This means that majority of the genes in the genome are under neutral or negative selection.
 
 Interestingly, the sections of the genome with mean $\omega$ values larger than one seem to be clustered near the terminus of replication.
-There appears to be a particular peak at around 3.7Mbp from the origin of replication.
+There appears to be a particular peak at around 3.7 million base pairs (Mbp) from the origin of replication.
 Genes that have an $\omega$ value larger than 1 are thought to be under positive selection and conferring some sort of benefit to the organism, and will therefore likely be maintained over time.
 Interestingly, the majority of the core and well conserved portion of the \strep
 genome is located in the first ~3Mbp near the origin of replication.
 The rest of the genome is part of the accessory genome which primarily consists of genes involved in local environmental adaptation and production of antibiotics.
 It is therefore conceivable that this area of the genome is mostly under positive selection and trying to "hold on" to mutations that are beneficial to the organism.
 
-The points on the bottom graph represent the mean expected number of substitutions per 10,000 bp (10Kbp) for both dN and dS.
+The points on the bottom graph represent the mean expected number of substitutions per 10Kbp for both dN and dS.
 This was calculated by averaging the dS and dN values respectively over each 10Kbp section of the genome. 
 A non-linear trend line with confidence intervals was added to the plot to show an overall trend about how dN and dS respectively are changing with distance from the origin of replication.
 As mentioned previously, we see that dS is higher than dN for most of the genes in \strep
 .
 dS appears to be slightly decreasing with increased distance from the origin of replication, while dN appears to be slightly increasing.
-we also see that the pattern for dN and dS are non-linear, although only slightly.
+We also see that the pattern for dN and dS are non-linear, although only slightly.
 Biologically, we know that the majority of the core genome for \strep
-(the part of the genome containing functionally important genes), is located about 3 million base pairs (Mbp) from the origin of replication, while the accessory genome is located approximately 2Mbp from the terminus or replication.
+(the part of the genome containing functionally important genes), is located about 3Mbp from the origin of replication, while the accessory genome is located approximately 2Mbp from the terminus or replication.
 It is therefore plausible that core genes should have more synonymous substitutions, so the amino acid sequence is not altered, compared to the accessory genome.
 It is conceivable that the accessory genome has more non-synonymous substitutions which could provide increased genetic diversity, assisting in for example producing new antibiotics.
 With the location of the accessory genome coinciding with areas where we see decreased dS and increased dN, we could infer that biologically this is what is happening.
@@ -542,7 +552,7 @@ g6
 
 ```
 
-For the expression plots above,we took every cKbp region of the genome and grouped them into a bin. The c differed for each bacteria, as each one of the datasets contains different number of observations and different range of values for the distance from the origin of replication. The dark brown points on the graph shows the mean expression value calculated over cKbp section of the genome. We included all the raw data along with the mean and plotted it in a lighter color. Each plot contained a non-linear trend line with confidence intervals to show an overall trend about how expression value changes with distance from the origin of replication. In \textit{Streptomyces}, \textit{E.\,coli}, and\textit{E.\,coli}, we see that expression decreases as we move away from the origin, just like what we predicted. However, there are two notable exceptions, pSymB and pSymA.
+For the expression plots above,we took every c Kbp region of the genome and grouped them into a bin. The c differed for each bacteria, as each one of the datasets contains different number of observations and different range of values for the distance from the origin of replication. The dark brown points on the graph shows the mean expression value calculated over cKbp section of the genome. We included all the raw data along with the mean and plotted it in a lighter color. Each plot contained a non-linear trend line with confidence intervals to show an overall trend about how expression value changes with distance from the origin of replication. In \textit{Streptomyces}, \textit{B.\,subtilis}, and \textit{E.\,coli}, we see that expression decreases as we move away from the origin, just like what we predicted. However, there are two notable exceptions, pSymB and pSymA.
 These happen to be the two secondary replicons of \smel
 which in general contain majority of the accessory genome.
 This could be why these replicons appear to have the opposite gene expression trend from the other bacteria. 
@@ -556,14 +566,14 @@ This is where we expect most of the accessory genome to be located.
 We also see that the the expression decreases in a non-linear way, then we start to see more of a wave-like pattern at the terminus.
 
 For \textit{B.\,subtilis}
-,as we move away from the origin, we barely see any significant changes in the expression values. Until we are around 35 (5Kbp) away from the origin, that is when expresion values starts to decrease. Which is expected, as that is where we expect most of our accessory genomes to be located.
+, as we move away from the origin, we barely see any significant changes in the expression values. Until we are around 35 (5Kbp) away from the origin, that is when expresion values starts to decrease. Which is expected, as that is where we expect most of our accessory genomes to be located.
 
 For \textit{E.\,coli}
-, we see more of a wave-like pattern, until we are near the terminus, that is when we start to see a decrease in expression values.Again, this is expected, because most of accessory genomes are located near the terminus.
+, we see more of a wave-like pattern, until we are near the terminus, that is when we start to see a decrease in expression values. Again, this is expected, because most of accessory genomes are located near the terminus.
 
 For pSymB and pSymA, we see the same trend in both. We see a wave-like pattern through out the plot until we are near the terminus, that is when we start to see an increase in the expression values. 
 
-Gene expression of \textit{Streptomyces}, \textit{E.\,coli}, and\textit{E.\,coli}  decreases with increasing distance from the
+Gene expression of \textit{Streptomyces}, \textit{B.\,subtilis}, and\textit{E.\,coli}  decreases with increasing distance from the
 origin of replication in a
 \textbf{non-linear} manner. 
 
@@ -578,13 +588,13 @@ We utilized trend lines, box-plots, violin plots and reference lines to aid in s
 We also wanted to pick colours that were subjectively pretty, but also dichromat-friendly and that went well together so all the graphs looked cohesive.
 Most of our graphs are based around scatter plots, so the colours needed to be fairly saturated to easily identify points/elements of the graph that we wanted to have stand out.
 We chose to apply transparency and "jittering" (where applicable) to ensure that overlapping points were identifiable and to maximize the amount of points shown.
+As we are dealing with multiple bacterial replicons in our graphs we decided to have titles on all graphs where we are showing values for just one replicon. 
+This is to avoid confusion about which bacterial replicon viewers are looking at.
 
-**We might need to remove this, or alter it, as I chose to add all the graphs for expression.**
 Any graphs that involve the distance from the origin of replication and the response variables, we chose to focus on one bacteria.
-All the bacterial replicons vary greatly in length from 1Mbp to ~5Mbp.
+All the bacterial replicons vary greatly in length from ~1Mbp to ~5Mbp.
 If we had used a facet to show for example, how gene expression changes with distance from the origin of replication in all replicons, some of the replicons would be "squished" on the x-axis and we would be unable to see any of the results.
-We therefore chose to focus on the most interesting bacteria (\strep
-) for storytelling.
+We therefore chose to create multiple graphs for each bacterial replicon, or focus on only one particularaly interesting replicon.
 
 ## Selection:
 
@@ -594,11 +604,15 @@ When considering genomic distance from the origin of replication we scaled the p
 
 When choosing colours for this graph, we wanted colours that also matched with the gene expression data set, but also worked well for these different types of graphs.
 Since $\omega$ provides important information about the selective pressures acting on a gene, we wanted to choose a colour that was different from the dN and dS colours so it could stand out in the facet graph.
-We also wanted dN and dS to be similar colours (blue and purple) because they have the same units are both represent substitution rates.
+We also wanted dN and dS to be similar colours (blue and purple) because they have the same units and both represent substitution rates.
 
-### Facet Graph
+Although most of the scales are log base 10, we decided to retain zero values because these provide valuable biological information.
+Genes with dS = 0 means that there are no synonomous substitutions which grealty influences our predictions on what evolutionary trajectories and past events are acting on that gene.
+The same could be said for dN values equal to 0, or $\omega$ values equal to 0.
+
+### Facet Graph:
 For this graph we wanted to be able to compare the dS, dN and $\omega$ values within each bacterial replicon, and across all bacterial replicons, so we decided on a facet graph.
-This allows us to see differences between dN, dS and $\omega$ within each bacterial replicon while also highlight overarching similarities or differences between the bacterial replicons.
+This allows us to see differences between dN, dS and $\omega$ within each bacterial replicon while also highlighting overarching similarities or differences between the bacterial replicons.
 We decided to facet based on bacteria because primarally we wanted to show differences within bacterial replicons rather than between all bacterial replicons.
 We chose to show the data points as a strip plot with a box plot and violin plot overlayed.
 This allows for the maximum amount of information about the distribution of the selection values to be shown.
@@ -631,19 +645,18 @@ We experimented with having facets for both the bacteria and selection variables
 These graphs allow for the scales to be "tighter" around the values for the rates (dN and dS) and $\omega$, since both facets are allowed to have varying scales.
 These graphs also make it clear which units correspond to which values, which could be confusing in the figure presented in the main part of this write up.
 Since there are more sections to this graph, we decided to separate the bacteria into two groups so that the bacterial name and replicon would be readable without having to use abbreviations.
-We also chose to make 2 of these graphs so that the data was not un-readable.
 However, we believe that the version of this figure found in the main part of the write up represents the best figure for biologists.
 Since the selection values (dN, dS and $\omega$) are very similar and based on one another, we wanted to have them all in one graph so we could compare their values to one another.
 When they are separated as in Figures A1 and A2, it is difficult to see how $\omega$ relates to dN and dS.
 Additionally, we wanted to have all bacterial replicons in the same figure so we could look at any similarities or differences between the bacteria.
 As mentioned previously, this would not be possible with the supplemental graphs (A1 and A2) because we would be sacrificing readability.
-The choice for faceting by bacteria or by selection value is difficult because most biologists will want to look at what is happening within each bacterial replicon first, and then look at over arching trends.
+The choice for faceting by bacteria or by selection value is difficult because most biologists will want to look at what is happening within each bacterial replicon first, and then look at over arching trends between bacterial replicons.
 This again is difficult to determine with Figures A1 and A2.
 Therefore, we believe that the figure presented in the main part of the document provides a compact, accurate, and prefereable depiction of the selection values.
 
 
 
-### Example Selection Values Graph
+### Example Selection Values Graph:
 Since the range of values and units differ between the dN, dS and $\omega$ values, we decided to "facet" the values to allow for two scales.
 The top graph shows the mean $\omega$ values over 10Kbp distances from the origin of replication, and the bottom graph depicts the mean dN and dS values over 10Kbp distances from the origin of replication.
 Separating the data into two graphs allows for a clear separation of units and allows for a "zoomed in" picture of the values.

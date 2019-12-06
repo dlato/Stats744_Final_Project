@@ -1,0 +1,741 @@
+---
+title: "Final Project Write-Up"
+author: "Daniella Lato and Jana Taha"
+date: "December 2019"
+output: pdf_document
+fontsize: 12pt
+header-includes: \usepackage{xspace, longtable, booktabs}
+---
+
+\newcommand{\smel}{\textit{S.\,meliloti}\xspace}
+\newcommand{\bass}{\textit{B.\,subtilis}\xspace}
+\newcommand{\ecol}{\textit{E.\,coli}\xspace}
+\newcommand{\strep}{\textit{Streptomyces}\xspace}
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(data.table)
+library(devtools)
+library(cowplot)
+library(ggpubr)
+library(plyr)
+library(dplyr)
+library(directlabels)
+library(formatR)
+library(gridExtra)
+library(grid)
+options(scipen=10000)
+#setting up a theme so all graphs are consistant
+theme_set(theme_bw() + theme(strip.background =element_rect(fill="#e7e5e2")) +
+            theme(strip.text = element_text(size =15)) +
+            theme(plot.title = element_text(hjust = 0.5, size = 18), 
+                  panel.background = element_rect(fill = "white", colour = NA), 
+                  panel.grid.major = element_line(colour = "grey90", size = 0.2), 
+                  panel.grid.minor = element_line(colour = "grey98", size = 0.5), 
+                  panel.spacing = unit(0.25, "lines"), 
+                  axis.text=element_text(size=18),
+                  axis.title = element_text(size = 18),
+                  #for second legend on y-axis
+                  axis.text.y.right = element_text(size=18),
+                  legend.title = element_blank(),
+                  legend.text = element_text(size = 18),
+                  #change the colour of facet label background
+                  strip.background = element_rect(fill = "#E6E1EA"),
+                  #remove space between facest
+                  panel.spacing.x=unit(0, "lines"),
+                  legend.key = element_blank(),
+                  legend.background=element_blank(),
+                  legend.position="top") 
+)
+#prevent overflow of code boxes
+library(knitr)
+opts_chunk$set(tidy.opts=list(width.cutoff=70),tidy=TRUE,fig.width=10, fig.height=7)
+```
+
+#  Visualizing Molecular Trends in Bacterial Genomes
+
+```{r selection_dat, include=FALSE}
+#read in data'
+sel_dat <- read.csv("./data/all_bac_selection_data.csv", header = FALSE)
+#drop first column because it is just the row numbers
+sel_dat <- sel_dat[,-1]
+#col names
+colnames(sel_dat) <- c("value", "position", "class", "bacteria")
+#remove NAs
+sel_dat <- sel_dat[!is.na(sel_dat$value),]
+#number of bacterial replicons
+num_of_plots <- length(levels(sel_dat$bacteria))
+
+###################################
+#########################
+#chunking the data into sections of the genome
+#########################
+#decreasing order
+sel_dat_ord <- arrange(sel_dat,position)
+nmax_pos <- max(sel_dat_ord$position)
+nmin_pos <- min(sel_dat_ord$position)
+#lenght of section of genome
+chunklen <- 10000
+chunk_len_of_genome <- round_any(nmax_pos, chunklen, f=ceiling)
+chunks <- seq(chunklen, chunk_len_of_genome, chunklen)
+
+#expty vec to hold the rows that split the dat into X kb chunks
+exp_rows_to_split_dat <- vector()
+for (i in chunks) {
+  exp_rows <-
+    which(abs(sel_dat_ord$position-i)==min(abs(sel_dat$position-i)))
+  # finding the closest number to each 10kb without going over it
+  exp_max_row <- max(exp_rows)
+  exp_rows_to_split_dat <- c(exp_rows_to_split_dat, exp_max_row)
+}#for
+diff <- c(exp_rows_to_split_dat[-1],NA)
+tmp_df <- as.data.frame(cbind(exp_rows_to_split_dat,diff))
+tmp_df$rep_vec <- tmp_df$diff - tmp_df$exp_rows_to_split_dat
+#make rep vector
+rep_vec <- c(exp_rows_to_split_dat[1],tmp_df$rep_vec[-length(tmp_df$rep_vec)])
+rep_vec
+#make new column with "groups" of these chunks
+new_sections <- rep(chunks, rep_vec)
+sel_dat_ord$new_sections <- new_sections
+
+#mean for each genome chunk
+median_sel_dat <- sel_dat_ord %>%
+  dplyr::group_by(bacteria,class,new_sections) %>%
+  dplyr::summarise(value.mean = mean(value), value.sd = sd(value))
+#remove NAs
+median_sel_dat <- tidyr::drop_na(median_sel_dat)
+
+#plot just strep
+strep_dat <- median_sel_dat[which(median_sel_dat$bacteria == "strep"),]
+#scale the genomic position
+strep_dat$new_sections <- strep_dat$new_sections / 1000000
+
+
+
+###get separate datasets for the rates and omega
+rates_dat <- sel_dat[which(sel_dat$class == "dN" | sel_dat$class == "dS"),]
+omega_dat <- sel_dat[which(sel_dat$class == "omega"),]
+### separate those again by the non-multirepliconic and multirepliconic bacteria
+single_rates_dat <- rates_dat[which(rates_dat$bacteria == "ecoli" | rates_dat$bacteria == "bass" | rates_dat$bacteria == "strep"),]
+multi_rates_dat <- rates_dat[which(rates_dat$bacteria == "sinoC" | rates_dat$bacteria == "pSymA" | rates_dat$bacteria == "pSymB"),]
+
+single_omega_dat <- omega_dat[which(omega_dat$bacteria == "ecoli" | omega_dat$bacteria == "bass" | omega_dat$bacteria == "strep"),]
+multi_omega_dat <- omega_dat[which(omega_dat$bacteria == "sinoC" | omega_dat$bacteria == "pSymA" | omega_dat$bacteria == "pSymB"),]
+
+#get levels into order we want
+single_rates_dat$bacteria <- fct_relevel(single_rates_dat$bacteria,"ecoli","bass","strep","sinoC","pSymA","pSymB")
+levels(single_rates_dat$bacteria) <- c("ecoli" = expression(paste(italic("E.coli"), "")),
+                              "bass" = expression(paste(italic("B. subtilis"), "")),
+                              "strep" = expression(paste(italic("Streptomyces"), "")),
+                              "sinoC" = expression(paste(italic("S.meliloti"), " Chromosome")),
+                              "pSymA" = expression(paste(italic("S.meliloti"), " pSymA")),
+                              "pSymB" = expression(paste(italic("S.meliloti"), " pSymB")))
+
+single_omega_dat$bacteria <- fct_relevel(single_omega_dat$bacteria,"ecoli","bass","strep","sinoC","pSymA","pSymB")
+#italic bacteria names
+levels(single_omega_dat$bacteria) <- c("ecoli" = expression(paste(italic("E.coli"), "")),
+                                       "bass" = expression(paste(italic("B. subtilis"), "")),
+                                       "strep" = expression(paste(italic("Streptomyces"), "")),
+                                       "sinoC" = expression(paste(italic("S.meliloti"), " Chromosome")),
+                                       "pSymA" = expression(paste(italic("S.meliloti"), " pSymA")),
+                                       "pSymB" = expression(paste(italic("S.meliloti"), " pSymB")))
+
+
+multi_rates_dat$bacteria <- fct_relevel(multi_rates_dat$bacteria,"ecoli","bass","strep","sinoC","pSymA","pSymB")
+#italic bacteria names
+levels(multi_rates_dat$bacteria) <- c("ecoli" = expression(paste(italic("E.coli"), "")),
+                                       "bass" = expression(paste(italic("B. subtilis"), "")),
+                                       "strep" = expression(paste(italic("Streptomyces"), "")),
+                                       "sinoC" = expression(paste(italic("S.meliloti"), " Chromosome")),
+                                       "pSymA" = expression(paste(italic("S.meliloti"), " pSymA")),
+                                       "pSymB" = expression(paste(italic("S.meliloti"), " pSymB")))
+
+multi_omega_dat$bacteria <- fct_relevel(multi_omega_dat$bacteria,"ecoli","bass","strep","sinoC","pSymA","pSymB")
+#italic bacteria names
+levels(multi_omega_dat$bacteria) <- c("ecoli" = expression(paste(italic("E.coli"), "")),
+                                      "bass" = expression(paste(italic("B. subtilis"), "")),
+                                      "strep" = expression(paste(italic("Streptomyces"), "")),
+                                      "sinoC" = expression(paste(italic("S.meliloti"), " Chromosome")),
+                                      "pSymA" = expression(paste(italic("S.meliloti"), " pSymA")),
+                                      "pSymB" = expression(paste(italic("S.meliloti"), " pSymB")))
+
+levels(sel_dat$bacteria)
+sel_dat$bacteria <- fct_relevel(sel_dat$bacteria,"ecoli","bass","strep","sinoC","pSymA","pSymB")
+levels(sel_dat$bacteria)
+#italic bacteria names
+levels(sel_dat$bacteria) <- c("ecoli" = expression(paste(italic("E.coli"), "")),
+                              "bass" = expression(paste(italic("B. subtilis"), "")),
+                              "strep" = expression(paste(italic("Streptomyces"), "")),
+                              "sinoC" = expression(paste(italic("S.meliloti"), " Chromosome")),
+                              "pSymA" = expression(paste(italic("S.meliloti"), " pSymA")),
+                              "pSymB" = expression(paste(italic("S.meliloti"), " pSymB")))
+
+
+
+
+
+
+```
+
+**The Data:**
+Our data is biologically based and mostly deals with genome wide trends.
+We will be looking at gene expression and selection in four bacterial genomes: \ecol, \bass, \strep, and \smel.
+All of the bacteria have their genome contained in one chromosome except \smel 
+which is a multi-repliconic bacteria. A multi-repliconic bacteria means that the genome is made up of multiple replicons or chromosome like structures. For this reason, each replicon of \smel 
+(chromosome, pSymA, pSymB) will be analyzed separately.
+The gene expression data set has information about the average expression value of the gene (averaged across multiple data sets) and the genomic location of that gene relative to the origin of replication.
+Additionally, we have obtained selection information on a few of these genes from each bacterial genome.
+This selection information tells us about the synonymous substitution rate (dS, mutations that do not cause a change in the amino acid sequence), the non-synonymous substitution rate (dN, mutations that cause a change in the amino acid sequence), and $\omega$ (dN/dS).
+The $\omega$ ratio allows us to determine if these substitutions in the sequence will be maintained or deleted over time.
+If $\omega$ for a gene is larger than 1, the gene is under positive selection and therefore is beneficial to the organism and will likely be maintained in the genome over time.
+If $\omega$ is less than 1, the gene is under purifying or negative selection, and therefore is deleterious to the organism and will likely not be maintained in the genome over time.
+If $\omega$ is equal to 1, the gene is under neutral selection, and is neither beneficial nor deleterious to the organism.
+This selection data is again linked to the relative distance from the origin of replication.
+
+Both data sets are looking at how the response variables change with distance from the origin of replication.
+Near the origin of replication we expect genes to be more conserved and encoding for essential functions than genes located near the terminus of replication.
+Genes near the origin typically therefore, have higher gene expression and less mutations or substitutions, because they are important to the function of the organism.
+We expect that most genes (in any genome) are under neutral or purifying selection (removing deleterious traits), regardless of their genomic location (neutral theory or nearly neutral theory).
+Since genes near the terminus are changing often (mutations) and involved in local environmental adaptation, we could suppose that these genes might be the best candidates for positive selection (increase beneficial traits).
+
+This leaves us with three predictions for our data sets:
+
+1. Gene expression should decrease when moving away from the origin of replication
+
+2. We should have dS $>$ dN for most genes in all bacteria
+
+3. Most genes should be under neutral or purifying selection, any genes that are under positive selection should be located near the terminus
+
+
+**Selection Data**
+
+We first present a graph showing the distributions of dN, dS and $\omega$ values for all genes in each of the bacterial replicons.
+Graphical decisions for this figure are discussed more in the *Graphical Decisions* section.
+```{r selection_summary_graph, include=FALSE}
+
+#choose colours
+colours_arr <- rep(c( "#80A7B9","#928CAB","#B18C6E"),num_of_plots)
+#plot
+set.seed(1738);
+vio_str_box <-(ggplot(sel_dat, aes(x=class, y=value, fill = class, colour = class)) 
+               + geom_jitter(position=position_jitter(0.2))
+               + geom_violin(colour = "black", fill = NA) 
+               + geom_boxplot(width=.1, outlier.shape=NA, colour = "black", fill = colours_arr) 
+               + stat_boxplot(geom = "errorbar", width = 0.2, colour = "black") 
+               #omega = 1 reference line
+               +  geom_hline(yintercept=1, linetype="dashed", color = "black")
+               + facet_wrap(~bacteria, labeller=label_parsed)
+               + xlab("") 
+               + ylab("Expected Number of Substitutions per Site") 
+               + scale_color_manual(values=c("#80A7B9","#928CAB","#B18C6E"),labels = c(" dN", " dS", expression(omega)))
+               #make the omega a math symbol in x-axis
+               + scale_x_discrete(breaks = c("dN", "dS", "omega"),labels = c("dN","dS", expression(omega))) 
+               #log scale and removing trailing zeros from y-axis labels
+               #and have label at omega = 1 for reference
+               + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.01,0.1, 1, 10,1000),
+                                    #adding a second axis for omega!
+                                    sec.axis = sec_axis(trans = ~ . * 1,
+                                                        name = 'Ratio of dN/dS \n',
+                                                        labels = function(x) ifelse(x == 0, "0", x),
+                                                        breaks=c(0.001,0.01,0.1, 1, 10,1000)))
+               ##remove weird second legend
+               #+ guides(fill=FALSE)
+               #remove redundant legend
+               + theme(legend.position = "none")
+)
+
+```
+
+```{r, warning=FALSE}
+vio_str_box
+```
+
+
+When looking at dN and dS substitution rates, we expect that the rate of synonymous substitutions (dS) should be higher than the rate of non-synonymous substitutions.
+Biologically, mutations that cause a change in an amino acid are more likely to alter the function of the protein than mutations that do not cause a change in an amino acid. 
+As mentioned, a non-functional protein could have catastrophic consequences on the well being of the organism.
+Across all the bacterial replicons we see that indeed, dS > dN.
+In some of the bacterial replicons such as \bass
+and \ecol
+, there appears to be a high number of genes with dS values larger than 1.
+There is a phylogenetic component to the calculation of dN, dS and $\omega$ and the programs are taking an average of all the substitutions that could have occurred along any branch within the phylogentic tree, over the total number of sites in the gene.
+This means, there depending on how close or distantly related the taxa are, there could have been multiple substitutions at one (or many) sites within the gene.
+This could cause the value of dS to be estimated to be larger than one substitution per site.
+
+We also notice that most of the $\omega$ values for each bacterial replicon are below 1, this is what we expected.
+An $\omega$ value below one means that the genes are likely neutral or under negative selection, meaning that mutations having deleterious impact on the organism will be removed.
+The notable exception to this is \strep
+, which appears to have a bi-modal distribution of $\omega$ values with a high number of genes with $\omega$ values at or above 1.
+\strep
+creates 80% of the antibiotics that we currently use.
+This means that the genome of \strep
+would generally benefit from positive selection, where mutations that confer a benefit to the organism are retained.
+
+Since we have some theory about how genes are organized on bacterial genomes, we decided to take a closer look at the selection values for \strep
+and see where these genes fall relative to the origin of replication.
+
+
+
+```{r selection, include=FALSE}
+#making subsets of data to plot them separately
+strep_omeg <- strep_dat[which(strep_dat$class == "omega"),]
+
+strep_rates <- strep_dat[which(strep_dat$class == "dS" | strep_dat$class == "dN"),]
+
+colours_arr <- c("#6494AA","#A09ABC")
+#graph with only dS and dN
+rate_g <- (ggplot(strep_rates, aes(x=new_sections, y=value.mean, colour=class))
+          #  geom_errorbar(aes(ymin=value.mean-sd, ymax=value.mean+sd), width=.1, position=pd) +
+          + geom_point(alpha = 0.75)
+          + geom_smooth()
+          #labels for the colours
+          + annotate("text", x=5.4,y=0.015,label="dS", colour = "#A09ABC", size = 6)
+          + annotate("text", x=5.4,y=0.0035,label="dN", colour = "#6494AA", size = 6)
+          + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.01,0.1, 1, 10))
+          + scale_color_manual(values=colours_arr)
+          #remove redundant xaxis
+          + theme(
+            #remove legend
+            legend.position = "none")
+          #axis labels
+          + ylab("Mean Expected\n# of Substitutions\nper 10Kbp")
+           + xlab("Distance from the Origin of Replication (Mbp)")
+)
+
+
+colours_arr <- c("#C29979")
+omeg_g <- (ggplot(strep_omeg, aes(x=new_sections, y=value.mean, colour=class))
+           + geom_point(alpha = 0.75)
+           + geom_smooth()
+           #labels for the colours
+           + annotate("text", x=5.4,y=0.4,label="omega", parse=TRUE, colour = "#C29979", size = 10)
+           + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.01,0.1, 1, 10))
+           + scale_color_manual(values=colours_arr)
+           #omega = 1 reference line
+           +  geom_hline(yintercept=1, linetype="dashed", color = "black", size=1)
+           #axis labels
+          + ggtitle(expression(paste(italic("Streptomyces"), " Chromosome")))
+           + ylab("Mean Ratio\n(dN/dS)\nper 10Kbp")
+          #remove x axis labels
+          + theme(axis.title.x = element_blank(),
+                  axis.ticks.x = element_blank(),
+                  axis.text.x = element_blank(),
+                  #remove legend
+                  legend.position = "none")
+)
+
+
+```
+
+```{r, dS_dN_graph, warning=FALSE}
+#arrange the graphs on one. since facet will not let you re-lable each axis in a facet
+grid.newpage()
+grid.draw(rbind(ggplotGrob(omeg_g), ggplotGrob(rate_g)))
+
+```
+
+The top graph shows the mean $\omega$ calculated over each 10Kbp region of the \strep 
+genome.
+As mentioned before, this was calculated by averaging the $\omega$ values of all genes within each 10Kbp section of the genome. 
+A non-linear trend line with confidence intervals was added to the plot to show an overall trend about how $\omega$ changes with distance from the origin of replication.
+As mentioned previously, we see that most sections of the genome have a mean $\omega$ value of less than 1, as expected.
+This means that majority of the genes in the genome are under neutral or negative selection.
+
+Interestingly, the sections of the genome with mean $\omega$ values larger than one seem to be clustered near the terminus of replication.
+There appears to be a particular peak at around 3.7Mbp from the origin of replication.
+Genes that have an $\omega$ value larger than 1 are thought to be under positive selection and conferring some sort of benefit to the organism, and will therefore likely be maintained over time.
+Interestingly, the majority of the core and well conserved portion of the \strep
+genome is located in the first ~3Mbp near the origin of replication.
+The rest of the genome is part of the accessory genome which primarily consists of genes involved in local environmental adaptation and production of antibiotics.
+It is therefore conceivable that this area of the genome is mostly under positive selection and trying to "hold on" to mutations that are beneficial to the organism.
+
+The points on the bottom graph represent the mean expected number of substitutions per 10,000 bp (10Kbp) for both dN and dS.
+This was calculated by averaging the dS and dN values respectively over each 10Kbp section of the genome. 
+A non-linear trend line with confidence intervals was added to the plot to show an overall trend about how dN and dS respectively are changing with distance from the origin of replication.
+As mentioned previously, we see that dS is higher than dN for most of the genes in \strep
+.
+dS appears to be slightly decreasing with increased distance from the origin of replication, while dN appears to be slightly increasing.
+we also see that the pattern for dN and dS are non-linear, although only slightly.
+Biologically, we know that the majority of the core genome for \strep
+(the part of the genome containing functionally important genes), is located about 3 million base pairs (Mbp) from the origin of replication, while the accessory genome is located approximately 2Mbp from the terminus or replication.
+It is therefore plausible that core genes should have more synonymous substitutions, so the amino acid sequence is not altered, compared to the accessory genome.
+It is conceivable that the accessory genome has more non-synonymous substitutions which could provide increased genetic diversity, assisting in for example producing new antibiotics.
+With the location of the accessory genome coinciding with areas where we see decreased dS and increased dN, we could infer that biologically this is what is happening.
+
+Discussion of our graphical choices for this graph can be found in the *Graphical Decisions* section.
+
+
+**Gene Expression Data**
+
+Now we are going to see whether our prediction, that the Gene expression should decease when moving away from the origin of replication, holds.
+To begin we created the same graph for each of the bacterial genomes to explore how gene expression changes with distance from the origin of replication.
+
+```{r, expression_graph, include=FALSE}
+data12 <- read.delim("./data/strep_gene_exp_bidirectional_data.txt", sep = "")
+data12$tmp_pos = abs(data12$tmp_pos)
+data12$group<-cut(data12$tmp_pos, breaks = seq(200,5400000,100000),labels = seq(1:53))
+data12$avg = rep(0,7768)
+for (i in 1:53) {
+y = data12$Exp[(data12$group == i)]
+data12$avg[(data12$group == i)] = mean(data12$Exp[(data12$group == i)])
+}
+
+(g1 <- ggplot(data = data12, mapping = aes(x=group,y=Exp)) 
+  +geom_jitter(aes(color="#F3D9B1"),alpha=0.4, width = 0.2) 
+  +geom_point(aes(y = avg, color = "#C29979")) 
+  +geom_smooth(aes(x = as.numeric(group), y = avg,color = "#6494AA"),se=FALSE,span=0.5) 
+  +guides(color=FALSE) 
+  #+theme_minimal()  
+  #+scale_y_log10()
+  + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x))
+  +scale_color_manual(values = c("#6494AA","#C29979","#F3D9B1"))
+  +ylab("log Expression (CPM)") 
+  +xlab("Distance from the origin of replication (10Kbp)")
+  + ggtitle(expression(paste(italic("Streptomyces"), " Chromosome")))
+)
+
+```
+
+```{r, expression_graph2, warning=FALSE}
+g1
+
+```
+
+THE BELOW BOLDED SECTION NEEDS TO BE FIXED SO THAT IT ACTALLY REFLECTS WHATEVER OTHER EXPLORATORY GRAPHICS ARE BEING MADE.
+**For most of the exploration graphs we see that gene expression does decrease with increasing distance from the origin of replication for most of the bacteria. 
+However, there are two notable exceptions, pSymB and pSymA.
+These happen to be the two secondary replicons of \smel
+which in general contain majority of the accessory genome.
+This could be why these replicons appear to have the opposite gene expression trend from the other bacteria.
+We will be focusing on \strep
+and analyzing the trends we see in that graph in depth.**
+
+
+
+From the summary of our data set, we saw that the distance from the origin of replication ranges from 219 to 5,247,360. Since we have in total 7,762 total observations, it will be more appropriate to bin our data. We decided to group by each 100,000 base pairs (bp) region of the \strep 
+genome, and ended up with 53 bins.
+
+In the plot above, the brown points on the graph shows the mean expression value calculated over each 10,000 base pairs (bp) region of the \strep 
+genome.
+
+From the trend line above, we see that in general Expression decreases as we move further away from the origin of replication. This decrease is definitely not linear, we observe some jumps through out the graph. When we are 3,600,000 bp away from the origin, we start to see more of a wave-like pattern.
+
+For \strep
+, the core genome is located within approximately 3,000,000 bp from the origin of replication.
+The accessory genome is generally located within the region approximately 2,000,000 bp from the terminus of replication.
+It makes sense that we are seeing expression dipping down at around the 3,000,000 bp point and staying lower for the remainder of the genome.
+This is where we expect most of the accessory genome to be located.
+
+
+# Graphical Decisions
+
+
+## General:
+Since the response variables for both the gene expression and the selection data have a wide range of values, we chose to use a log scale to make it easier to read.
+Additionally, all axis labels are clear, in a large font size, and have units where applicable.
+Trailing zeros were removed from the axis labels to again make it more readable.
+We ensured that Greek letters and italic bacteria names were used.
+We utilized trend lines, box-plots, violin plots and reference lines to aid in showing summary statistics and patterns in the data.
+We also wanted to pick colours that were subjectively pretty, but also dichromat-friendly and that went well together so all the graphs looked cohesive.
+Most of our graphs are based around scatter plots, so the colours needed to be fairly saturated to easily identify points/elements of the graph that we wanted to have stand out.
+We chose to apply transparency and "jittering" (where applicable) to ensure that overlapping points were identifiable and to maximize the amount of points shown.
+
+Any graphs that involve the distance from the origin of replication and the response variables, we chose to focus on one bacteria.
+All the bacterial replicons vary greatly in length from 1Mbp to ~5Mbp.
+If we had used a facet to show for example, how gene expression changes with distance from the origin of replication in all replicons, some of the replicons would be "squished" on the x-axis and we would be unable to see any of the results.
+We therefore chose to focus on the most interesting bacteria (\strep
+) for storytelling.
+
+## Selection:
+
+### General:
+With regards to colour, the selection graphs have the same colours for dN, dS, and $\omega$ in all graphs so that it is easy for the viewer to follow along when switching between graphs.
+When considering genomic distance from the origin of replication we scaled the points by 1 million base pairs to make the values on the x-axis more readable.
+
+When choosing colours for this graph, we wanted colours that also matched with the gene expression data set, but also worked well for these different types of graphs.
+Since $\omega$ provides important information about the selective pressures acting on a gene, we wanted to choose a colour that was different from the dN and dS colours so it could stand out in the facet graph.
+We also wanted dN and dS to be similar colours (blue and purple) because they have the same units are both represent substitution rates.
+
+### Facet Graph
+For this graph we wanted to be able to compare the dS, dN and $\omega$ values within each bacterial replicon, and across all bacterial replicons, so we decided on a facet graph.
+This allows us to see differences between dN, dS and $\omega$ within each bacterial replicon while also highlight overarching similarities or differences between the bacterial replicons.
+We decided to facet based on bacteria because primarally we wanted to show differences within bacterial replicons rather than between all bacterial replicons.
+We chose to show the data points as a strip plot with a box plot and violin plot overlayed.
+This allows for the maximum amount of information about the distribution of the selection values to be shown.
+
+As mentioned previously, we are interested in $\omega$ values that are larger than zero (see intro on positive selection).
+We decided to add a reference line at 1 to help remind viewers about the differences between $\omega$ values that lie above and below this line.
+
+For the facet selection graph we chose to add in another y-axis to show the values of $\omega$, since the units are different than the units for dN and dS.
+The arrangement of bacteria in the facet plot was mostly guided by biological relevance. 
+\ecol
+and \bass 
+are the "lab rats", and therefore people often care about them the most, so we put them first.
+\strep
+is similar to \ecol 
+and \bass
+because it has it's genome in one chromosome.
+\smel 
+is a multi-repliconic bacteria (has more than one chromosome-like structure), and therefore we wanted to keep the replicons of this bacteria close together so they could be easily compared to one another.
+In the selection summary graphic we decided to add in a redundant legend to aid viewers in determining what colours were linked to which selection measure.
+
+We chose to arrange the selection parameters (dN, dS and $\omega$) in that particular order because $\omega$ is the ratio of dN/dS, we thought that it would be appropriate to put dN first in an attempt to match the ratio order.
+Likewise, $\omega$ was chosen as the right most value because it is a combination of the first two values.
+We removed the legend as we thought it to be redundant.
+We also removed any space between the facets to ensure there was less unecessary white space.
+
+We experimented with many many versions of this graph, prominant versions can be found in the *Appendix* section.
+Although $\omega$ is "unitless", dN and dS are not.
+It was therefore necessary to have multiple lables for both sets of values.
+We experimented with having facets for both the bacteria and selection variables (see Figures A1 and A2 in *Appendix*).
+These graphs allow for the scales to be "tighter" around the values for the rates (dN and dS) and $\omega$, since both facets are allowed to have varying scales.
+These graphs also make it clear which units correspond to which values, which could be confusing in the figure presented in the main part of this write up.
+Since there are more sections to this graph, we decided to separate the bacteria into two groups so that the bacterial name and replicon would be readable without having to use abbreviations.
+We also chose to make 2 of these graphs so that the data was not un-readable.
+However, we believe that the version of this figure found in the main part of the write up represents the best figure for biologists.
+Since the selection values (dN, dS and $\omega$) are very similar and based on one another, we wanted to have them all in one graph so we could compare their values to one another.
+When they are separated as in Figures A1 and A2, it is difficult to see how $\omega$ relates to dN and dS.
+Additionally, we wanted to have all bacterial replicons in the same figure so we could look at any similarities or differences between the bacteria.
+As mentioned previously, this would not be possible with the supplemental graphs (A1 and A2) because we would be sacrificing readability.
+The choice for faceting by bacteria or by selection value is difficult because most biologists will want to look at what is happening within each bacterial replicon first, and then look at over arching trends.
+This again is difficult to determine with Figures A1 and A2.
+Therefore, we believe that the figure presented in the main part of the document provides a compact, accurate, and prefereable depiction of the selection values.
+
+
+
+### Example Selection Values Graph
+Since the range of values and units differ between the dN, dS and $\omega$ values, we decided to "facet" the values to allow for two scales.
+The top graph shows the mean $\omega$ values over 10Kbp distances from the origin of replication, and the bottom graph depicts the mean dN and dS values over 10Kbp distances from the origin of replication.
+Separating the data into two graphs allows for a clear separation of units and allows for a "zoomed in" picture of the values.
+Since the $\omega$ values are so much higher than the dN or dS values, having all selection parameters (dN, dS and $\omega$) on the same graph would obscure any subtle changes in the parameters with respect to distance from the origin of replication.
+By using separate graphs, we are able to see these changes more clearly.
+
+We chose to put $\omega$ on the top part of the figure and the rates (dS and dN) on the bottom part.
+This is partially because we are interested primaraly in the distribution of $\omega$ as distance from the origin of replication increases, and partially because the values of $\omega$ are generally larger than the values for the rates.
+It therefore is logical to have $\omega$ at a higher "height" in the graphic than dN and dS.
+
+We chose to include a non-linear trend line to help show what overall patterns are happening as the selection parameters change with distance from the origin of replication.
+This allows us to see peaks and valleys that we would not necessarily see with a simple linear model.
+We allowed for confidence intervals on the line to help show the fit of the geom_smooth() line.
+
+Again, we are primarily interested in $\omega$ values that are larger than zero (see *The Data* section on positive selection).
+We decided to add a reference line at 1 to help remind viewers about the differences between $\omega$ values that lie above and below this line.
+
+We also used direct labeling when we could to avoid the need for a legend.
+We additionally put the dS and dN values on the top graph and the $\omega$ values on the bottom graph because $\omega$ is the ratio of the top graph (dN/dS).
+Although the y-axis titles are lengthy, they are biologically accurate and convey the proper units for each of the selection values.
+We chose to put them on separate lines so they are as readable as possible.
+
+For this graphic we also had many itterations (see *Appendix* Figure A3).
+In general, humans are better at determining the slope of a line when it is near a 45 degree angle.
+By changing the arrangement of these figures on the graphic, we can adjust the aspect ratio so the trend lines appear to be at an angle closer to 45 degrees.
+This can be seen in Figure A3 in the *Appendix*.
+Indeed, this figure does accentuate the trend lines and it is easier to see the peaks and valleys.
+However, from a genomic perspective it is difficult to see any patterns.
+Someone that is interested in \strep
+would have issues determining which portions of the genome (relative to the origin of replication) have certain values for dN, dS and $\omega$.
+Additionally, it is difficult to establish which portions of the genome (relative to the origin of replication) fall within a peak or valley of high or low selection values.
+We believe that this supplemental graph A3 does not capture this information.
+In the graph presented in this main portion of this document, it is clear which portions of the genome have high or low selection values.
+It is particularaly easy to determine the locations of the core (~3Mbp from the origin of replication) and accessory genome (~ the last 2Mbp of the graph) in \strep
+, which carry important predications about how selection might be acting upon those regions of the genome.
+Showing the graphs in a horizontal manner gives a more indepth picture about the distribution of the selection values across the genome (relative to the origin of replication).
+A vertical layout (Figure A3) of these graphs loses information about the genomic location of the selection values.
+We therefore believe that the graph presented in the main text is the best option for conveying the most amount of information and staying biologically relevant.
+
+## Gene Expression: 
+
+In our expression plot, we used geom_jitter() and plotted all the observations within each group. 
+We then calculated the mean expression value of each bin and plotted it as a point on top of the observations. We used the same color brown, but in two different shades to represent the observations and the mean value. That is, because both represent the same response variable, the expression value. 
+
+We included all of the the observations along with the mean, because taking means alone could ignore some unusual data points that could be of importance to us. 
+We chose the width of our bins and median values in a way that would reduce the overall noise of the graph, but still allow for a signal to be seen.
+We also used geom_smooth() in our plot, this made it easier for us to see any trends in our plot.
+For the gene expression graph we wanted to have as much information as possible, without it being too distracting.
+So, we chose a lighter colour (light brown) for the raw data and a darker colour (dark brown) for the median values for each bin.
+We additionally chose a bold colour (blue) for the trend line.
+All these colour components help the viewer focus on the median values, which is what we were trying to highlight, but still have access to all the data points.
+
+# Appendix:
+
+Figure A1:
+```{r single_sel_summary, include=FALSE}
+#### separate facet for rates for non-multi rep bacteria
+colours_arr <- rep(c("#80A7B9","#928CAB"), num_of_plots/2)
+single_rates_summary <-(ggplot(single_rates_dat, aes(x=class, y=value, fill = class, colour = class)) 
+               + geom_jitter(position=position_jitter(0.2))
+               + geom_violin(colour = "black", fill = NA) 
+               + geom_boxplot(width=.1, outlier.shape=NA, colour = "black", fill = colours_arr) 
+               + stat_boxplot(geom = "errorbar", width = 0.2, colour = "black") 
+               + facet_wrap(~bacteria, labeller=label_parsed)
+               + xlab("") 
+               + ylab("Expected Number\nof Substitutions\nper Site") 
+               + scale_color_manual(values=c("#80A7B9","#928CAB"),labels = c(" dN", " dS"))
+               + scale_x_discrete(breaks = c("dN", "dS"),labels = c("dN","dS")) 
+               #log scale and removing trailing zeros from y-axis labels
+               + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.01,0.1, 1, 10,1000))
+                 #remove all legends
+                 + theme(legend.position = "none",
+                         #removing space at bottom of plot
+                         plot.margin=unit(c(1,1,-0.5,1), "cm"),
+                         #remove space between facest
+                         panel.spacing.x=unit(0, "lines"))
+)
+
+single_rates_summary
+
+### summary graph for omega values for non-multi-rep bacteria
+colours_arr <- rep(c("#B18C6E"), num_of_plots/2)
+single_omega_summary <-(ggplot(single_omega_dat, aes(x=class, y=value, fill = class, colour = class)) 
+                 + geom_jitter(position=position_jitter(0.2))
+                 + geom_violin(colour = "black", fill = NA) 
+                 + geom_boxplot(width=.1, outlier.shape=NA, colour = "black", fill = colours_arr) 
+                 + stat_boxplot(geom = "errorbar", width = 0.2, colour = "black") 
+                 + facet_wrap(~bacteria, labeller=label_parsed)
+                 #omega = 1 reference line only on the omega data
+                 +  geom_hline(data = data.frame(yint=1,fake_class="ome"), aes(yintercept= yint), linetype="dashed", color = "black")
+                 + xlab("") 
+                 + ylab("Ratio of dN/dS") 
+                 + scale_color_manual(values=c("#B18C6E"),labels = c(expression(omega)))
+                 #make the omega a math symbol in x-axis
+                 + scale_x_discrete(breaks = c("omega"),labels = c(expression(omega))) 
+                 #log scale and removing trailing zeros from y-axis labels
+                 #and have label at omega = 1 for reference
+                 + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.01, 0.1, 1, 10,1000))
+                 #remove all legends and facet labels (redundant)
+                 + theme(legend.position = "none",
+                         strip.background = element_blank(),
+                         strip.text.x = element_blank(),
+                         #specify plot margins
+                         plot.margin=unit(c(0.1,1,0.5,1), "cm"))
+)
+
+single_omega_summary
+
+```
+
+
+```{r, single_sel_summary_graph, warning=FALSE}
+
+#arrange the graphs for non-multi rep bac
+grid.newpage()
+grid.draw(rbind(ggplotGrob(single_rates_summary), ggplotGrob(single_omega_summary)))
+
+
+```
+
+
+
+Figure A2:
+```{r multi_sel_summary, include=FALSE}
+#### separate facet for rates for non-multi rep bacteria
+colours_arr <- rep(c("#80A7B9","#928CAB"), num_of_plots/2)
+multi_rates_summary <-(ggplot(multi_rates_dat, aes(x=class, y=value, fill = class, colour = class)) 
+               + geom_jitter(position=position_jitter(0.2))
+               + geom_violin(colour = "black", fill = NA) 
+               + geom_boxplot(width=.1, outlier.shape=NA, colour = "black", fill = colours_arr) 
+               + stat_boxplot(geom = "errorbar", width = 0.2, colour = "black") 
+               + facet_wrap(~bacteria, labeller=label_parsed)
+               + xlab("") 
+               + ylab("Expected Number\nof Substitutions\nper Site") 
+               + scale_color_manual(values=c("#80A7B9","#928CAB"),labels = c(" dN", " dS"))
+               + scale_x_discrete(breaks = c("dN", "dS"),labels = c("dN","dS")) 
+               #log scale and removing trailing zeros from y-axis labels
+               + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.01,0.1, 1, 10,1000))
+                 #remove all legends
+                 + theme(legend.position = "none",
+                         #removing space at bottom of plot
+                         plot.margin=unit(c(1,1,-0.5,1), "cm"),
+                         #remove space between facest
+                         panel.spacing.x=unit(0, "lines"))
+)
+
+
+### summary graph for omega values for non-multi-rep bacteria
+colours_arr <- rep(c("#B18C6E"), num_of_plots/2)
+multi_omega_summary <-(ggplot(multi_omega_dat, aes(x=class, y=value, fill = class, colour = class)) 
+                 + geom_jitter(position=position_jitter(0.2))
+                 + geom_violin(colour = "black", fill = NA) 
+                 + geom_boxplot(width=.1, outlier.shape=NA, colour = "black", fill = colours_arr) 
+                 + stat_boxplot(geom = "errorbar", width = 0.2, colour = "black") 
+                 + facet_wrap(~bacteria, labeller=label_parsed)
+                 #omega = 1 reference line only on the omega data
+                 +  geom_hline(data = data.frame(yint=1,fake_class="ome"), aes(yintercept= yint), linetype="dashed", color = "black")
+                 + xlab("") 
+                 + ylab("Ratio of dN/dS") 
+                 + scale_color_manual(values=c("#B18C6E"),labels = c(expression(omega)))
+                 #make the omega a math symbol in x-axis
+                 + scale_x_discrete(breaks = c("omega"),labels = c(expression(omega))) 
+                 #log scale and removing trailing zeros from y-axis labels
+                 #and have label at omega = 1 for reference
+                 + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.01, 0.1, 1, 10,1000))
+                 #remove all legends and facet labels (redundant)
+                 + theme(legend.position = "none",
+                         strip.background = element_blank(),
+                         strip.text.x = element_blank(),
+                         #specify plot margins
+                         plot.margin=unit(c(0.1,1,0.5,1), "cm"))
+)
+
+
+```
+
+
+```{r, multi_sel_summary_graph, warning=FALSE}
+
+#arrange the graphs for non-multi rep bac
+grid.newpage()
+grid.draw(rbind(ggplotGrob(multi_rates_summary), ggplotGrob(multi_omega_summary)))
+
+
+```
+
+
+Figure A3:
+```{r strep_selection2, include=FALSE}
+colours_arr <- c("#6494AA","#A09ABC")
+#graph with only dS and dN
+rate_g2 <- (ggplot(strep_rates, aes(x=new_sections, y=value.mean, colour=class))
+          #  geom_errorbar(aes(ymin=value.mean-sd, ymax=value.mean+sd), width=.1, position=pd) +
+          + geom_point(alpha = 0.65)
+          + geom_smooth()
+          #labels for the colours
+          + annotate("text", x=5.4,y=0.015,label="dS", colour = "#A09ABC", size = 6)
+          + annotate("text", x=5.4,y=0.0035,label="dN", colour = "#6494AA", size = 6)
+          + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.01,0.1, 1, 10))
+          + scale_color_manual(values=colours_arr)
+          #remove redundant xaxis
+          + theme(
+                  #remove legend
+                  legend.position = "none")
+          #axis labels
+          + ylab("Mean Expected # of Substitutions per 10Kbp")
+           + xlab("Distance from the Origin\nof Replication (Mbp)")
+          #+ ggtitle(expression(paste(italic("Streptomyces"), " Chromosome")))
+)
+
+
+colours_arr <- c("#C29979")
+omeg_g2 <- (ggplot(strep_omeg, aes(x=new_sections, y=value.mean, colour=class))
+           + geom_point(alpha = 0.65)
+           + geom_smooth()
+           #labels for the colours
+           + annotate("text", x=5.4,y=0.4,label="omega", parse=TRUE, colour = "#C29979", size = 10)
+           + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.01,0.1, 1, 10))
+           + scale_color_manual(values=colours_arr)
+           #omega = 1 reference line
+           +  geom_hline(yintercept=1, linetype="dashed", color = "black", size=1)
+           #axis labels
+           + xlab("Distance from the Origin\nof Replication (Mbp)")
+           + ylab("Mean Ratio (dN/dS) per 10Kbp")
+           + theme(legend.position = "none")
+)
+
+
+```
+```{r, dS_dN_graph2, warning=FALSE}
+#arrange the graphs on one. since facet will not let you re-lable each axis in a facet
+grid.newpage()
+grid.draw(cbind(ggplotGrob(rate_g2), ggplotGrob(omeg_g2)))
+
+```
