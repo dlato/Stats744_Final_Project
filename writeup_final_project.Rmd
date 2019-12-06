@@ -675,11 +675,10 @@ Again, we are primarily interested in $\omega$ values that are larger than zero 
 We decided to add a reference line at 1 to help remind viewers about the differences between $\omega$ values that lie above and below this line.
 
 We also used direct labeling when we could to avoid the need for a legend.
-We additionally put the dS and dN values on the top graph and the $\omega$ values on the bottom graph because $\omega$ is the ratio of the top graph (dN/dS).
 Although the y-axis titles are lengthy, they are biologically accurate and convey the proper units for each of the selection values.
 We chose to put them on separate lines so they are as readable as possible.
 
-For this graphic we also had many itterations (see *Appendix* Figure A3).
+For this graphic we also had many itterations (see *Appendix* Figure A3 for the most prominant one).
 In general, humans are better at determining the slope of a line when it is near a 45 degree angle.
 By changing the arrangement of these figures on the graphic, we can adjust the aspect ratio so the trend lines appear to be at an angle closer to 45 degrees.
 This can be seen in Figure A3 in the *Appendix*.
@@ -700,13 +699,13 @@ We therefore believe that the graph presented in the main text is the best optio
 ## Gene Expression: 
 
 We decided to include all six different gene expression plots, as we see different trends for each bacteria.
-I did not go with facets, because the range of values of the distance from the origin of replication differs for each bacteria. 
+We did not go with facets, because the range of values of the distance from the origin of replication differs for each bacteria. 
 But the order in which we decided to show the plots, follows the same order we did for the facets in the selection plots (for the same reasoning too).
 
 In our expression plot, we used geom_jitter() and plotted all the observations within each group. 
 We then calculated the mean expression value of each bin and plotted it as a point on top of the observations. We used the same color brown, but in two different shades to represent the observations and the mean value. That is, because both represent the same response variable, the expression value. 
 
-we wanted to have as much information as possible, without it being too distracting. So, we chose a lighter colour and included all of the the raw data. 
+We wanted to have as much information as possible, without it being too distracting. So, we chose a lighter colour and included all of the the raw data. 
 
 For each expression plot, we considered more than one possible size for the width of our bins.  We decided to go with the ones that would reduce the overall noise of the graph, but still allow for a signal to be seen.
 
@@ -860,8 +859,8 @@ rate_g2 <- (ggplot(strep_rates, aes(x=new_sections, y=value.mean, colour=class))
           + geom_point(alpha = 0.65)
           + geom_smooth()
           #labels for the colours
-          + annotate("text", x=5.4,y=0.015,label="dS", colour = "#A09ABC", size = 6)
-          + annotate("text", x=5.4,y=0.0035,label="dN", colour = "#6494AA", size = 6)
+          + annotate("text", x=5.5,y=0.015,label="dS", colour = "#A09ABC", size = 4)
+          + annotate("text", x=5.6,y=0.0035,label="dN", colour = "#6494AA", size = 4)
           + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.01,0.1, 1, 10))
           + scale_color_manual(values=colours_arr)
           #remove redundant xaxis
@@ -880,7 +879,7 @@ omeg_g2 <- (ggplot(strep_omeg, aes(x=new_sections, y=value.mean, colour=class))
            + geom_point(alpha = 0.65)
            + geom_smooth()
            #labels for the colours
-           + annotate("text", x=5.4,y=0.4,label="omega", parse=TRUE, colour = "#C29979", size = 10)
+           + annotate("text", x=5.5,y=0.3,label="omega", parse=TRUE, colour = "#C29979", size = 8)
            + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.01,0.1, 1, 10))
            + scale_color_manual(values=colours_arr)
            #omega = 1 reference line
