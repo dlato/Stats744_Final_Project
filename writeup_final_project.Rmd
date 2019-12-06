@@ -386,16 +386,20 @@ We created the same graph for each of the bacterial genomes to explore how gene 
 ```{r, expression_graph, include=FALSE}
 
 # strep
-data12 <- read.delim("./data/strep_gene_exp_bidirectional_data.txt", sep = "")
-data12$tmp_pos = abs(data12$tmp_pos)
-data12$group<-cut(data12$tmp_pos, breaks = seq(200,5400000,100000),labels = seq(1:53))
-data12$avg = rep(0,7768)
+strep_data <- read.delim("./data/strep_gene_exp_bidirectional_data.txt", sep = "")
+# taking the absolute value of the distance from the origin of replication 
+strep_data$tmp_pos = abs(strep_data$tmp_pos)
+# creating the bins
+strep_data$group<-cut(strep_data$tmp_pos, breaks = seq(200,5400000,100000),labels = seq(1:53))
+# Finding the mean value of expression for all bins
+strep_data$avg = rep(0,7768)
 for (i in 1:53) {
-y = data12$Exp[(data12$group == i)]
-data12$avg[(data12$group == i)] = mean(data12$Exp[(data12$group == i)])
+y = strep_data$Exp[(strep_data$group == i)]
+strep_data$avg[(strep_data$group == i)] = mean(strep_data$Exp[(strep_data$group == i)])
 }
 
-(g1 <- ggplot(data = data12, mapping = aes(x=group,y=Exp)) 
+# The plot:
+(g1 <- ggplot(data = strep_data, mapping = aes(x=group,y=Exp)) 
   +geom_jitter(aes(color="#F3D9B1"),alpha=0.4, width = 0.2) 
   +geom_point(aes(y = avg, color = "#C29979")) 
   +geom_smooth(aes(x = as.numeric(group), y = avg,color = "#6494AA"),span=0.5) 
@@ -408,20 +412,20 @@ data12$avg[(data12$group == i)] = mean(data12$Exp[(data12$group == i)])
   + ggtitle(expression(paste(italic("Streptomyces"))))
 )
 
+# Doing the same for all other 5 bacterias
 #sinoC
-data11 <- read.delim("./data/sinoC_gene_exp_bidirectional_data.txt", sep = "")
-data11$tmp_pos = abs(data11$tmp_pos)
-summary(data11)
-data11$group<-cut(data11$tmp_pos, breaks = seq(880,2300000,50000)
+sinoC_data <- read.delim("./data/sinoC_gene_exp_bidirectional_data.txt", sep = "")
+sinoC_data$tmp_pos = abs(sinoC_data$tmp_pos)
+sinoC_data$group<-cut(sinoC_data$tmp_pos, breaks = seq(880,2300000,50000)
                   ,labels = seq(1:45)
 )
-data11$avg = rep(0,3429)
+sinoC_data$avg = rep(0,3429)
 for (i in 1:45) {
-  y = data11$Exp[(data11$group == i)]
-  data11$avg[(data11$group == i)] = mean(data11$Exp[(data11$group == i)])
+  y = sinoC_data$Exp[(sinoC_data$group == i)]
+  sinoC_data$avg[(sinoC_data$group == i)] = mean(sinoC_data$Exp[(sinoC_data$group == i)])
 }
 
-(g2 <- ggplot(data = data11, mapping = aes(x=group,y=Exp)) 
+(g2 <- ggplot(data = sinoC_data, mapping = aes(x=group,y=Exp)) 
   +geom_jitter(aes(color="#F3D9B1"),alpha=0.4, width = 0.2) 
   +geom_point(aes(y = avg, color = "#C29979")) 
   +geom_smooth(aes(x = as.numeric(group), y = avg,color = "#6494AA"),span=0.5) 
@@ -435,20 +439,18 @@ for (i in 1:45) {
 )
 
 # ecoli
-data7 <- read.delim("./data/ecoli_gene_exp_bidirectional_data.txt",sep = "")
-data7$tmp_pos = abs(data7$tmp_pos)
-summary(data7)
-data7$group<-cut(data7$tmp_pos, breaks = seq(480,3350000,75000)
+ecoli_data <- read.delim("./data/ecoli_gene_exp_bidirectional_data.txt",sep = "")
+ecoli_data$tmp_pos = abs(ecoli_data$tmp_pos)
+ecoli_data$group<-cut(ecoli_data$tmp_pos, breaks = seq(480,3350000,75000)
                  ,labels = seq(1:44)
 )
-summary(data7$group)
-data7$avg = rep(0,3364)
+ecoli_data$avg = rep(0,3364)
 for (i in 1:44) {
-  y = data7$Exp[(data7$group == i)]
-  data7$avg[(data7$group == i)] = mean(data7$Exp[(data7$group == i)])
+  y = ecoli_data$Exp[(ecoli_data$group == i)]
+  ecoli_data$avg[(ecoli_data$group == i)] = mean(ecoli_data$Exp[(ecoli_data$group == i)])
 }
 
-(g3 <- ggplot(data = data7, mapping = aes(x=group,y=Exp)) 
+(g3 <- ggplot(data = ecoli_data, mapping = aes(x=group,y=Exp)) 
   +geom_jitter(aes(color="#F3D9B1"),alpha=0.4, width = 0.2) 
   +geom_point(aes(y = avg, color = "#C29979")) 
   +geom_smooth(aes(x = as.numeric(group), y = avg,color = "#6494AA"),span=0.5) 
@@ -462,20 +464,18 @@ for (i in 1:44) {
 )
 
 # bass
-data8 <- read.delim("./data/bass_gene_exp_bidirectional_data.txt", sep = "")
-data8$tmp_pos = abs(data8$tmp_pos)
-summary(data8)
-data8$group<-cut(data8$tmp_pos, breaks = seq(280,2350000,50000)
+bass_data <- read.delim("./data/bass_gene_exp_bidirectional_data.txt", sep = "")
+bass_data$tmp_pos = abs(bass_data$tmp_pos)
+bass_data$group<-cut(bass_data$tmp_pos, breaks = seq(280,2350000,50000)
                  ,labels = seq(1:46)
 )
-summary(data8$group)
-data8$avg = rep(0,4154)
+bass_data$avg = rep(0,4154)
 for (i in 1:46) {
-  y = data8$Exp[(data8$group == i)]
-  data8$avg[(data8$group == i)] = mean(data8$Exp[(data8$group == i)])
+  y = bass_data$Exp[(bass_data$group == i)]
+  bass_data$avg[(bass_data$group == i)] = mean(bass_data$Exp[(bass_data$group == i)])
 }
 
-(g4 <- ggplot(data = data8, mapping = aes(x=group,y=Exp)) 
+(g4 <- ggplot(data = bass_data, mapping = aes(x=group,y=Exp)) 
   +geom_jitter(aes(color="#F3D9B1"),alpha=0.4, width = 0.2) 
   +geom_point(aes(y = avg, color = "#C29979")) 
   +geom_smooth(aes(x = as.numeric(group), y = avg,color = "#6494AA"),span=0.5) 
@@ -489,19 +489,17 @@ for (i in 1:46) {
 )
 
 # pSymA
-data9 <- read.delim("./data/pSymA_gene_exp_bidirectional_data.txt", sep = "")
-data9$tmp_pos = abs(data9$tmp_pos)
-summary(data9)
-data9$group<-cut(data9$tmp_pos, breaks = seq(513,980000,20000)
+pSymA_data <- read.delim("./data/pSymA_gene_exp_bidirectional_data.txt", sep = "")
+pSymA_data$tmp_pos = abs(pSymA_data$tmp_pos)
+pSymA_data$group<-cut(pSymA_data$tmp_pos, breaks = seq(513,980000,20000)
                  ,labels = seq(1:48)
 )
-summary(data9$group)
-data9$avg = rep(0,1293)
+pSymA_data$avg = rep(0,1293)
 for (i in 1:48) {
-  y = data9$Exp[(data9$group == i)]
-  data9$avg[(data9$group == i)] = mean(data9$Exp[(data9$group == i)])
+  y = pSymA_data$Exp[(pSymA_data$group == i)]
+  pSymA_data$avg[(pSymA_data$group == i)] = mean(pSymA_data$Exp[(pSymA_data$group == i)])
 }
-(g5 <- ggplot(data = data9, mapping = aes(x=group,y=Exp)) 
+(g5 <- ggplot(data = pSymA_data, mapping = aes(x=group,y=Exp)) 
   +geom_jitter(aes(color="#F3D9B1"),alpha=0.4, width = 0.2) 
   +geom_point(aes(y = avg, color = "#C29979")) 
   +geom_smooth(aes(x = as.numeric(group), y = avg,color = "#6494AA"),span=0.5) 
@@ -515,20 +513,18 @@ for (i in 1:48) {
 )
 
 # pSymB
-data10 <- read.delim("./data/pSymB_gene_exp_bidirectional_data.txt", sep = "")
-data10$tmp_pos = abs(data10$tmp_pos)
-summary(data10)
-data10$group<-cut(data10$tmp_pos, breaks = seq(650,870000,20000)
+pSymB_data <- read.delim("./data/pSymB_gene_exp_bidirectional_data.txt", sep = "")
+pSymB_data$tmp_pos = abs(pSymB_data$tmp_pos)
+pSymB_data$group<-cut(pSymB_data$tmp_pos, breaks = seq(650,870000,20000)
                   ,labels = seq(1:43)
 )
-summary(data10$group)
-data10$avg = rep(0,1570)
+pSymB_data$avg = rep(0,1570)
 for (i in 1:43) {
-  y = data10$Exp[(data10$group == i)]
-  data10$avg[(data10$group == i)] = mean(data10$Exp[(data10$group == i)])
+  y = pSymB_data$Exp[(pSymB_data$group == i)]
+pSymB_data$avg[(pSymB_data$group == i)] = mean(pSymB_data$Exp[(pSymB_data$group == i)])
 }
 
-(g6 <- ggplot(data = data10, mapping = aes(x=group,y=Exp)) 
+(g6 <- ggplot(data = pSymB_data, mapping = aes(x=group,y=Exp)) 
   +geom_jitter(aes(color="#F3D9B1"),alpha=0.4, width = 0.2) 
   +geom_point(aes(y = avg, color = "#C29979")) 
   +geom_smooth(aes(x = as.numeric(group), y = avg,color = "#6494AA"),span=0.5) 
