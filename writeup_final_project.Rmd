@@ -194,7 +194,7 @@ This means that values of 0 are located closest to the origin, and the largest v
 The gene expression data set has information about the average expression value of the gene (averaged across multiple data sets) and the genomic location of that gene relative to the origin of replication.
 Additionally, we have obtained selection information on a few of these genes from each bacterial genome.
 This selection information tells us about the synonymous substitution rate (dS, mutations that do not cause a change in the amino acid sequence), the non-synonymous substitution rate (dN, mutations that cause a change in the amino acid sequence), and $\omega$ (dN/dS).
-Since synonomous substitutions do not cause a change in an amino acid sequence, we expect most genes to have a synonomous rate (dS) larger than non-synonomoys rate (dN). 
+Since synonymous substitutions do not cause a change in an amino acid sequence, we expect most genes to have a synonymous rate (dS) larger than non-synonymous rate (dN). 
 
 The $\omega$ ratio allows us to determine if the genes will be maintained or deleted over time.
 If $\omega$ for a gene is larger than 1, the gene is under positive selection and therefore is beneficial to the organism and will likely be maintained in the genome over time.
@@ -281,7 +281,7 @@ creates 80% of the antibiotics that we currently use.
 This means that the genome of \strep
 would generally benefit from positive selection, where mutations that confer a benefit to the organism are retained.
 
-As metioned previously, genes that are highly conserved and essential to the function of the organism are usually found near the origin of replication and part of the core genome.
+As mentioned previously, genes that are highly conserved and essential to the function of the organism are usually found near the origin of replication and part of the core genome.
 Genes that are less conserved and essential are usually found near the terminus of replication and are used in local environmental adaptation, these are a part of the accessory genome.
 Since we have some theory about how genes are organized on bacterial genomes, we decided to take a closer look at the selection values for \strep
 and see where these genes fall relative to the origin of replication.
@@ -549,7 +549,7 @@ g6
 
 ```
 
-For the expression plots above,we took every c Kbp region of the genome and grouped them into a bin. The c differed for each bacteria, as each one of the datasets contains different number of observations and different range of values for the distance from the origin of replication. The dark brown points on the graph shows the mean expression value calculated over cKbp section of the genome. We included all the raw data along with the mean and plotted it in a lighter color. Each plot contained a non-linear trend line with confidence intervals to show an overall trend about how expression value changes with distance from the origin of replication. In \textit{Streptomyces}, \textit{B.\,subtilis}, and \textit{E.\,coli}, we see that expression decreases as we move away from the origin, just like what we predicted. However, there are two notable exceptions, pSymB and pSymA.
+For the expression plots above,we took every c Kbp region of the genome and grouped them into a bin. The c differed for each bacteria, as each one of the data sets contains different number of observations and different range of values for the distance from the origin of replication. The dark brown points on the graph shows the mean expression value calculated over cKbp section of the genome. We included all the raw data along with the mean and plotted it in a lighter color. Each plot contained a non-linear trend line with confidence intervals to show an overall trend about how expression value changes with distance from the origin of replication. In \textit{Streptomyces}, \textit{B.\,subtilis}, and \textit{E.\,coli}, we see that expression decreases as we move away from the origin, just like what we predicted. However, there are two notable exceptions, pSymB and pSymA.
 These happen to be the two secondary replicons of \smel
 which in general contain majority of the accessory genome.
 This could be why these replicons appear to have the opposite gene expression trend from the other bacteria. 
@@ -563,7 +563,7 @@ This is where we expect most of the accessory genome to be located.
 We also see that the the expression decreases in a non-linear way, then we start to see more of a wave-like pattern at the terminus.
 
 For \textit{B.\,subtilis}
-, as we move away from the origin, we barely see any significant changes in the expression values. Until we are around 35 (50Kbp) away from the origin, that is when expresion values starts to decrease. Which is expected, as that is where we expect most of our accessory genomes to be located.
+, as we move away from the origin, we barely see any significant changes in the expression values. Until we are around 35 (50Kbp) away from the origin, that is when expression values starts to decrease. Which is expected, as that is where we expect most of our accessory genomes to be located.
 
 For \textit{E.\,coli}
 , we see more of a wave-like pattern, until we are near the terminus, that is when we start to see a decrease in expression values. Again, this is expected, because most of accessory genomes are located near the terminus.
@@ -591,7 +591,7 @@ This is to avoid confusion about which bacterial replicon viewers are looking at
 Any graphs that involve the distance from the origin of replication and the response variables, we chose to focus on one bacteria.
 All the bacterial replicons vary greatly in length from ~1Mbp to ~5Mbp.
 If we had used a facet to show for example, how gene expression changes with distance from the origin of replication in all replicons, some of the replicons would be "squished" on the x-axis and we would be unable to see any of the results.
-We therefore chose to create multiple graphs for each bacterial replicon, or focus on only one particularaly interesting replicon.
+We therefore chose to create multiple graphs for each bacterial replicon, or focus on only one particularly interesting replicon.
 
 ## Selection:
 
@@ -604,13 +604,13 @@ Since $\omega$ provides important information about the selective pressures acti
 We also wanted dN and dS to be similar colours (blue and purple) because they have the same units and both represent substitution rates.
 
 Although most of the scales are log base 10, we decided to retain zero values because these provide valuable biological information.
-Genes with dS = 0 means that there are no synonomous substitutions which grealty influences our predictions on what evolutionary trajectories and past events are acting on that gene.
+Genes with dS = 0 means that there are no synonymous substitutions which greatly influences our predictions on what evolutionary trajectories and past events are acting on that gene.
 The same could be said for dN values equal to 0, or $\omega$ values equal to 0.
 
 ### Facet Graph:
 For this graph we wanted to be able to compare the dS, dN and $\omega$ values within each bacterial replicon, and across all bacterial replicons, so we decided on a facet graph.
 This allows us to see differences between dN, dS and $\omega$ within each bacterial replicon while also highlighting overarching similarities or differences between the bacterial replicons.
-We decided to facet based on bacteria because primarally we wanted to show differences within bacterial replicons rather than between all bacterial replicons.
+We decided to facet based on bacteria because primarily we wanted to show differences within bacterial replicons rather than between all bacterial replicons.
 We chose to show the data points as a strip plot with a box plot and violin plot overlayed.
 This allows for the maximum amount of information about the distribution of the selection values to be shown.
 
@@ -633,11 +633,11 @@ In the selection summary graphic we decided to add in a redundant legend to aid 
 We chose to arrange the selection parameters (dN, dS and $\omega$) in that particular order because $\omega$ is the ratio of dN/dS, we thought that it would be appropriate to put dN first in an attempt to match the ratio order.
 Likewise, $\omega$ was chosen as the right most value because it is a combination of the first two values.
 We removed the legend as we thought it to be redundant.
-We also removed any space between the facets to ensure there was less unecessary white space.
+We also removed any space between the facets to ensure there was less necessary white space.
 
-We experimented with many many versions of this graph, prominant versions can be found in the *Appendix* section.
-Although $\omega$ is "unitless", dN and dS are not.
-It was therefore necessary to have multiple lables for both sets of values.
+We experimented with many many versions of this graph, prominent versions can be found in the *Appendix* section.
+Although $\omega$ is "unit less", dN and dS are not.
+It was therefore necessary to have multiple labels for both sets of values.
 We experimented with having facets for both the bacteria and selection variables (see Figures A1 and A2 in *Appendix*).
 These graphs allow for the scales to be "tighter" around the values for the rates (dN and dS) and $\omega$, since both facets are allowed to have varying scales.
 These graphs also make it clear which units correspond to which values, which could be confusing in the figure presented in the main part of this write up.
@@ -649,7 +649,7 @@ Additionally, we wanted to have all bacterial replicons in the same figure so we
 As mentioned previously, this would not be possible with the supplemental graphs (A1 and A2) because we would be sacrificing readability.
 The choice for faceting by bacteria or by selection value is difficult because most biologists will want to look at what is happening within each bacterial replicon first, and then look at over arching trends between bacterial replicons.
 This again is difficult to determine with Figures A1 and A2.
-Therefore, we believe that the figure presented in the main part of the document provides a compact, accurate, and prefereable depiction of the selection values.
+Therefore, we believe that the figure presented in the main part of the document provides a compact, accurate, and preferable depiction of the selection values.
 
 
 
@@ -661,7 +661,7 @@ Since the $\omega$ values are so much higher than the dN or dS values, having al
 By using separate graphs, we are able to see these changes more clearly.
 
 We chose to put $\omega$ on the top part of the figure and the rates (dS and dN) on the bottom part.
-This is partially because we are interested primaraly in the distribution of $\omega$ as distance from the origin of replication increases, and partially because the values of $\omega$ are generally larger than the values for the rates.
+This is partially because we are interested primarily in the distribution of $\omega$ as distance from the origin of replication increases, and partially because the values of $\omega$ are generally larger than the values for the rates.
 It therefore is logical to have $\omega$ at a higher "height" in the graphic than dN and dS.
 
 We chose to include a non-linear trend line to help show what overall patterns are happening as the selection parameters change with distance from the origin of replication.
@@ -675,7 +675,7 @@ We also used direct labeling when we could to avoid the need for a legend.
 Although the y-axis titles are lengthy, they are biologically accurate and convey the proper units for each of the selection values.
 We chose to put them on separate lines so they are as readable as possible.
 
-For this graphic we also had many itterations (see *Appendix* Figure A3 for the most prominant one).
+For this graphic we also had many iterations (see *Appendix* Figure A3 for the most prominent one).
 In general, humans are better at determining the slope of a line when it is near a 45 degree angle.
 By changing the arrangement of these figures on the graphic, we can adjust the aspect ratio so the trend lines appear to be at an angle closer to 45 degrees.
 This can be seen in Figure A3 in the *Appendix*.
@@ -686,9 +686,9 @@ would have issues determining which portions of the genome (relative to the orig
 Additionally, it is difficult to establish which portions of the genome (relative to the origin of replication) fall within a peak or valley of high or low selection values.
 We believe that this supplemental graph A3 does not capture this information.
 In the graph presented in this main portion of this document, it is clear which portions of the genome have high or low selection values.
-It is particularaly easy to determine the locations of the core (~3Mbp from the origin of replication) and accessory genome (~ the last 2Mbp of the graph) in \strep
-, which carry important predications about how selection might be acting upon those regions of the genome.
-Showing the graphs in a horizontal manner gives a more indepth picture about the distribution of the selection values across the genome (relative to the origin of replication).
+It is particularly easy to determine the locations of the core (~3Mbp from the origin of replication) and accessory genome (~ the last 2Mbp of the graph) in \strep
+, which carry important predication about how selection might be acting upon those regions of the genome.
+Showing the graphs in a horizontal manner gives a more in depth picture about the distribution of the selection values across the genome (relative to the origin of replication).
 A vertical layout (Figure A3) of these graphs loses information about the genomic location of the selection values.
 We therefore believe that the graph presented in the main text is the best option for conveying the most amount of information and staying biologically relevant.
 
@@ -707,7 +707,7 @@ We wanted to have as much information as possible, without it being too distract
 For each expression plot, we considered more than one possible size for the width of our bins.  We decided to go with the ones that would reduce the overall noise of the graph, but still allow for a signal to be seen.
 
 We also used geom_smooth() in our plots, this made it easier for us to see what overall patterns are happening as we move away from the origin of replication. We assessed more than one different span value, but did not see much of a difference in different span values, so we abided by the value 0.5.
-We allowed for confidence intervals, but we do not see much of it for most of the bacterias, except for pSymA and pSymB. 
+We allowed for confidence intervals, but we do not see much of it for most of the bacteria, except for pSymA and pSymB. 
 
 We chose a lighter colour (light brown) for the raw data and a darker colour (dark brown) for the mean values for each bin.We additionally chose a bold colour (blue) for the trend line.
 All these colour components help the viewer focus on the mean values, which is what we were trying to highlight, but still have access to all the data points.
