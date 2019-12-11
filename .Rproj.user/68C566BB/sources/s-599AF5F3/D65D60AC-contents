@@ -236,7 +236,7 @@ vio_str_box <-(ggplot(sel_dat, aes(x=class, y=value, fill = class, colour = clas
                +  geom_hline(yintercept=1, linetype="dashed", color = "black")
                + facet_wrap(~bacteria, labeller=label_parsed)
                + xlab("") 
-               + ylab("Expected Number of Substitutions per Site") 
+               + ylab("Expected # of Substitutions per Site") 
                + scale_color_manual(values=c("#80A7B9","#928CAB","#B18C6E"),labels = c(" dN", " dS", expression(omega)))
                #make the omega a math symbol in x-axis
                + scale_x_discrete(breaks = c("dN", "dS", "omega"),labels = c("dN","dS", expression(omega))) 
@@ -725,7 +725,7 @@ single_rates_summary <-(ggplot(single_rates_dat, aes(x=class, y=value, fill = cl
                + stat_boxplot(geom = "errorbar", width = 0.2, colour = "black") 
                + facet_wrap(~bacteria, labeller=label_parsed)
                + xlab("") 
-               + ylab("Expected Number\nof Substitutions\nper Site") 
+               + ylab("Expected # of\nSubstitutions\nper Site") 
                + scale_color_manual(values=c("#80A7B9","#928CAB"),labels = c(" dN", " dS"))
                + scale_x_discrete(breaks = c("dN", "dS"),labels = c("dN","dS")) 
                #log scale and removing trailing zeros from y-axis labels
@@ -793,7 +793,7 @@ multi_rates_summary <-(ggplot(multi_rates_dat, aes(x=class, y=value, fill = clas
                + stat_boxplot(geom = "errorbar", width = 0.2, colour = "black") 
                + facet_wrap(~bacteria, labeller=label_parsed)
                + xlab("") 
-               + ylab("Expected Number\nof Substitutions\nper Site") 
+               + ylab("Expected # of\nSubstitutions\nper Site") 
                + scale_color_manual(values=c("#80A7B9","#928CAB"),labels = c(" dN", " dS"))
                + scale_x_discrete(breaks = c("dN", "dS"),labels = c("dN","dS")) 
                #log scale and removing trailing zeros from y-axis labels
