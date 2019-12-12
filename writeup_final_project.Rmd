@@ -199,13 +199,14 @@ Since synonymous substitutions do not cause a change in an amino acid sequence, 
 The $\omega$ ratio allows us to determine if the genes will be maintained or deleted over time.
 If $\omega$ for a gene is larger than 1, the gene is under positive selection and therefore is beneficial to the organism and will likely be maintained in the genome over time.
 If $\omega$ is less than 1, the gene is under purifying or negative selection, and therefore is deleterious to the organism and will likely not be maintained in the genome over time.
-If $\omega$ is equal to 1, the gene is under neutral selection, and is neither beneficial nor deleterious to the organism.
+If $\omega$ is equal to (or close to) 1, the gene is under neutral selection, and is neither beneficial nor deleterious to the organism.
 This selection data is again linked to the relative distance from the origin of replication.
 
 Both data sets are looking at how the response variables change with distance from the origin of replication.
 Near the origin of replication we expect genes to be more conserved and encoding for essential functions than genes located near the terminus of replication.
 Genes near the origin typically therefore, have higher gene expression and less mutations or substitutions, because they are important to the function of the organism.
 We expect that most genes (in any genome) are under neutral or purifying selection (removing deleterious traits), regardless of their genomic location (neutral theory or nearly neutral theory).
+That being said, most amino acids are under some sort of constraint so it is rare that any genes will have an $\omega$ value equal to (or close to) 1.
 Since genes near the terminus are changing often (mutations) and involved in local environmental adaptation, we could suppose that these genes might be the best candidates for positive selection (increase beneficial traits).
 
 This leaves us with three predictions for our data sets:
@@ -214,7 +215,7 @@ This leaves us with three predictions for our data sets:
 
 2. We should have dS $>$ dN for most genes in all bacteria
 
-3. Most genes should be under neutral or purifying selection, any genes that are under positive selection should be located near the terminus
+3. Most genes should be under purifying or neutral selection, any genes that are under positive selection should be located near the terminus
 
 
 **Selection Data**
@@ -272,8 +273,13 @@ There is a phylogenetic component to the calculation of dN, dS and $\omega$ and 
 This means, there depending on how close or distantly related the taxa are, there could have been multiple substitutions at one (or many) sites within the gene.
 This could cause the value of dS to be estimated to be larger than one substitution per site.
 
-We also notice that most of the $\omega$ values for each bacterial replicon are below 1, this is what we expected.
-An $\omega$ value below one means that the genes are likely neutral or under negative selection, meaning that mutations having deleterious impact on the organism will be removed over time.
+We also notice that most of the $\omega$ values for each bacterial replicon are below (or close to) 1, this is what we expected.
+An $\omega$ value below (or close to) one means that the genes are likely neutral or under negative selection, meaning that mutations having deleterious impact on the organism will be removed over time.
+As mentioned previously, any genes that have an $\omega$ value equal to or close to 1 are most likely under neutral selection.
+It is difficult to tell from the graph which genes have an $\omega$ value statistically close enough to 1 to be considered neutral.
+The program (PAML) used to estimate the values of dN, dS, and $\omega$ uses a maximum-likelihood framework to calculate the average value over all sites in the gene.
+This means that we are quite confident that what we are seeing is the true value because it is impacting all sites over a prolonged period of time.
+To be more conservative, any $\omega$ values that are ``close'' to one should be considered neutral with caution.
 The notable exception to this is \strep
 , which appears to have a bi-modal distribution of $\omega$ values with a high number of genes with $\omega$ values at or above 1.
 \strep
@@ -282,7 +288,7 @@ This means that the genome of \strep
 would generally benefit from positive selection, where mutations that confer a benefit to the organism are retained.
 
 As mentioned previously, genes that are highly conserved and essential to the function of the organism are usually found near the origin of replication and part of the core genome.
-Genes that are less conserved and essential are usually found near the terminus of replication and are used in local environmental adaptation, these are a part of the accessory genome.
+Genes that are less conserved and non-essential are usually found near the terminus of replication and are used in local environmental adaptation, these are a part of the accessory genome.
 Since we have some theory about how genes are organized on bacterial genomes, we decided to take a closer look at the selection values for \strep
 and see where these genes fall relative to the origin of replication.
 
@@ -346,13 +352,55 @@ grid.draw(rbind(ggplotGrob(omeg_g), ggplotGrob(rate_g)))
 
 ```
 
+
+```{r omeg_2, include=FALSE}
+#lable all points that have omega > 1 as a different colour
+res <- strep_omeg %>% mutate(category=cut(value.mean, breaks=c(-Inf, 1, Inf), labels=c("#C29979","#594637")))
+
+colours_arr <- res$category
+omeg_g <- (ggplot(res, aes(x=new_sections, y=value.mean))
+           + geom_point(alpha = 0.75, fill = colours_arr, colour = colours_arr)
+           + geom_smooth(colour = "#C29979")
+           #labels for the colours
+           + annotate("text", x=5.4,y=0.4,label="omega", parse=TRUE, colour = "#C29979", size = 10)
+           + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.01,0.1, 1, 10))
+           #+ scale_color_manual(values=colours_arr)
+           #omega = 1 reference line
+           +  geom_hline(yintercept=1, linetype="dashed", color = "black", size=1)
+           #axis labels
+          + ggtitle(expression(paste(italic("Streptomyces"), " Chromosome")))
+           + ylab("Mean Ratio\n(dN/dS)\nper 10Kbp")
+          #remove x axis labels
+          + theme(axis.title.x = element_blank(),
+                  axis.ticks.x = element_blank(),
+                  axis.text.x = element_blank(),
+                  #remove legend
+                  legend.position = "none")
+)
+
+```
+
+
+```{r, strep_sel2, warning=FALSE}
+#arrange the graphs on one. since facet will not let you re-lable each axis in a facet
+grid.newpage()
+grid.draw(rbind(ggplotGrob(omeg_g), ggplotGrob(rate_g)))
+
+```
+
+
 The top graph shows the mean $\omega$ calculated over each 10Kbp region of the \strep 
 genome.
 This was calculated by averaging the $\omega$ values over each 10,000 bp (10Kbp) section of the genome. 
 As mentioned before, this was calculated by averaging the $\omega$ values of all genes within each 10Kbp section of the genome. 
 A non-linear trend line with confidence intervals was added to the plot to show an overall trend about how $\omega$ changes with distance from the origin of replication.
-As mentioned previously, we see that most sections of the genome have a mean $\omega$ value of less than 1, as expected.
+As mentioned previously, we see that most sections of the genome have a mean $\omega$ value of less than (or close to) 1, as expected.
 This means that majority of the genes in the genome are under neutral or negative selection.
+As mentioned previously, any genes that have an $\omega$ value equal to or close to 1 are most likely under neutral selection.
+It is difficult to tell from the graph which genes have an $\omega$ value statistically close enough to 1 to be considered neutral.
+The program (PAML) used to estimate the values of dN, dS, and $\omega$ uses a maximum-likelihood framework to calculate the average value over all sites in the gene.
+This means that we are quite confident that what we are seeing is the true value because it is impacting all sites over a prolonged period of time.
+To be more conservative, any $\omega$ values that are ``close'' to one should be considered neutral with caution.
 
 Interestingly, the sections of the genome with mean $\omega$ values larger than one seem to be clustered near the terminus of replication.
 There appears to be a particular peak at around 3.7 million base pairs (Mbp) from the origin of replication.

@@ -200,6 +200,10 @@ ecol_dat$new_sections <- ecol_dat$new_sections / 1000000
 ##levels(ecol_dat$fake_class) <- factor(ecol_dat$fake_class, levels= c("omeg", "rates"))
 ecol_omeg <- ecol_dat[which(ecol_dat$class == "omega"),]
 head(ecol_omeg)
+class(ecol_omeg)
+#make new column to colour points with omega > 1
+res <- ecol_omeg %>% mutate(category=cut(value.mean, breaks=c(-Inf, 1, Inf), labels=c("#C29979","#594637")))
+res <- ecol_omeg %>% mutate(category=cut(value.mean, breaks=c(-Inf, 1, Inf), labels=c("#C29979","#6A5442")))
 
 ecol_rates <- ecol_dat[which(ecol_dat$class == "dS" | ecol_dat$class == "dN"),]
 head(ecol_rates)
@@ -231,12 +235,35 @@ rate_g <- (ggplot(ecol_rates, aes(x=new_sections, y=value.mean, colour=class))
 
 rate_g
 
+colours_arr <- res$category
+colours_arr <- res$category
+omeg_g <- (ggplot(res, aes(x=new_sections, y=value.mean))
+           + geom_point(alpha = 0.75, fill = colours_arr, colour = colours_arr)
+           + geom_smooth(colour = "#C29979")
+           #labels for the colours
+           + annotate("text", x=5.4,y=0.4,label="omega", parse=TRUE, colour = "#C29979", size = 10)
+           + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.01,0.1, 1, 10))
+           #+ scale_color_manual(values=colours_arr)
+           #omega = 1 reference line
+           +  geom_hline(yintercept=1, linetype="dashed", color = "black", size=1)
+           #axis labels
+           + ggtitle(expression(paste(italic("Streptomyces"), " Chromosome")))
+           + ylab("Mean Ratio\n(dN/dS)\nper 10Kbp")
+           #remove x axis labels
+           + theme(axis.title.x = element_blank(),
+                   axis.ticks.x = element_blank(),
+                   axis.text.x = element_blank(),
+                   #remove legend
+                   legend.position = "none")
+)
+omeg_g
 #colours_arr <- c("#C29979")
-colours_arr <- c("#B18C6E")
-omeg_g <- (ggplot(ecol_omeg, aes(x=new_sections, y=value.mean, colour=class))
+#colours_arr <- c("#B18C6E")
+#omeg_g <- (ggplot(ecol_omeg, aes(x=new_sections, y=value.mean, colour=class))
+omeg_g <- (ggplot(res, aes(x=new_sections, y=value.mean))
            #  geom_errorbar(aes(ymin=value.mean-sd, ymax=value.mean+sd), width=.1, position=pd) +
-           + geom_point(alpha = 0.75)
-           + geom_smooth()
+           + geom_point(alpha = 0.75, fill = colours_arr, colour = colours_arr)
+           + geom_smooth(colour = "#C29979")
            #labels for the colours
            + annotate("text", x=5.4,y=0.4,label="omega", parse=TRUE, colour = "#B18C6E", size = 10)
            + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.1, 1, 10))

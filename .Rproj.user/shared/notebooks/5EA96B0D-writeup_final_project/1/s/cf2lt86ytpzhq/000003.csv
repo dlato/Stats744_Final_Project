@@ -1,0 +1,6 @@
+"0","grid.draw(rbind(ggplotGrob(omeg_g), ggplotGrob(rate_g)))
+"
+"2","`geom_smooth()` using method = 'loess' and formula 'y ~ x'
+"
+"2","`geom_smooth()` using method = 'loess' and formula 'y ~ x'
+"
