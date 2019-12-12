@@ -935,6 +935,21 @@ omeg_g2 <- (ggplot(strep_omeg, aes(x=new_sections, y=value.mean, colour=class))
            + theme(legend.position = "none")
 )
 
+colours_arr <- res$category
+omeg_g2 <- (ggplot(res, aes(x=new_sections, y=value.mean))
+           + geom_point(alpha = 0.65, colour = colours_arr, fill = colours_arr)
+           + geom_smooth(colour = "#C29979")
+           #labels for the colours
+           + annotate("text", x=5.55,y=0.25,label="omega", parse=TRUE, colour = "#C29979", size = 9)
+           + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.01,0.1, 1, 10))
+           + scale_color_manual(values=colours_arr)
+           #omega = 1 reference line
+           +  geom_hline(yintercept=1, linetype="dashed", color = "black", size=1)
+           #axis labels
+           + xlab("Distance from the Origin\nof Replication (Mbp)")
+           + ylab("Mean Ratio (dN/dS) per 10Kbp")
+           + theme(legend.position = "none")
+)
 
 ```
 ```{r, dS_dN_graph2, warning=FALSE}
