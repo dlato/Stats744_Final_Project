@@ -1,0 +1,27 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1576157879582.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "110407167",
+    "id" : "A7D94B1E",
+    "lastKnownWriteTime" : 1576166804,
+    "last_content_update" : 1576166804923,
+    "path" : "~/Stats744_Final_Project/summary_graphics.R",
+    "project_path" : "summary_graphics.R",
+    "properties" : {
+        "cursorPosition" : "240,105",
+        "marks" : "<:202,-1\n>:202,0",
+        "scrollLine" : "224",
+        "tempName" : "Untitled1"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

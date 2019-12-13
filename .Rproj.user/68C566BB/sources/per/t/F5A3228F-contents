@@ -1,0 +1,259 @@
+---
+title: "Stats744: HW4"
+output: pdf_document
+fontsize: 12pt
+header-includes: \usepackage{xspace, longtable, booktabs}
+---
+
+```{r setup, include=FALSE}
+library(dotwhisker)
+library(broom)
+library(dplyr)
+library(tidyverse)
+library(sjPlot)
+library(sjlabelled)
+library(sjmisc)
+library(ggplot2)
+library(flextable)
+options(scipen=10000)
+## BMB: thanks for setting the theme up front
+theme_set(theme_bw() + theme(strip.background =element_rect(fill="#e7e5e2")) +
+            theme(strip.text = element_text(size =10)) +
+            theme(plot.title = element_text(hjust = 0.5), 
+                  panel.background = element_rect(fill = "white", colour = NA), 
+                  panel.grid.major = element_line(colour = "grey90", size = 0.2), 
+                  panel.grid.minor = element_line(colour = "grey98", size = 0.5), 
+                  panel.spacing = unit(0.25, "lines"), 
+                  axis.text=element_text(size=10),
+                  legend.position="top") 
+          )
+
+#prevent overflow of code boxes
+library(knitr)
+opts_chunk$set(tidy.opts=list(width.cutoff=70),tidy=TRUE)
+```
+
+\newcommand{\smel}{\textit{S.\,meliloti}\xspace}
+\newcommand{\bass}{\textit{B.\,subtilis}\xspace}
+\newcommand{\ecol}{\textit{E.\,coli}\xspace}
+\newcommand{\strep}{\textit{Streptomyces}\xspace}
+\providecommand{\e}[1]{\ensuremath{\times 10^{#1}}}
+
+
+
+## Illustrating Statistical Inference
+
+### Data:
+
+As part of my thesis I have information about substitutions and their variation across four bacterial genomes: \ecol, \bass, \strep, and \smel.
+The bacteria \smel
+is  multi-repliconic and therefore each of its replicons is analyzed separately. 
+**BMB: for explaining this to lay people you might want to say more about what "multi-repliconic" means ...**
+
+The data is binary: determining at each site in the genome if there is a substitution (1), or there is not (0).
+This was also broken down into protein coding and non-protein coding sections of the genome.
+We expect that non-protein coding segments of the genome to be undergoing more substitutions because they are typically "less important" than protein-coding segments of the genome.
+I previously fit a logistic regression to the data and obtained a tables with the following results:
+
+
+\begin{table}[h]
+	\centering
+		\begin{tabular}{lcccc}
+			\toprule
+			\multicolumn{5}{c}{Protein Coding} \\
+			\midrule
+			Bacteria and Replicon & Coefficient Estimate & Standard Error & z-value & P($>$|z|)\\
+			\midrule
+			\ecol Chromosome &  -4.308\e{-8} & 2.584\e{-9} & -16.67 & $<$2\e{-16} \\
+			\bass Chromosome &  -4.971\e{-8} & 4.268\e{-9} & -11.65 & $<$2\e{-16} \\
+			\strep Chromosome & 1.989\e{-8} & 8.696\e{-10} & 57.37 & $<$2\e{-16}\\
+			\smel Chromosome &  -1.903\e{-7} &  2.13\e{-8} & -8.934 & $<$2\e{-16} \\
+			\smel pSymA &  -6.642\e{-7} & 2.801\e{-8} & -23.71 & $<$2\e{-16} \\
+			\smel pSymB & 1.769\e{-7} & 2.33\e{-8} & 7.593 & 3.11\e{-14}\\
+			\bottomrule
+		\end{tabular}
+\end{table}
+
+
+**BMB: you can (and should!) create these tables straight from a table of values (e.g. see `Hmisc::latex` and `?pander::pandoc.table`) or even straight from a fitted model (e.g. see the `huxtable` package). It's very clever of you to define the `\e{}` macro!**
+
+**BMB: it might make things easier to rescale by $10^{-6}$, if there were a way to explain it (so the numbers were easier to comprehend) -- change in substitution probably per million sites?**
+
+\begin{table}[h]
+	\centering
+		\begin{tabular}{lcccc}
+			\toprule
+			\multicolumn{5}{c}{Non-Protein Coding} \\
+			\midrule
+			Bacteria and Replicon & Coefficient Estimate & Standard Error & z-value & P\\
+			\midrule
+			 \ecol Chromosome &  9.896\e{-9} & 7.159\e{-9} & 1.382 & 0.167 \\
+			 \bass Chromosome &  -1.055\e{-7} & 1.25\e{-8} & -8.436 & $<$2\e{-16}  \\
+			 \strep Chromosome & 1.635\e{-7} & 2.893\e{-9} & 56.5 & $<$2\e{-16}\\
+			 \smel Chromosome & -2.900\e{-7} & 3.852\e{-8} &  -7.527 & 5.18\e{-14} \\
+			 \smel pSymA &  -1.263\e{-6} & 5.595\e{-8} & -22.57 & $<$2\e{-16} \\
+			 \smel pSymB & 4.771\e{-7} & 5.314\e{-8} & 8.978 & $<$2\e{-16}  \\
+			\bottomrule
+		\end{tabular}
+\end{table}
+
+
+Read in the data and format: (I have over 160 million lines of data so it was just not feasible to run the logistic regressions. So I manually added the output from the logistic regression results)
+
+**BMB: you might be able to get very similar (and much faster) results by binning the data. I would really like to see what happens if you fit more flexible models as a function of distance! Probably good practice to output the fitted model, or at least its coefficient table.  See the `butcher` package for saving versions of the model that don't include all the data!**
+ 
+I think I may have cheated a bit, but I made each bacteria a "term" even though they were not actually "terms" in the model.
+Each logistic regression model was run separately on both the protein coding and non-protein coding sections of each bacterial replicon.
+I did this so the data would be displayed in the graph the way that I want it to be.
+
+```{r, data_read}
+subs_dat <- read.table(header=TRUE,check.names=FALSE,text="
+term model  estimate  std.error statistic p.value 
+ecoli 1 -0.00000004308 0.000000002584  -16.67 0.0000000000000002
+ecoli 0 0.000000009896  0.000000007159  1.382 0.167
+bass  1 -0.00000004971  0.000000004268  -11.65  0.0000000000000002
+bass  0 -0.0000001055 0.0000000125  -8.436  0.0000000000000002
+strep  1 0.00000001989 0.0000000008696 57.37 0.0000000000000002
+strep 0 0.0000001635  0.000000002893  56.5  0.0000000000000002
+schrom  1 -0.0000001903 0.0000000213  -8.934  0.0000000000000002
+schrom  0 -0.0000002900 0.00000003852 -7.527  0.0000000000000518
+pa  1  -0.0000006642  0.00000002801 -23.71  0.0000000000000002
+pa  0 -0.000001263  0.00000005595 -22.57  0.0000000000000002
+pb  1 0.0000001769  0.0000000233  7.593 0.0000000000000311
+pb  0 0.0000004771  0.00000005314 8.978 0.0000000000000002
+
+")
+```
+```{r}
+sp_labs <- c("E. coli","B. subtilis","S. meliloti Chromosome","S. meliloti pSymA")
+sp_expr <- "([[:alpha:]]\\. )?[[:alpha:]]+"
+sp_get <- function(value) stringr::str_extract(value,sp_expr)
+nonsp_get <- function(value) stringr::str_remove(value,sp_expr)
+sp_get(sp_labs)
+nonsp_get(sp_labs)
+## https://stackoverflow.com/questions/32803727/ggplot-scale-x-continuous-with-symbol-make-bold
+make_labels <- function(value) {
+  value <- as.character(value)
+  do.call(expression, Map(function(x,y) bquote(paste(italic(.(x)),.(y))),
+                         sp_get(value), nonsp_get(value)))
+}
+make_labels(sp_labs[1])
+```
+
+### Graph 1
+```{r, graph, linewidth=60}
+dwplot(size = 3, subs_dat) %>%
+  relabel_predictors(ecoli = "E. coli",
+                          bass = "B. subtilis",
+                          strep = "Streptomyces",
+                          schrom = "S. meliloti Chromosome",
+                          pa = "S. meliloti pSymA",
+                          pb = "S. meliloti pSymB", face = "italic") +
+  xlab("Coefficient Estimates") +
+  scale_y_discrete(labels=make_labels) +                        
+  geom_vline(xintercept=0,lty=2)+ 
+  scale_colour_manual(values=c("#E08F8F","#173FAA"),
+                      name = "",
+                      labels = c("Protein Coding", "Non-Protein Coding"))
+ 
+```
+
+
+### Discussion of Graph 1
+
+In this graphic the coefficient estimates for each logistic regression are plotted.
+I have added in a reference line at zero to assist with determining statistical significance. 
+Typically, any coefficient estimates (and their respective standard errors) that cross over the zero reference line are not considered significant.
+In this plot, it is clear that the only estimate that is not significant is the non-protein coding regions of \ecol. **BMB why??**
+In the protein coding regions of \strep
+, the coefficient estimate is very close to the zero reference line, but does not touch it, and is therefore significant.
+
+**BMB: rescale coeff estimates to ``per million sites"?**
+
+It is also very easy to see which bacterial replicons have a positive or negative coefficient estimate. 
+pSymB of \smel 
+and \strep 
+are the only replicons to have a significant positive coefficient estimate, while the rest of the bacterial replicons have a significant negative coefficient estimate.
+
+### Discussion on Biological Relevance
+If the coefficient estimate is significantly positive, in this case it means that the probability of a substitution at a particular base increases with increasing distance from the origin of replication.
+**BMB: aha!! you probably should have said this earlier; I didn't know what the actual model was**
+This is to be expected because as replication proceeds from the origin towards the terminus, it is more prone to errors.
+Additionally, genes that are associated with core functions of the organism are typically found near the origin of replication.
+Since errors in these genes could be detrimental, we expect less substitutions and mutations to be present.
+Therefore, we should observe more substitutions near the terminus of the genome, and less substitutions near the origin of replication.
+
+If the coefficient estimate is significantly negative, in this case it means that the probability of a substitution at a particular base in the genome decreases with increasing distance from the origin of replication.
+This is counterintuitive to the typical organization of bacterial genomes.
+However, I failed to mention the most important part of my analysis, I take into account genomic rearrangements.
+Bacterial genomes are frequently re-arranging, re-organizing, and re-working their genomic information through a variety of processes such as duplications, translocations, and horizontal gene transfer.
+I account for these rearrangements by allowing genomic segments to be present in different locations in various bacterial strains.
+Previous studies have not accounted for rearrangements, which could explain why most of the bacterial replicons in this study have a higher probability of substitutions near the origin of replication.
+
+### Graph 2
+```{r, graph2, linewidth=60}
+subs_dat$estimate <- subs_dat$estimate * 1000000
+subs_dat$std.error <- subs_dat$std.error * 1000000
+dwplot(size = 3, subs_dat) %>%
+  ## BMB: try to avoid repetition?
+  relabel_predictors(ecoli = "E. coli",
+                          bass = "B. subtilis",
+                          strep = "Streptomyces",
+                          schrom = "S. meliloti Chromosome",
+                          pa = "S. meliloti pSymA",
+                          pb = "S. meliloti pSymB") +
+  scale_y_discrete(labels=make_labels) +                        
+  xlab(bquote('Coefficient Estimates'~(x10^6))) + ## BMB 10^6, right?
+  geom_vline(xintercept=0,lty=2)+ 
+  scale_colour_manual(values=c("#E08F8F","#173FAA"),
+                      name = "",
+                      labels = c("Protein Coding", "Non-Protein Coding"))
+ 
+```
+
+
+### Discussion of Graph 2
+I did not like the way that the coefficient estimate numbers looked on the x-axis so I wanted to try and see what they would look like as smaller numbers.
+I think it looks better, but I am not sure if this is maybe harder to read because people have to do some mental math to determine how small the coefficient estimate is. **BMB: I prefer it**
+I am also unsure if scaling the coefficient estimates and standard errors this way is mathematically correct. **BMB: yes it is**
+
+
+I was really excited for this assignment because I think it is a cool way to present multiple coefficient estimates focusing on their significance.
+It never occurred to me to present my regression results like this.
+
+
+### Other things...
+```{r, test, linewidth=60}
+#I tried many things to make the bacteria names italic 
+#(like the below code), but I just could not get it 
+#to work. dwplot() appears to not like expressions or 
+#paste...or substitute
+
+#subs_dat %>% dwplot(relabel_predictors(c("ecoli" = expression(paste(italic("E.coli"), " Chromosome")),
+#                          "bass" = expression(paste(italic("B. subtilis"), " Chromosome")),
+#                          "strep" = expression(paste(italic("Streptomyces"), " Chromosome")),
+#                          "sinoC" = expression(paste(italic("S.meliloti"), " Chromosome")),
+#                          "pSymA" = expression(paste(italic("S.meliloti"), " pSymA")),
+#                          "pSymB" = expression(paste(italic("S.meliloti"), " pSymB"))))) +
+#  xlab("CHANGE ME (x10^2)") +
+#  geom_vline(xintercept=0,lty=2)+ 
+#  scale_colour_manual(values=c("#E08F8F","#173FAA"),
+#                      name = "",
+#                      breaks=c("0","1"),
+#                      labels = c("Protein Coding", "Non-Protein Coding"))
+
+#I also tried this before I made the dwplot
+##make sure bacteria names are italic
+#bac_names <- c("ecoli" = expression(paste(italic("E.coli"), " Chromosome")),
+#                          "bass" = expression(paste(italic("B. subtilis"), " Chromosome")),
+#                          "strep" = expression(paste(italic("Streptomyces"), " Chromosome")),
+#                          "sinoC" = expression(paste(italic("S.meliloti"), " Chromosome")),
+#                          "pSymA" = expression(paste(italic("S.meliloti"), " pSymA")),
+#                          "pSymB" = expression(paste(italic("S.meliloti"), " pSymB")))
+# 
+#subs_dat$term <- bac_names
+ 
+```
+
+**BMB: see my solution.  score: 2.25**
+

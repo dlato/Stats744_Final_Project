@@ -235,7 +235,11 @@ rate_g <- (ggplot(ecol_rates, aes(x=new_sections, y=value.mean, colour=class))
 
 rate_g
 
-colours_arr <- res$category
+
+res <- strep_omeg %>% mutate(category=cut(value.mean, breaks=c(-Inf, 1, Inf), labels=c("#C29979","#242038")))
+res <- strep_omeg %>% mutate(category=cut(value.mean, breaks=c(-Inf, 1, Inf), labels=c("#C29979","#433E0E")))
+res <- strep_omeg %>% mutate(category=cut(value.mean, breaks=c(-Inf, 1, Inf), labels=c("#C29979","#E23400")))
+
 colours_arr <- res$category
 omeg_g <- (ggplot(res, aes(x=new_sections, y=value.mean))
            + geom_point(alpha = 0.75, fill = colours_arr, colour = colours_arr)

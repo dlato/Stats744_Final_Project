@@ -14,6 +14,7 @@ fontsize: 12pt
 \newcommand{\bass}{\textit{B.\,subtilis}\xspace}
 \newcommand{\ecol}{\textit{E.\,coli}\xspace}
 \newcommand{\strep}{\textit{Streptomyces}\xspace}
+\providecommand{\e}[1]{\ensuremath{\times 10^{#1}}}
 
 ```{r setup, include=FALSE}
 library(tidyverse)
@@ -194,7 +195,8 @@ This means that values of 0 are located closest to the origin, and the largest v
 The gene expression data set has information about the average expression value of the gene (averaged across multiple data sets) and the genomic location of that gene relative to the origin of replication.
 Additionally, we have obtained selection information on a few of these genes from each bacterial genome.
 This selection information tells us about the synonymous substitution rate (dS, mutations that do not cause a change in the amino acid sequence), the non-synonymous substitution rate (dN, mutations that cause a change in the amino acid sequence), and $\omega$ (dN/dS).
-Since synonymous substitutions do not cause a change in an amino acid sequence, we expect most genes to have a synonymous rate (dS) larger than non-synonymous rate (dN). 
+Since synonymous substitutions do not cause a change in an amino acid sequence, we expect most genes to have a synonymous rate (dS) larger than non-synonymous rate (dN).
+This is because a change in the amino acid sequence could greatly alter the protein function which could be detrimental to the organism.
 
 The $\omega$ ratio allows us to determine if the genes will be maintained or deleted over time.
 If $\omega$ for a gene is larger than 1, the gene is under positive selection and therefore is beneficial to the organism and will likely be maintained in the genome over time.
@@ -205,9 +207,9 @@ This selection data is again linked to the relative distance from the origin of 
 Both data sets are looking at how the response variables change with distance from the origin of replication.
 Near the origin of replication we expect genes to be more conserved and encoding for essential functions than genes located near the terminus of replication.
 Genes near the origin typically therefore, have higher gene expression and less mutations or substitutions, because they are important to the function of the organism.
-We expect that most genes (in any genome) are under neutral or purifying selection (removing deleterious traits), regardless of their genomic location (neutral theory or nearly neutral theory).
+We expect that most genes (in any organism) are under neutral or purifying selection (removing deleterious traits), regardless of their genomic location (neutral theory or nearly neutral theory).
 That being said, most amino acids are under some sort of constraint so it is rare that any genes will have an $\omega$ value equal to (or close to) 1.
-Since genes near the terminus are changing often (mutations) and involved in local environmental adaptation, we could suppose that these genes might be the best candidates for positive selection (increase beneficial traits).
+Since genes near the terminus are changing often (mutations), and are involved in local environmental adaptation, we could suppose that these genes might be the best candidates for positive selection (increase beneficial traits).
 
 This leaves us with three predictions for our data sets:
 
@@ -271,16 +273,16 @@ and \ecol
 , there appears to be a high number of genes with dS values larger than 1.
 There is a phylogenetic component to the calculation of dN, dS and $\omega$ and the programs are taking an average of all the substitutions that could have occurred along any branch within the phylogentic tree, over the total number of sites in the gene.
 This means, there depending on how close or distantly related the taxa are, there could have been multiple substitutions at one (or many) sites within the gene.
-This could cause the value of dS to be estimated to be larger than one substitution per site.
+This could cause the value of dS (or dN) to be estimated to be larger than one substitution per site.
 
-We also notice that most of the $\omega$ values for each bacterial replicon are below (or close to) 1, this is what we expected.
+We also notice that visually most of the $\omega$ values for each bacterial replicon are below (or close to) 1, this is what we expected.
 An $\omega$ value below (or close to) one means that the genes are likely neutral or under negative selection, meaning that mutations having deleterious impact on the organism will be removed over time.
-As mentioned previously, any genes that have an $\omega$ value equal to or close to 1 are most likely under neutral selection.
 It is difficult to tell from the graph which genes have an $\omega$ value statistically close enough to 1 to be considered neutral.
 The program (PAML) used to estimate the values of dN, dS, and $\omega$ uses a maximum-likelihood framework to calculate the average value over all sites in the gene.
 This means that we are quite confident that what we are seeing is the true value because it is impacting all sites over a prolonged period of time.
 To be more conservative, any $\omega$ values that are ``close'' to one should be considered neutral with caution.
-The notable exception to this is \strep
+
+The notable exception to having most genes with $\omega$ values larger than one is \strep
 , which appears to have a bi-modal distribution of $\omega$ values with a high number of genes with $\omega$ values at or above 1.
 \strep
 creates 80% of the antibiotics that we currently use.
@@ -321,41 +323,29 @@ rate_g <- (ggplot(strep_rates, aes(x=new_sections, y=value.mean, colour=class))
 )
 
 
-colours_arr <- c("#C29979")
-omeg_g <- (ggplot(strep_omeg, aes(x=new_sections, y=value.mean, colour=class))
-           + geom_point(alpha = 0.75)
-           + geom_smooth()
-           #labels for the colours
-           + annotate("text", x=5.4,y=0.4,label="omega", parse=TRUE, colour = "#C29979", size = 10)
-           + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.01,0.1, 1, 10))
-           + scale_color_manual(values=colours_arr)
-           #omega = 1 reference line
-           +  geom_hline(yintercept=1, linetype="dashed", color = "black", size=1)
-           #axis labels
-          + ggtitle(expression(paste(italic("Streptomyces"), " Chromosome")))
-           + ylab("Mean Ratio\n(dN/dS)\nper 10Kbp")
-          #remove x axis labels
-          + theme(axis.title.x = element_blank(),
-                  axis.ticks.x = element_blank(),
-                  axis.text.x = element_blank(),
-                  #remove legend
-                  legend.position = "none")
-)
+#colours_arr <- c("#C29979")
+#omeg_g <- (ggplot(strep_omeg, aes(x=new_sections, y=value.mean, colour=class))
+#           + geom_point(alpha = 0.75)
+#           + geom_smooth()
+#           #labels for the colours
+#           + annotate("text", x=5.4,y=0.4,label="omega", parse=TRUE, colour = "#C29979", size = 10)
+#           + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.01,0.1, 1, 10))
+#           + scale_color_manual(values=colours_arr)
+#           #omega = 1 reference line
+#           +  geom_hline(yintercept=1, linetype="dashed", color = "black", size=1)
+#           #axis labels
+#          + ggtitle(expression(paste(italic("Streptomyces"), " Chromosome")))
+#           + ylab("Mean Ratio\n(dN/dS)\nper 10Kbp")
+#          #remove x axis labels
+#          + theme(axis.title.x = element_blank(),
+#                  axis.ticks.x = element_blank(),
+#                  axis.text.x = element_blank(),
+#                  #remove legend
+#                  legend.position = "none")
+#)
 
-
-```
-
-```{r, dS_dN_graph, warning=FALSE}
-#arrange the graphs on one. since facet will not let you re-lable each axis in a facet
-grid.newpage()
-grid.draw(rbind(ggplotGrob(omeg_g), ggplotGrob(rate_g)))
-
-```
-
-
-```{r omeg_2, include=FALSE}
 #lable all points that have omega > 1 as a different colour
-res <- strep_omeg %>% mutate(category=cut(value.mean, breaks=c(-Inf, 1, Inf), labels=c("#C29979","#594637")))
+res <- strep_omeg %>% mutate(category=cut(value.mean, breaks=c(-Inf, 1, Inf), labels=c("#C29979","#E23400")))
 
 colours_arr <- res$category
 omeg_g <- (ggplot(res, aes(x=new_sections, y=value.mean))
@@ -380,27 +370,23 @@ omeg_g <- (ggplot(res, aes(x=new_sections, y=value.mean))
 
 ```
 
-
-```{r, strep_sel2, warning=FALSE}
+```{r, dS_dN_graph, warning=FALSE}
 #arrange the graphs on one. since facet will not let you re-lable each axis in a facet
 grid.newpage()
 grid.draw(rbind(ggplotGrob(omeg_g), ggplotGrob(rate_g)))
 
 ```
 
-
 The top graph shows the mean $\omega$ calculated over each 10Kbp region of the \strep 
 genome.
 This was calculated by averaging the $\omega$ values over each 10,000 bp (10Kbp) section of the genome. 
-As mentioned before, this was calculated by averaging the $\omega$ values of all genes within each 10Kbp section of the genome. 
 A non-linear trend line with confidence intervals was added to the plot to show an overall trend about how $\omega$ changes with distance from the origin of replication.
+Any group of genes that have an average $\omega$ value larger than 1 have been coloured in a bright coral colour to assist in distinguishing them from the other values.
 As mentioned previously, we see that most sections of the genome have a mean $\omega$ value of less than (or close to) 1, as expected.
 This means that majority of the genes in the genome are under neutral or negative selection.
 As mentioned previously, any genes that have an $\omega$ value equal to or close to 1 are most likely under neutral selection.
 It is difficult to tell from the graph which genes have an $\omega$ value statistically close enough to 1 to be considered neutral.
-The program (PAML) used to estimate the values of dN, dS, and $\omega$ uses a maximum-likelihood framework to calculate the average value over all sites in the gene.
-This means that we are quite confident that what we are seeing is the true value because it is impacting all sites over a prolonged period of time.
-To be more conservative, any $\omega$ values that are ``close'' to one should be considered neutral with caution.
+Again, to be more conservative, any $\omega$ values that are ``close'' to 1 should be considered neutral with caution.
 
 Interestingly, the sections of the genome with mean $\omega$ values larger than one seem to be clustered near the terminus of replication.
 There appears to be a particular peak at around 3.7 million base pairs (Mbp) from the origin of replication.
@@ -413,18 +399,17 @@ It is therefore conceivable that this area of the genome is mostly under positiv
 The points on the bottom graph represent the mean expected number of substitutions per 10Kbp for both dN and dS.
 This was calculated by averaging the dS and dN values respectively over each 10Kbp section of the genome. 
 A non-linear trend line with confidence intervals was added to the plot to show an overall trend about how dN and dS respectively are changing with distance from the origin of replication.
-As mentioned previously, we see that dS is higher than dN for most of the genes in \strep
+As mentioned previously, we see that visually dS is higher than dN for most of the genes in \strep
 .
 dS appears to be slightly decreasing with increased distance from the origin of replication, while dN appears to be slightly increasing.
 We also see that the pattern for dN and dS are non-linear, although only slightly.
 Biologically, we know that the majority of the core genome for \strep
-(the part of the genome containing functionally important genes), is located about 3Mbp from the origin of replication, while the accessory genome is located approximately 2Mbp from the terminus or replication.
+(the part of the genome containing functionally important genes), is located about 3Mbp from the origin of replication, while the accessory genome is located approximately 2Mbp from the terminus of replication.
 It is therefore plausible that core genes should have more synonymous substitutions, so the amino acid sequence is not altered, compared to the accessory genome.
 It is conceivable that the accessory genome has more non-synonymous substitutions which could provide increased genetic diversity, assisting in for example producing new antibiotics.
 With the location of the accessory genome coinciding with areas where we see decreased dS and increased dN, we could infer that biologically this is what is happening.
 
 Discussion of our graphical choices for this graph can be found in the *Graphical Decisions* section.
-
 \newpage
 **Gene Expression Data**
 
@@ -622,6 +607,14 @@ Gene expression of \textit{Streptomyces}, \textit{B.\,subtilis}, and\textit{E.\,
 origin of replication in a
 \textbf{non-linear} manner. 
 
+
+#Note:
+When discussing the data we did not perform statistical tests to check our hypothesis (stated in **The Data** section), we instead focused on depicting these trends visually as this is a data visualization course.
+Daniella has done some analysis in her thesis looking at statistical linear trends of dN, dS, $\omega$, and gene expression changing with distance from the origin of replication in all of the bacterial replicons and these results can be found in the appendix.
+
+
+
+
 # Graphical Decisions
 
 ## General:
@@ -676,7 +669,6 @@ and \bass
 because it has it's genome in one chromosome.
 \smel 
 is a multi-repliconic bacteria (has more than one chromosome-like structure), and therefore we wanted to keep the replicons of this bacteria close together so they could be easily compared to one another.
-In the selection summary graphic we decided to add in a redundant legend to aid viewers in determining what colours were linked to which selection measure.
 
 We chose to arrange the selection parameters (dN, dS and $\omega$) in that particular order because $\omega$ is the ratio of dN/dS, we thought that it would be appropriate to put dN first in an attempt to match the ratio order.
 Likewise, $\omega$ was chosen as the right most value because it is a combination of the first two values.
@@ -718,6 +710,8 @@ We allowed for confidence intervals on the line to help show the fit of the geom
 
 Again, we are primarily interested in $\omega$ values that are larger than zero (see *The Data* section on positive selection).
 We decided to add a reference line at 1 to help remind viewers about the differences between $\omega$ values that lie above and below this line.
+We also decided to choose a bright colour to make the points where $\omega$ is $>$ 1 stand out.
+This makes it easy to see any points that are very close to the $\omega$ = 1 line, which as mentioned previously should be called "neutral" with caution.
 
 We also used direct labeling when we could to avoid the need for a legend.
 Although the y-axis titles are lengthy, they are biologically accurate and convey the proper units for each of the selection values.
@@ -919,21 +913,21 @@ rate_g2 <- (ggplot(strep_rates, aes(x=new_sections, y=value.mean, colour=class))
 )
 
 
-colours_arr <- c("#C29979")
-omeg_g2 <- (ggplot(strep_omeg, aes(x=new_sections, y=value.mean, colour=class))
-           + geom_point(alpha = 0.65)
-           + geom_smooth()
-           #labels for the colours
-           + annotate("text", x=5.55,y=0.25,label="omega", parse=TRUE, colour = "#C29979", size = 9)
-           + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.01,0.1, 1, 10))
-           + scale_color_manual(values=colours_arr)
-           #omega = 1 reference line
-           +  geom_hline(yintercept=1, linetype="dashed", color = "black", size=1)
-           #axis labels
-           + xlab("Distance from the Origin\nof Replication (Mbp)")
-           + ylab("Mean Ratio (dN/dS) per 10Kbp")
-           + theme(legend.position = "none")
-)
+#colours_arr <- c("#C29979")
+#omeg_g2 <- (ggplot(strep_omeg, aes(x=new_sections, y=value.mean, colour=class))
+#           + geom_point(alpha = 0.65)
+#           + geom_smooth()
+#           #labels for the colours
+#           + annotate("text", x=5.55,y=0.25,label="omega", parse=TRUE, colour = "#C29979", size = 9)
+#           + scale_y_continuous(trans='log10',labels = function(x) ifelse(x == 0, "0", x), breaks=c(0.001,0.01,0.1, 1, 10))
+#           + scale_color_manual(values=colours_arr)
+#           #omega = 1 reference line
+#           +  geom_hline(yintercept=1, linetype="dashed", color = "black", size=1)
+#           #axis labels
+#           + xlab("Distance from the Origin\nof Replication (Mbp)")
+#           + ylab("Mean Ratio (dN/dS) per 10Kbp")
+#           + theme(legend.position = "none")
+#)
 
 colours_arr <- res$category
 omeg_g2 <- (ggplot(res, aes(x=new_sections, y=value.mean))
@@ -958,3 +952,47 @@ grid.newpage()
 grid.draw(cbind(ggplotGrob(rate_g2), ggplotGrob(omeg_g2)))
 
 ```
+
+
+\begin{table}[h]
+	\centering
+	\resizebox{\textwidth}{!}{%
+		\begin{tabular}{ll}
+			\toprule
+			Bacteria and Replicon & Regression Slope of the \\
+			& Change in Gene Expression\\
+			&  with Distance from the \\
+			& Origin of Replication \\
+			\midrule
+			\ecol Chromosome & -2.29\e{-5}*** \\
+			\bass Chromosome & -2.48\e{-5}**\\
+			\strep Chromosome & -1.41\e{-7}** \\
+			\smel Chromosome & -2.54\e{-5}*\\
+			\smel pSymA & NS\\
+			\smel pSymB & NS\\
+			\bottomrule
+		\end{tabular}
+		
+	}%resizebox
+	\caption{\label{tab:lr_normalized_exp} Linear regression results of average expression and distance from the origin of replication. The average expression values were calculated by dividing the total counts per million expression value per 10kb section of the genome by the total number of genes in the respective 10kb section. Linear regression was calculated after the origin of replication was moved to the beginning of the genome and all subsequent positions were scaled around the origin accounting for bidirectional replication. Statistical outliers were removed from this linear regression calculation.  All results are marked with significance codes as followed: $<$ 0.001 = `\*\*\*', 0.001 $<$ 0.01 = `\*\*', 0.01 $<$ 0.05 = `\*', $>$ 0.05 = `NS'.  A grey row indicates a significant negative trend.}
+\end{table}
+
+\begin{table}[h]
+	\centering
+	\resizebox{\textwidth}{!}{%
+		\begin{tabular}{lccc}
+			\toprule
+			Bacteria and Replicon &  dN & dS & $\omega$ \\
+			\midrule
+			\ecol Chromosome & 3.36\e{-9}** & NS & 1.22\e{-8}***\\
+			\bass Chromosome & -5.69\e{-9}*** & NS & -7.66\e{-9}**\\
+			\strep Chromosome & 4.32\e{-10}*** & NS & 7.08\e{-9}***\\
+			\smel Chromosome & -4.87\e{-10}* & -1.06\e{-8}*** & NS \\
+			\smel pSymA & NS & 2.20\e{-7}*** & NS\\
+			\smel pSymB & 4.68\e{-9}* & NS & 4.89\e{-8}*\\
+			\bottomrule
+		\end{tabular}
+		
+	}%resizebox
+	\caption{\label{tab:dN_dS_lin_reg} Linear regression for dN, dS, and $\omega$ calculated for each bacterial replicon on a per genome basis. All results are marked with significance codes as followed: p: $<$ 0.001 = `\*\*\*', 0.001 $<$ 0.01 = `\*\*', 0.01 $<$ 0.05 = `\*', $>$ 0.05 = `NS'.}
+\end{table}
