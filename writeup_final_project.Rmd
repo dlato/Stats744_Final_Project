@@ -413,7 +413,7 @@ Discussion of our graphical choices for this graph can be found in the *Graphica
 \newpage
 **Gene Expression Data**
 
-Now we are going to see whether our prediction, that the Gene expression should decease when moving away from the origin of replication, holds.
+Now we are going to see whether our prediction, that the Gene expression should decrease when moving away from the origin of replication, holds.
 We created the same graph for each of the bacterial genomes to explore how gene expression changes with distance from the origin of replication.
 
 ```{r, expression_graph, include=FALSE}
